@@ -8,9 +8,19 @@
 /* tslint:disable */
 /* eslint-disable */
 export interface UserInput {
-    name: string;
-    role: string;
-    email: string;
+    name?: Nullable<string>;
+    role?: Nullable<string>;
+    email?: Nullable<string>;
+}
+
+export interface UserWhereUniqueInput {
+    id?: Nullable<string>;
+    email?: Nullable<string>;
+}
+
+export interface UserUpdateInput {
+    data: UserInput;
+    where: UserWhereUniqueInput;
 }
 
 export interface Task {
@@ -27,7 +37,7 @@ export interface IQuery {
     tasks(): Nullable<Nullable<Task>[]> | Promise<Nullable<Nullable<Task>[]>>;
     task(id: string): Nullable<Task> | Promise<Nullable<Task>>;
     users(): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
-    user(id: string): Nullable<User> | Promise<Nullable<User>>;
+    user(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export interface User {
@@ -38,7 +48,9 @@ export interface User {
 }
 
 export interface IMutation {
-    userCreate(input: UserInput): Nullable<User> | Promise<Nullable<User>>;
+    createUser(input: UserInput): Nullable<User> | Promise<Nullable<User>>;
+    updateUser(input: UserUpdateInput): Nullable<User> | Promise<Nullable<User>>;
+    deleteUser(input?: Nullable<UserWhereUniqueInput>): Nullable<User> | Promise<Nullable<User>>;
 }
 
 export type DateTime = any;

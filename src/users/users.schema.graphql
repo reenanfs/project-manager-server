@@ -6,16 +6,28 @@ type User {
 }
 
 input UserInput {
-  name: String!
-  role: String!
-  email: String!
+  name: String
+  role: String
+  email: String
+}
+
+input UserWhereUniqueInput {
+  id: ID
+  email: String
+}
+
+input UserUpdateInput {
+  data: UserInput!
+  where: UserWhereUniqueInput!
 }
 
 type Query {
   users: [User]
-  user(id: ID!): User
+  user(input: UserWhereUniqueInput!): User
 }
 
 type Mutation {
-  userCreate(input: UserInput!): User
+  createUser(input: UserInput!): User
+  updateUser(input: UserUpdateInput!): User
+  deleteUser(input: UserWhereUniqueInput): User
 }
