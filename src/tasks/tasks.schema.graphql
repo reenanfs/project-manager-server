@@ -1,0 +1,16 @@
+scalar DateTime
+
+type Task {
+  id: ID!
+  taskName: String!
+  description: String
+  user: User
+  startDate: DateTime!
+  dueDate: DateTime!
+  completionDate: DateTime
+}
+
+type Query {
+  tasks: [Task]
+  task(id: ID!): Task
+}
