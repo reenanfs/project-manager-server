@@ -1,5 +1,6 @@
 import { Resolver, Args, Mutation, Query } from '@nestjs/graphql';
 import { Prisma, User } from '@prisma/client';
+import { Nullable } from 'src/types/typescript.types';
 import { UsersService } from './users.service';
 
 @Resolver()
@@ -7,12 +8,14 @@ export class UsersResolver {
   constructor(private usersService: UsersService) {}
 
   @Query('users')
-  async getUsers() {
+  async getUsers(): Promise<Nullable<User[]>> {
     return this.usersService.getUsers({});
   }
 
   @Query('user')
-  async getUser(@Args('input') input: Prisma.UserWhereUniqueInput) {
+  async getUser(
+    @Args('input') input: Prisma.UserWhereUniqueInput,
+  ): Promise<Nullable<User>> {
     return this.usersService.getUser(input);
   }
 
@@ -26,11 +29,8 @@ export class UsersResolver {
   @Mutation()
   async updateUser(
     @Args('input')
-    input: {
-      where: Prisma.UserWhereUniqueInput;
-      data: Prisma.UserUpdateInput;
-    },
-  ): Promise<User> {
+    input: Prisma.UserUpdateInput,
+  ): Promise<Nullable<User>> {
     return this.usersService.updateUser(input);
   }
 
@@ -38,7 +38,7 @@ export class UsersResolver {
   async deleteUser(
     @Args('input')
     input: Prisma.UserWhereUniqueInput,
-  ): Promise<User> {
+  ): Promise<Nullable<User>> {
     return this.usersService.deleteUser(input);
   }
 }

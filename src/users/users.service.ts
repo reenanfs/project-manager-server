@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
+import { UpdateTaskInput } from 'src/graphql/typescript-typings';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Nullable } from 'src/types/typescript.types';
 
 @Injectable()
 export class UsersService {
@@ -12,7 +14,7 @@ export class UsersService {
     cursor?: Prisma.UserWhereUniqueInput;
     where?: Prisma.UserWhereInput;
     orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<User[] | null> {
+  }): Promise<Nullable<User[]>> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prismaService.user.findMany({
       skip,
@@ -23,7 +25,7 @@ export class UsersService {
     });
   }
 
-  async getUser(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
+  async getUser(where: Prisma.UserWhereUniqueInput): Promise<Nullable<User>> {
     return this.prismaService.user.findUnique({ where });
   }
 
@@ -33,18 +35,22 @@ export class UsersService {
     });
   }
 
-  async updateUser(input: {
-    where: Prisma.UserWhereUniqueInput;
-    data: Prisma.UserUpdateInput;
-  }): Promise<User> {
-    const { where, data } = input;
+  async updateUser(data: Prisma.UserUpdateInput): Promise<Nullable<User>> {
+    const { id } = data;
+
+    const where = {
+      id: id as string,
+    };
+
     return this.prismaService.user.update({
       where,
       data,
     });
   }
 
-  async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
+  async deleteUser(
+    where: Prisma.UserWhereUniqueInput,
+  ): Promise<Nullable<User>> {
     return this.prismaService.user.delete({ where });
   }
 }

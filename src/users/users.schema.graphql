@@ -5,20 +5,21 @@ type User {
   email: String!
 }
 
-input UserInput {
+input CreateUserInput {
+  name: String!
+  role: String!
+  email: String!
+}
+
+input UpdateUserInput {
+  id: ID!
   name: String
   role: String
   email: String
 }
 
 input UserWhereUniqueInput {
-  id: ID
-  email: String
-}
-
-input UserUpdateInput {
-  data: UserInput!
-  where: UserWhereUniqueInput!
+  id: ID!
 }
 
 type Query {
@@ -27,7 +28,7 @@ type Query {
 }
 
 type Mutation {
-  createUser(input: UserInput!): User
-  updateUser(input: UserUpdateInput!): User
-  deleteUser(input: UserWhereUniqueInput): User
+  createUser(input: CreateUserInput!): User
+  updateUser(input: UpdateUserInput!): User
+  deleteUser(input: UserWhereUniqueInput!): User
 }

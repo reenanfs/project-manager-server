@@ -10,7 +10,35 @@ type Task {
   completionDate: DateTime
 }
 
+input CreateTaskInput {
+  taskName: String!
+  description: String
+  userId: ID!
+  startDate: DateTime!
+  dueDate: DateTime!
+}
+
+input UpdateTaskInput {
+  id: ID!
+  taskName: String
+  description: String
+  userId: ID
+  startDate: DateTime
+  dueDate: DateTime
+  completionDate: DateTime
+}
+
+input TaskWhereUniqueInput {
+  id: ID!
+}
+
 type Query {
   tasks: [Task]
-  task(id: ID!): Task
+  task(input: TaskWhereUniqueInput!): Task
+}
+
+type Mutation {
+  createTask(input: CreateTaskInput!): Task
+  updateTask(input: UpdateTaskInput!): Task
+  deleteTask(input: TaskWhereUniqueInput!): Task
 }
