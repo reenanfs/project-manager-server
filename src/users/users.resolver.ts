@@ -1,13 +1,20 @@
 import { NotFoundException } from '@nestjs/common';
-import { Resolver, Args, Mutation, Query } from '@nestjs/graphql';
-import { Prisma, User } from '@prisma/client';
+import {
+  Resolver,
+  Args,
+  Mutation,
+  Query,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
+import { Task, User } from '@prisma/client';
 import { UserWhereUniqueInput } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
 
-@Resolver()
+@Resolver('User')
 export class UsersResolver {
   constructor(private usersService: UsersService) {}
 
@@ -21,6 +28,11 @@ export class UsersResolver {
     @Args('input') input: UserWhereUniqueInput,
   ): Promise<Nullable<User>> {
     return this.usersService.getUser(input);
+  }
+
+  @ResolveField('tasks')
+  async getUserTasks(@Parent() user: User): Promise<Nullable<Task[]>> {
+    return this.usersService.getUserTasks(user);
   }
 
   @Mutation()

@@ -43,9 +43,8 @@ export class TasksResolver {
   }
 
   @ResolveField('user')
-  async getUser(@Parent() task: Task): Promise<User> {
-    const { userId: id } = task;
-    return this.usersService.getUser({ id });
+  async getTaskUser(@Parent() task: Task): Promise<User> {
+    return this.tasksService.getTaskUser(task);
   }
 
   @Mutation()

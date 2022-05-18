@@ -3,6 +3,7 @@ type User {
   name: String!
   role: String!
   email: String!
+  tasks: [Task]
 }
 
 input CreateUserInput {

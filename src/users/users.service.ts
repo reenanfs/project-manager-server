@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, Task, User } from '@prisma/client';
 import { UserCreateInput } from 'src/prisma/generated-types/user/user-create.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Nullable } from 'src/typescript/types';
@@ -49,5 +49,11 @@ export class UsersService {
     where: Prisma.UserWhereUniqueInput,
   ): Promise<Nullable<User>> {
     return this.prismaService.user.delete({ where });
+  }
+
+  async getUserTasks(user: User): Promise<Nullable<Task[]>> {
+    return this.prismaService.user
+      .findUnique({ where: { id: user.id } })
+      .tasks();
   }
 }

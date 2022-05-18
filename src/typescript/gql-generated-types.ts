@@ -85,6 +85,7 @@ export class User {
     name: string;
     role: string;
     email: string;
+    tasks?: Nullable<Nullable<Task>[]>;
 }
 
 export type DateTime = any;
