@@ -3,6 +3,9 @@
 /node_modules
 /prisma/generated-types
 
+# Secret
+.env
+
 # Logs
 logs
 *.log
