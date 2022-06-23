@@ -4,7 +4,7 @@ type Task {
   id: ID!
   taskName: String!
   description: String
-  user: User
+  user: User!
   startDate: DateTime!
   dueDate: DateTime!
   completionDate: DateTime

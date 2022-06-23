@@ -7,10 +7,11 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { Task, User } from '@prisma/client';
+import { Prisma, Task, User } from '@prisma/client';
 import { UserWhereUniqueInput } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { DeleteUsersDto } from './dtos/delete-users.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
 
@@ -70,5 +71,13 @@ export class UsersResolver {
     }
 
     return this.usersService.deleteUser(input);
+  }
+
+  @Mutation()
+  async deleteUsers(
+    @Args('input')
+    input: DeleteUsersDto,
+  ): Promise<Prisma.BatchPayload> {
+    return this.usersService.deleteUsers(input);
   }
 }

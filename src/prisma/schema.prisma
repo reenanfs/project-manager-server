@@ -11,22 +11,25 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
-  name String
-  role String
+  id    String @id @default(uuid())
+  name  String
+  role  String
   email String @unique
   tasks Task[]
+
   @@map("users")
 }
 
 model Task {
-  id String @id @default(uuid())
-  taskName String @map("task_name")
-  description String?
-  userId String @map("user_id")
-  user User @relation(fields: [userId], references: [id])
-  startDate DateTime @map("start_date")
-  dueDate DateTime @map("due_date")
+  id             String    @id @default(uuid())
+  taskName       String    @map("task_name")
+  description    String?
+  userId         String    @map("user_id")
+  user           User      @relation(fields: [userId], references: [id])
+  startDate      DateTime  @map("start_date")
+  dueDate        DateTime  @map("due_date")
   completionDate DateTime? @map("completion_date")
+  completed      DateTime?
+
   @@map("tasks")
 }

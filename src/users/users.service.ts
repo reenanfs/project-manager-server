@@ -3,6 +3,7 @@ import { Prisma, Task, User } from '@prisma/client';
 import { UserCreateInput } from 'src/prisma/generated-types/user/user-create.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Nullable } from 'src/typescript/types';
+import { DeleteUsersDto } from './dtos/delete-users.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Injectable()
@@ -49,6 +50,14 @@ export class UsersService {
     where: Prisma.UserWhereUniqueInput,
   ): Promise<Nullable<User>> {
     return this.prismaService.user.delete({ where });
+  }
+
+  async deleteUsers({ ids }: DeleteUsersDto): Promise<Prisma.BatchPayload> {
+    return this.prismaService.user.deleteMany({
+      where: {
+        id: { in: ids },
+      },
+    });
   }
 
   async getUserTasks(user: User): Promise<Nullable<Task[]>> {

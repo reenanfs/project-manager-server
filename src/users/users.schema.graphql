@@ -6,6 +6,10 @@ type User {
   tasks: [Task]
 }
 
+type BulkOperationResult {
+  count: Int!
+}
+
 input CreateUserInput {
   name: String!
   role: String!
@@ -17,6 +21,10 @@ input UpdateUserInput {
   name: String
   role: String
   email: String
+}
+
+input DeleteUsersInput {
+  ids: [String!]!
 }
 
 input UserWhereUniqueInput {
@@ -32,4 +40,5 @@ type Mutation {
   createUser(input: CreateUserInput!): User
   updateUser(input: UpdateUserInput!): User
   deleteUser(input: UserWhereUniqueInput!): User
+  deleteUsers(input: DeleteUsersInput): BulkOperationResult
 }

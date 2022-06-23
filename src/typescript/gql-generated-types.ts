@@ -42,6 +42,10 @@ export class UpdateUserInput {
     email?: Nullable<string>;
 }
 
+export class DeleteUsersInput {
+    ids: string[];
+}
+
 export class UserWhereUniqueInput {
     id: string;
 }
@@ -50,7 +54,7 @@ export class Task {
     id: string;
     taskName: string;
     description?: Nullable<string>;
-    user?: Nullable<User>;
+    user: User;
     startDate: DateTime;
     dueDate: DateTime;
     completionDate?: Nullable<DateTime>;
@@ -78,6 +82,8 @@ export abstract class IMutation {
     abstract updateUser(input: UpdateUserInput): Nullable<User> | Promise<Nullable<User>>;
 
     abstract deleteUser(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract deleteUsers(input?: Nullable<DeleteUsersInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
 }
 
 export class User {
@@ -86,6 +92,10 @@ export class User {
     role: string;
     email: string;
     tasks?: Nullable<Nullable<Task>[]>;
+}
+
+export class BulkOperationResult {
+    count: number;
 }
 
 export type DateTime = any;
