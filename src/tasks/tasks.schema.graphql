@@ -5,17 +5,18 @@ type Task {
   taskName: String!
   description: String
   user: User!
-  startDate: DateTime!
-  dueDate: DateTime!
+  startDate: DateTime
+  dueDate: DateTime
   completionDate: DateTime
+  completed: Boolean
 }
 
 input CreateTaskInput {
   taskName: String!
   description: String
   userId: ID!
-  startDate: DateTime!
-  dueDate: DateTime!
+  startDate: DateTime
+  dueDate: DateTime
 }
 
 input UpdateTaskInput {
@@ -26,6 +27,7 @@ input UpdateTaskInput {
   startDate: DateTime
   dueDate: DateTime
   completionDate: DateTime
+  completed: Boolean
 }
 
 input TaskWhereUniqueInput {

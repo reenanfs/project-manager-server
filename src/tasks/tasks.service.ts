@@ -1,7 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma, Task, User } from '@prisma/client';
-import { TaskCreateManyInput } from 'src/prisma/generated-types/task/task-create-many.input';
-import { TaskCreateInput } from 'src/prisma/generated-types/task/task-create.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateTaskInput } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
@@ -32,7 +30,7 @@ export class TasksService {
     return this.prismaService.task.findUnique({ where });
   }
 
-  async createTask(data: TaskCreateManyInput): Promise<Task> {
+  async createTask(data: Prisma.TaskCreateManyInput): Promise<Task> {
     return this.prismaService.task.create({
       data,
     });

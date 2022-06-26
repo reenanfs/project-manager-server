@@ -26,10 +26,10 @@ model Task {
   description    String?
   userId         String    @map("user_id")
   user           User      @relation(fields: [userId], references: [id])
-  startDate      DateTime  @map("start_date")
-  dueDate        DateTime  @map("due_date")
+  startDate      DateTime?  @map("start_date")
+  dueDate        DateTime?  @map("due_date")
   completionDate DateTime? @map("completion_date")
-  completed      DateTime?
+  completed      Boolean?
 
   @@map("tasks")
 }

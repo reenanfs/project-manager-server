@@ -11,8 +11,8 @@ export class CreateTaskInput {
     taskName: string;
     description?: Nullable<string>;
     userId: string;
-    startDate: DateTime;
-    dueDate: DateTime;
+    startDate?: Nullable<DateTime>;
+    dueDate?: Nullable<DateTime>;
 }
 
 export class UpdateTaskInput {
@@ -23,6 +23,7 @@ export class UpdateTaskInput {
     startDate?: Nullable<DateTime>;
     dueDate?: Nullable<DateTime>;
     completionDate?: Nullable<DateTime>;
+    completed?: Nullable<boolean>;
 }
 
 export class TaskWhereUniqueInput {
@@ -55,9 +56,10 @@ export class Task {
     taskName: string;
     description?: Nullable<string>;
     user: User;
-    startDate: DateTime;
-    dueDate: DateTime;
+    startDate?: Nullable<DateTime>;
+    dueDate?: Nullable<DateTime>;
     completionDate?: Nullable<DateTime>;
+    completed?: Nullable<boolean>;
 }
 
 export abstract class IQuery {
