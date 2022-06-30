@@ -8,14 +8,13 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { Prisma, Task, User } from '@prisma/client';
-import {
-  CreateTaskInput,
-  TaskWhereUniqueInput,
-  UpdateTaskInput,
-} from 'src/typescript/gql-generated-types';
+import { TaskWhereUniqueInput } from 'src/typescript/gql-generated-types';
 
 import { Nullable } from 'src/typescript/types';
 import { UsersService } from 'src/users/users.service';
+import { CreateTaskDto } from './dtos/create-task.dto';
+import { DeleteTasksDto } from './dtos/delete-tasks.dto';
+import { UpdateTaskDto } from './dtos/update-task.dto';
 
 import { TasksService } from './tasks.service';
 
@@ -44,7 +43,7 @@ export class TasksResolver {
   }
 
   @Mutation()
-  async createTask(@Args('input') input: CreateTaskInput): Promise<Task> {
+  async createTask(@Args('input') input: CreateTaskDto): Promise<Task> {
     const { userId: id } = input;
 
     const user = await this.usersService.getUser({ id });
@@ -59,7 +58,7 @@ export class TasksResolver {
   @Mutation()
   async updateTask(
     @Args('input')
-    input: UpdateTaskInput,
+    input: UpdateTaskDto,
   ): Promise<Nullable<Task>> {
     const { id } = input;
 
@@ -86,5 +85,13 @@ export class TasksResolver {
     }
 
     return this.tasksService.deleteTask(input);
+  }
+
+  @Mutation()
+  async deleteTasks(
+    @Args('input')
+    input: DeleteTasksDto,
+  ): Promise<Prisma.BatchPayload> {
+    return this.tasksService.deleteTasks(input);
   }
 }

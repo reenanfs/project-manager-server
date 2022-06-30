@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Task, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateTaskInput } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
+import { CreateTaskDto } from './dtos/create-task.dto';
+import { DeleteTasksDto } from './dtos/delete-tasks.dto';
+import { UpdateTaskDto } from './dtos/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -30,13 +32,13 @@ export class TasksService {
     return this.prismaService.task.findUnique({ where });
   }
 
-  async createTask(data: Prisma.TaskCreateManyInput): Promise<Task> {
+  async createTask(data: CreateTaskDto): Promise<Task> {
     return this.prismaService.task.create({
       data,
     });
   }
 
-  async updateTask(data: UpdateTaskInput): Promise<Nullable<Task>> {
+  async updateTask(data: UpdateTaskDto): Promise<Nullable<Task>> {
     const { id } = data;
 
     return this.prismaService.task.update({
@@ -49,6 +51,14 @@ export class TasksService {
     where: Prisma.TaskWhereUniqueInput,
   ): Promise<Nullable<Task>> {
     return this.prismaService.task.delete({ where });
+  }
+
+  async deleteTasks({ ids }: DeleteTasksDto): Promise<Prisma.BatchPayload> {
+    return this.prismaService.task.deleteMany({
+      where: {
+        id: { in: ids },
+      },
+    });
   }
 
   async getTaskUser(task: Task): Promise<Nullable<User>> {

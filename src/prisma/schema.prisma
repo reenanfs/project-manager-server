@@ -24,8 +24,8 @@ model Task {
   id             String    @id @default(uuid())
   taskName       String    @map("task_name")
   description    String?
-  userId         String    @map("user_id")
-  user           User      @relation(fields: [userId], references: [id])
+  userId         String?    @map("user_id")
+  user           User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
   startDate      DateTime?  @map("start_date")
   dueDate        DateTime?  @map("due_date")
   completionDate DateTime? @map("completion_date")

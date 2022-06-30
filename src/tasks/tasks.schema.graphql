@@ -4,11 +4,15 @@ type Task {
   id: ID!
   taskName: String!
   description: String
-  user: User!
+  user: User
   startDate: DateTime
   dueDate: DateTime
   completionDate: DateTime
   completed: Boolean
+}
+
+type BulkOperationResult {
+  count: Int!
 }
 
 input CreateTaskInput {
@@ -30,6 +34,10 @@ input UpdateTaskInput {
   completed: Boolean
 }
 
+input DeleteTasksInput {
+  ids: [String!]!
+}
+
 input TaskWhereUniqueInput {
   id: ID!
 }
@@ -43,4 +51,5 @@ type Mutation {
   createTask(input: CreateTaskInput!): Task
   updateTask(input: UpdateTaskInput!): Task
   deleteTask(input: TaskWhereUniqueInput!): Task
+  deleteTasks(input: DeleteTasksInput): BulkOperationResult
 }

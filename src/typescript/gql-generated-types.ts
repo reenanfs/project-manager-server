@@ -26,6 +26,10 @@ export class UpdateTaskInput {
     completed?: Nullable<boolean>;
 }
 
+export class DeleteTasksInput {
+    ids: string[];
+}
+
 export class TaskWhereUniqueInput {
     id: string;
 }
@@ -55,11 +59,15 @@ export class Task {
     id: string;
     taskName: string;
     description?: Nullable<string>;
-    user: User;
+    user?: Nullable<User>;
     startDate?: Nullable<DateTime>;
     dueDate?: Nullable<DateTime>;
     completionDate?: Nullable<DateTime>;
     completed?: Nullable<boolean>;
+}
+
+export class BulkOperationResult {
+    count: number;
 }
 
 export abstract class IQuery {
@@ -79,6 +87,8 @@ export abstract class IMutation {
 
     abstract deleteTask(input: TaskWhereUniqueInput): Nullable<Task> | Promise<Nullable<Task>>;
 
+    abstract deleteTasks(input?: Nullable<DeleteTasksInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+
     abstract createUser(input: CreateUserInput): Nullable<User> | Promise<Nullable<User>>;
 
     abstract updateUser(input: UpdateUserInput): Nullable<User> | Promise<Nullable<User>>;
@@ -94,10 +104,6 @@ export class User {
     role: string;
     email: string;
     tasks?: Nullable<Nullable<Task>[]>;
-}
-
-export class BulkOperationResult {
-    count: number;
 }
 
 export type DateTime = any;
