@@ -1,4 +1,4 @@
-import { IsDate, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsBoolean, IsDate, IsNotEmpty, IsOptional } from 'class-validator';
 import { UpdateTaskInput } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 
@@ -22,6 +22,6 @@ export class UpdateTaskDto extends UpdateTaskInput {
   completionDate?: Nullable<Date>;
 
   @IsOptional()
-  @IsDate()
+  @IsBoolean()
   completed?: Nullable<boolean>;
 }

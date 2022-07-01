@@ -1,11 +1,7 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { ValidationPipe } from '@nestjs/common';
-import { APP_PIPE } from '@nestjs/core';
-
 import { join } from 'path';
-
 import { DateTimeResolver } from 'graphql-scalars';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
 
