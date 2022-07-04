@@ -15,12 +15,26 @@ type BulkOperationResult {
   count: Int!
 }
 
+enum SortOrder {
+  asc
+  desc
+}
+
+input GetTasksOrderBy {
+  dueDate: SortOrder!
+}
+
+input GetTasksInput {
+  orderBy: GetTasksOrderBy
+}
+
 input CreateTaskInput {
   taskName: String!
   description: String
   userId: ID!
   startDate: DateTime
   dueDate: DateTime
+  completed: Boolean!
 }
 
 input UpdateTaskInput {
@@ -43,7 +57,7 @@ input TaskWhereUniqueInput {
 }
 
 type Query {
-  tasks: [Task]
+  tasks(input: GetTasksInput): [Task]
   task(input: TaskWhereUniqueInput!): Task
 }
 

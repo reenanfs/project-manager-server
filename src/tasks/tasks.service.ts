@@ -11,19 +11,11 @@ export class TasksService {
   constructor(private prismaService: PrismaService) {}
 
   async getTasks(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.UserWhereUniqueInput;
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
+    orderBy?: Prisma.TaskOrderByWithRelationInput;
   }): Promise<Nullable<Task[]>> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { orderBy } = params || {};
 
     return this.prismaService.task.findMany({
-      skip,
-      take,
-      cursor,
-      where,
       orderBy,
     });
   }

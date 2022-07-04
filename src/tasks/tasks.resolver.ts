@@ -8,7 +8,10 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { Prisma, Task, User } from '@prisma/client';
-import { TaskWhereUniqueInput } from 'src/typescript/gql-generated-types';
+import {
+  GetTasksInput,
+  TaskWhereUniqueInput,
+} from 'src/typescript/gql-generated-types';
 
 import { Nullable } from 'src/typescript/types';
 import { UsersService } from 'src/users/users.service';
@@ -26,8 +29,10 @@ export class TasksResolver {
   ) {}
 
   @Query('tasks')
-  async getTasks(): Promise<Nullable<Task[]>> {
-    return this.tasksService.getTasks({});
+  async getTasks(
+    @Args('input') input: GetTasksInput,
+  ): Promise<Nullable<Task[]>> {
+    return this.tasksService.getTasks(input);
   }
 
   @Query('task')

@@ -7,12 +7,26 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export enum SortOrder {
+    asc = "asc",
+    desc = "desc"
+}
+
+export class GetTasksOrderBy {
+    dueDate: SortOrder;
+}
+
+export class GetTasksInput {
+    orderBy?: Nullable<GetTasksOrderBy>;
+}
+
 export class CreateTaskInput {
     taskName: string;
     description?: Nullable<string>;
     userId: string;
     startDate?: Nullable<DateTime>;
     dueDate?: Nullable<DateTime>;
+    completed: boolean;
 }
 
 export class UpdateTaskInput {
@@ -71,7 +85,7 @@ export class BulkOperationResult {
 }
 
 export abstract class IQuery {
-    abstract tasks(): Nullable<Nullable<Task>[]> | Promise<Nullable<Nullable<Task>[]>>;
+    abstract tasks(input?: Nullable<GetTasksInput>): Nullable<Nullable<Task>[]> | Promise<Nullable<Nullable<Task>[]>>;
 
     abstract task(input: TaskWhereUniqueInput): Nullable<Task> | Promise<Nullable<Task>>;
 
