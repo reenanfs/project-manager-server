@@ -10,10 +10,18 @@ type BulkOperationResult {
   count: Int!
 }
 
+input GetUsersOrderBy {
+  updatedAt: SortOrder
+}
+
 input CreateUserInput {
   name: String!
   role: String!
   email: String!
+}
+
+input GetUsersInput {
+  orderBy: GetTasksOrderBy
 }
 
 input UpdateUserInput {
@@ -32,7 +40,7 @@ input UserWhereUniqueInput {
 }
 
 type Query {
-  users: [User]
+  users(input: GetUsersInput): [User]
   user(input: UserWhereUniqueInput!): User
 }
 

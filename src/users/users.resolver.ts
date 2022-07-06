@@ -8,7 +8,10 @@ import {
   Parent,
 } from '@nestjs/graphql';
 import { Prisma, Task, User } from '@prisma/client';
-import { UserWhereUniqueInput } from 'src/typescript/gql-generated-types';
+import {
+  GetUsersInput,
+  UserWhereUniqueInput,
+} from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { DeleteUsersDto } from './dtos/delete-users.dto';
@@ -20,8 +23,10 @@ export class UsersResolver {
   constructor(private usersService: UsersService) {}
 
   @Query('users')
-  async getUsers(): Promise<Nullable<User[]>> {
-    return this.usersService.getUsers({});
+  async getUsers(
+    @Args('input') input: GetUsersInput,
+  ): Promise<Nullable<User[]>> {
+    return this.usersService.getUsers(input);
   }
 
   @Query('user')

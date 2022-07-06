@@ -13,7 +13,8 @@ export enum SortOrder {
 }
 
 export class GetTasksOrderBy {
-    dueDate: SortOrder;
+    dueDate?: Nullable<SortOrder>;
+    updatedAt?: Nullable<SortOrder>;
 }
 
 export class GetTasksInput {
@@ -48,10 +49,18 @@ export class TaskWhereUniqueInput {
     id: string;
 }
 
+export class GetUsersOrderBy {
+    updatedAt?: Nullable<SortOrder>;
+}
+
 export class CreateUserInput {
     name: string;
     role: string;
     email: string;
+}
+
+export class GetUsersInput {
+    orderBy?: Nullable<GetTasksOrderBy>;
 }
 
 export class UpdateUserInput {
@@ -89,7 +98,7 @@ export abstract class IQuery {
 
     abstract task(input: TaskWhereUniqueInput): Nullable<Task> | Promise<Nullable<Task>>;
 
-    abstract users(): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
+    abstract users(input?: Nullable<GetUsersInput>): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
 
     abstract user(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
 }

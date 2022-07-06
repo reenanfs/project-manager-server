@@ -10,18 +10,11 @@ export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
   async getUsers(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.UserWhereUniqueInput;
-    where?: Prisma.UserWhereInput;
     orderBy?: Prisma.UserOrderByWithRelationInput;
   }): Promise<Nullable<User[]>> {
-    const { skip, take, cursor, where, orderBy } = params;
+    const { orderBy } = params || {};
+
     return this.prismaService.user.findMany({
-      skip,
-      take,
-      cursor,
-      where,
       orderBy,
     });
   }

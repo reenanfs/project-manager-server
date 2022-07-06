@@ -21,7 +21,8 @@ enum SortOrder {
 }
 
 input GetTasksOrderBy {
-  dueDate: SortOrder!
+  dueDate: SortOrder
+  updatedAt: SortOrder
 }
 
 input GetTasksInput {
