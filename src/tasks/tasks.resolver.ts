@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -39,7 +39,13 @@ export class TasksResolver {
   async getTask(
     @Args('input') input: TaskWhereUniqueInput,
   ): Promise<Nullable<Task>> {
-    return this.tasksService.getTask(input);
+    const task = await this.tasksService.getTask(input);
+
+    if (!task) {
+      throw new NotFoundException('Task does not exist!');
+    }
+
+    return task;
   }
 
   @ResolveField('user')
@@ -54,7 +60,7 @@ export class TasksResolver {
     const user = await this.usersService.getUser({ id });
 
     if (!user) {
-      throw new BadRequestException('Provided user does not exist!');
+      throw new NotFoundException('Provided user does not exist!');
     }
 
     return this.tasksService.createTask(input);
@@ -70,7 +76,7 @@ export class TasksResolver {
     const task = await this.tasksService.getTask({ id });
 
     if (!task) {
-      throw new BadRequestException('Task does not exist!');
+      throw new NotFoundException('Task does not exist!');
     }
 
     return this.tasksService.updateTask(input);
@@ -86,7 +92,7 @@ export class TasksResolver {
     const task = await this.tasksService.getTask({ id });
 
     if (!task) {
-      throw new BadRequestException('Task does not exist!');
+      throw new NotFoundException('Task does not exist!');
     }
 
     return this.tasksService.deleteTask(input);

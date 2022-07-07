@@ -33,7 +33,13 @@ export class UsersResolver {
   async getUser(
     @Args('input') input: UserWhereUniqueInput,
   ): Promise<Nullable<User>> {
-    return this.usersService.getUser(input);
+    const user = await this.usersService.getUser(input);
+
+    if (!user) {
+      throw new NotFoundException('User does not exist.');
+    }
+
+    return user;
   }
 
   @ResolveField('tasks')
