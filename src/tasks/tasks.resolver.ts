@@ -14,7 +14,6 @@ import {
 } from 'src/typescript/gql-generated-types';
 
 import { Nullable } from 'src/typescript/types';
-import { UsersService } from 'src/users/users.service';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { DeleteTasksDto } from './dtos/delete-tasks.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
@@ -23,10 +22,7 @@ import { TasksService } from './tasks.service';
 
 @Resolver('Task')
 export class TasksResolver {
-  constructor(
-    private tasksService: TasksService,
-    private usersService: UsersService,
-  ) {}
+  constructor(private tasksService: TasksService) {}
 
   @Query('tasks')
   async getTasks(
@@ -42,7 +38,7 @@ export class TasksResolver {
     const task = await this.tasksService.getTask(input);
 
     if (!task) {
-      throw new NotFoundException('Task does not exist!');
+      throw new NotFoundException('Task does not exist.');
     }
 
     return task;
@@ -55,15 +51,13 @@ export class TasksResolver {
 
   @Mutation()
   async createTask(@Args('input') input: CreateTaskDto): Promise<Task> {
-    const { userId: id } = input;
+    const task = await this.tasksService.createTask(input);
 
-    const user = await this.usersService.getUser({ id });
-
-    if (!user) {
-      throw new NotFoundException('Provided user does not exist!');
+    if (!task) {
+      throw new NotFoundException('User does not exist.');
     }
 
-    return this.tasksService.createTask(input);
+    return task;
   }
 
   @Mutation()
@@ -71,15 +65,13 @@ export class TasksResolver {
     @Args('input')
     input: UpdateTaskDto,
   ): Promise<Nullable<Task>> {
-    const { id } = input;
-
-    const task = await this.tasksService.getTask({ id });
+    const task = await this.tasksService.updateTask(input);
 
     if (!task) {
-      throw new NotFoundException('Task does not exist!');
+      throw new NotFoundException('Task does not exist.');
     }
 
-    return this.tasksService.updateTask(input);
+    return task;
   }
 
   @Mutation()
@@ -87,15 +79,13 @@ export class TasksResolver {
     @Args('input')
     input: TaskWhereUniqueInput,
   ): Promise<Nullable<Task>> {
-    const { id } = input;
-
-    const task = await this.tasksService.getTask({ id });
+    const task = await this.tasksService.deleteTask(input);
 
     if (!task) {
-      throw new NotFoundException('Task does not exist!');
+      throw new NotFoundException('Task does not exist.');
     }
 
-    return this.tasksService.deleteTask(input);
+    return task;
   }
 
   @Mutation()

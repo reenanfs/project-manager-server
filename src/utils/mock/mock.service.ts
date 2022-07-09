@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import {
-  BulkOperationResult,
-  Task,
-  User,
-} from 'src/typescript/gql-generated-types';
+import { Task, User } from '@prisma/client';
+import { BulkOperationResult } from 'src/typescript/gql-generated-types';
 
 @Injectable()
 export class MockService {
@@ -42,7 +39,7 @@ export class MockService {
       id: '0825f430-8de1-41d2-a24d-afc33f2fc8b7',
       taskName: 'Task1',
       description: 'Description1',
-      user: MockService.user,
+      userId: MockService.userId,
       startDate: new Date(),
       dueDate: new Date(),
       completionDate: new Date(),
@@ -54,7 +51,7 @@ export class MockService {
       id: '36f46331-6a70-4fac-8289-9eb34d1ebf4c',
       taskName: 'Task2',
       description: 'Description2',
-      user: MockService.user,
+      userId: MockService.userId,
       startDate: new Date(),
       dueDate: new Date(),
       completionDate: new Date(),
@@ -62,5 +59,14 @@ export class MockService {
       createdAt: new Date(),
       updatedAt: new Date(),
     },
+  ];
+
+  static task: Task = MockService.tasksArray[0];
+
+  static taskId: string = MockService.task.id;
+
+  static taskIdArray: string[] = [
+    MockService.taskId,
+    MockService.tasksArray[1].id,
   ];
 }

@@ -121,11 +121,13 @@ describe('UsersService', () => {
 
   describe('deleteUsers', () => {
     it('should delete many users', async () => {
-      const returnedBatchPayload = await service.deleteUsers({
+      const returneBulkOperationResult = await service.deleteUsers({
         ids: MockService.userIdArray,
       });
 
-      expect(returnedBatchPayload).toEqual(MockService.bulkOperationResult);
+      expect(returneBulkOperationResult).toEqual(
+        MockService.bulkOperationResult,
+      );
       expect(prisma.user.deleteMany).toHaveBeenCalledTimes(1);
       expect(prisma.user.deleteMany).toHaveBeenCalledWith({
         where: {
