@@ -7,4 +7,7 @@ definitionsFactory.generate({
   path: join(process.cwd(), 'src/typescript/gql-generated-types.ts'),
   outputAs: 'class',
   watch: true,
+  customScalarTypeMapping: {
+    DateTime: 'Date',
+  },
 });

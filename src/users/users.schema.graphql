@@ -1,9 +1,13 @@
+scalar DateTime
+
 type User {
   id: ID!
   name: String!
   role: String!
   email: String!
   tasks: [Task]
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type BulkOperationResult {
@@ -20,8 +24,12 @@ input CreateUserInput {
   email: String!
 }
 
+input GetUsersOrderBy {
+  updatedAt: SortOrder
+}
+
 input GetUsersInput {
-  orderBy: GetTasksOrderBy
+  orderBy: GetUsersOrderBy
 }
 
 input UpdateUserInput {

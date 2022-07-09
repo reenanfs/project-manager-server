@@ -7,10 +7,12 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { Prisma, Task, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import {
   GetUsersInput,
   UserWhereUniqueInput,
+  User,
+  Task,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -57,15 +59,13 @@ export class UsersResolver {
     @Args('input')
     input: UpdateUserDto,
   ): Promise<Nullable<User>> {
-    const { id } = input;
-
-    const user = await this.usersService.getUser({ id });
+    const user = await this.usersService.updateUser(input);
 
     if (!user) {
       throw new NotFoundException('User does not exist.');
     }
 
-    return this.usersService.updateUser(input);
+    return user;
   }
 
   @Mutation()
@@ -73,15 +73,13 @@ export class UsersResolver {
     @Args('input')
     input: UserWhereUniqueInput,
   ): Promise<Nullable<User>> {
-    const { id } = input;
-
-    const user = await this.usersService.getUser({ id });
+    const user = await this.usersService.deleteUser(input);
 
     if (!user) {
       throw new NotFoundException('User does not exist.');
     }
 
-    return this.usersService.deleteUser(input);
+    return user;
   }
 
   @Mutation()

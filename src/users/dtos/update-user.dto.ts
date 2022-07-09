@@ -9,6 +9,6 @@ export class UpdateUserDto extends UpdateUserInput {
   role: string;
 
   @IsEmail()
-  @ValidateIf((object) => object.email !== undefined)
+  @IsNotEmpty()
   email: string;
 }

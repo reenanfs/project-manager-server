@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, Task, User } from '@prisma/client';
+
 import { PrismaService } from 'src/prisma/prisma.service';
+import {
+  GetUsersOrderBy,
+  UserWhereUniqueInput,
+  BulkOperationResult,
+  User,
+  Task,
+} from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
+import { CreateUserDto } from './dtos/create-user.dto';
 import { DeleteUsersDto } from './dtos/delete-users.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 
@@ -10,7 +18,7 @@ export class UsersService {
   constructor(private prismaService: PrismaService) {}
 
   async getUsers(params: {
-    orderBy?: Prisma.UserOrderByWithRelationInput;
+    orderBy?: GetUsersOrderBy;
   }): Promise<Nullable<User[]>> {
     const { orderBy } = params || {};
 
@@ -19,11 +27,11 @@ export class UsersService {
     });
   }
 
-  async getUser(where: Prisma.UserWhereUniqueInput): Promise<Nullable<User>> {
+  async getUser(where: UserWhereUniqueInput): Promise<Nullable<User>> {
     return this.prismaService.user.findUnique({ where });
   }
 
-  async createUser(data: Prisma.UserCreateInput): Promise<User> {
+  async createUser(data: CreateUserDto): Promise<User> {
     return this.prismaService.user.create({
       data,
     });
@@ -32,19 +40,33 @@ export class UsersService {
   async updateUser(data: UpdateUserDto): Promise<Nullable<User>> {
     const { id } = data;
 
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      return null;
+    }
+
     return this.prismaService.user.update({
       where: { id },
       data,
     });
   }
 
-  async deleteUser(
-    where: Prisma.UserWhereUniqueInput,
-  ): Promise<Nullable<User>> {
+  async deleteUser(where: UserWhereUniqueInput): Promise<Nullable<User>> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: where.id },
+    });
+
+    if (!user) {
+      return null;
+    }
+
     return this.prismaService.user.delete({ where });
   }
 
-  async deleteUsers({ ids }: DeleteUsersDto): Promise<Prisma.BatchPayload> {
+  async deleteUsers({ ids }: DeleteUsersDto): Promise<BulkOperationResult> {
     return this.prismaService.user.deleteMany({
       where: {
         id: { in: ids },

@@ -60,7 +60,7 @@ export class CreateUserInput {
 }
 
 export class GetUsersInput {
-    orderBy?: Nullable<GetTasksOrderBy>;
+    orderBy?: Nullable<GetUsersOrderBy>;
 }
 
 export class UpdateUserInput {
@@ -87,6 +87,8 @@ export class Task {
     dueDate?: Nullable<DateTime>;
     completionDate?: Nullable<DateTime>;
     completed?: Nullable<boolean>;
+    createdAt?: Nullable<DateTime>;
+    updatedAt?: Nullable<DateTime>;
 }
 
 export class BulkOperationResult {
@@ -127,6 +129,8 @@ export class User {
     role: string;
     email: string;
     tasks?: Nullable<Nullable<Task>[]>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export type DateTime = any;

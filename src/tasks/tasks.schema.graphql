@@ -9,6 +9,8 @@ type Task {
   dueDate: DateTime
   completionDate: DateTime
   completed: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 type BulkOperationResult {
