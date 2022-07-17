@@ -1,6 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { MockService } from 'src/utils/mock/mock.service';
 import { TasksResolver } from './tasks.resolver';
 import { TasksService } from './tasks.service';
@@ -21,7 +20,7 @@ describe('TasksResolver', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TasksResolver, TasksService, PrismaService, MockService],
+      providers: [TasksResolver, TasksService, MockService],
     })
       .overrideProvider(TasksService)
       .useValue(mockTasksService)
