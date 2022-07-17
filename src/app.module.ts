@@ -15,10 +15,6 @@ import { UsersModule } from './users/users.module';
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       typePaths: ['./**/*.graphql'],
-      definitions: {
-        path: join(process.cwd(), 'src/typescript/gql-generated-types.ts'),
-        outputAs: 'class',
-      },
       resolvers: { DateTime: DateTimeResolver },
     }),
     TasksModule,

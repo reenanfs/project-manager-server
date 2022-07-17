@@ -7,10 +7,10 @@ import {
   BulkOperationResult,
   User,
   Task,
+  DeleteUsersInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { DeleteUsersDto } from './dtos/delete-users.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Injectable()
@@ -66,7 +66,7 @@ export class UsersService {
     return this.prismaService.user.delete({ where });
   }
 
-  async deleteUsers({ ids }: DeleteUsersDto): Promise<BulkOperationResult> {
+  async deleteUsers({ ids }: DeleteUsersInput): Promise<BulkOperationResult> {
     return this.prismaService.user.deleteMany({
       where: {
         id: { in: ids },

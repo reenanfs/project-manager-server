@@ -62,6 +62,7 @@ input TaskWhereUniqueInput {
 type Query {
   tasks(input: GetTasksInput): [Task]
   task(input: TaskWhereUniqueInput!): Task
+  test(input: TaskWhereUniqueInput!): Task
 }
 
 type Mutation {

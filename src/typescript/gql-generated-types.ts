@@ -100,6 +100,8 @@ export abstract class IQuery {
 
     abstract task(input: TaskWhereUniqueInput): Nullable<Task> | Promise<Nullable<Task>>;
 
+    abstract test(input: TaskWhereUniqueInput): Nullable<Task> | Promise<Nullable<Task>>;
+
     abstract users(input?: Nullable<GetUsersInput>): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
 
     abstract user(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
@@ -133,5 +135,5 @@ export class User {
     updatedAt: DateTime;
 }
 
-export type DateTime = any;
+export type DateTime = Date;
 type Nullable<T> = T | null;

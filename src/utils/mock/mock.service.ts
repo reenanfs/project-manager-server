@@ -19,7 +19,7 @@ export class MockService {
       role: 'Role2',
       email: 'email2@gmail.com',
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date('2100-12-12'),
     },
   ];
 
@@ -51,13 +51,13 @@ export class MockService {
       id: '36f46331-6a70-4fac-8289-9eb34d1ebf4c',
       taskName: 'Task2',
       description: 'Description2',
-      userId: MockService.userId,
+      userId: MockService.userIdArray[1],
       startDate: new Date(),
       dueDate: new Date(),
       completionDate: new Date(),
       completed: true,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date('2100-12-12'),
     },
   ];
 

@@ -1,27 +1,16 @@
-import { IsBoolean, IsDate, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, ValidateIf } from 'class-validator';
 import { UpdateTaskInput } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
 
 export class UpdateTaskDto extends UpdateTaskInput {
+  @ValidateIf((object, value) => value !== undefined)
   @IsNotEmpty()
-  taskName?: string;
+  taskName: string;
 
+  @ValidateIf((object, value) => value !== undefined)
   @IsNotEmpty()
-  userId?: string;
+  userId: string;
 
-  @IsOptional()
-  @IsDate()
-  startDate?: Nullable<Date>;
-
-  @IsOptional()
-  @IsDate()
-  dueDate?: Nullable<Date>;
-
-  @IsOptional()
-  @IsDate()
-  completionDate?: Nullable<Date>;
-
-  @IsOptional()
-  @IsBoolean()
-  completed?: Nullable<boolean>;
+  @ValidateIf((object, value) => value !== undefined)
+  @IsNotEmpty()
+  completed?: boolean;
 }

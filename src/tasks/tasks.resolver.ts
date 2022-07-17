@@ -9,16 +9,20 @@ import {
 } from '@nestjs/graphql';
 import { Prisma, Task, User } from '@prisma/client';
 import {
+  CreateTaskInput,
+  DeleteTasksInput,
   GetTasksInput,
   TaskWhereUniqueInput,
 } from 'src/typescript/gql-generated-types';
 
 import { Nullable } from 'src/typescript/types';
-import { CreateTaskDto } from './dtos/create-task.dto';
-import { DeleteTasksDto } from './dtos/delete-tasks.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
 
 import { TasksService } from './tasks.service';
+
+class test {
+  id: string;
+}
 
 @Resolver('Task')
 export class TasksResolver {
@@ -50,7 +54,7 @@ export class TasksResolver {
   }
 
   @Mutation()
-  async createTask(@Args('input') input: CreateTaskDto): Promise<Task> {
+  async createTask(@Args('input') input: CreateTaskInput): Promise<Task> {
     const task = await this.tasksService.createTask(input);
 
     if (!task) {
@@ -91,7 +95,7 @@ export class TasksResolver {
   @Mutation()
   async deleteTasks(
     @Args('input')
-    input: DeleteTasksDto,
+    input: DeleteTasksInput,
   ): Promise<Prisma.BatchPayload> {
     return this.tasksService.deleteTasks(input);
   }

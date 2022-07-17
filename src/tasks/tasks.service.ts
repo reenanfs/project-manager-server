@@ -3,13 +3,13 @@ import { Task, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   BulkOperationResult,
+  CreateTaskInput,
+  DeleteTasksInput,
   GetTasksOrderBy,
   TaskWhereUniqueInput,
+  UpdateTaskInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
-import { CreateTaskDto } from './dtos/create-task.dto';
-import { DeleteTasksDto } from './dtos/delete-tasks.dto';
-import { UpdateTaskDto } from './dtos/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -29,7 +29,7 @@ export class TasksService {
     return this.prismaService.task.findUnique({ where });
   }
 
-  async createTask(data: CreateTaskDto): Promise<Task> {
+  async createTask(data: CreateTaskInput): Promise<Task> {
     const { userId } = data;
 
     const user = await this.prismaService.user.findUnique({
@@ -45,7 +45,7 @@ export class TasksService {
     });
   }
 
-  async updateTask(data: UpdateTaskDto): Promise<Nullable<Task>> {
+  async updateTask(data: UpdateTaskInput): Promise<Nullable<Task>> {
     const { id } = data;
 
     const task = await this.prismaService.task.findUnique({
@@ -74,7 +74,7 @@ export class TasksService {
     return this.prismaService.task.delete({ where });
   }
 
-  async deleteTasks({ ids }: DeleteTasksDto): Promise<BulkOperationResult> {
+  async deleteTasks({ ids }: DeleteTasksInput): Promise<BulkOperationResult> {
     return this.prismaService.task.deleteMany({
       where: {
         id: { in: ids },
