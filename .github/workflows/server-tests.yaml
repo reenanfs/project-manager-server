@@ -1,0 +1,12 @@
+name: server-tests
+on: 
+  - push
+  - pull_request
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install dependencies
+      - run: npm i
+      - name: run unit tests
+      - run: npm run test
