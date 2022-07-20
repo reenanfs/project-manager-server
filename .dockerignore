@@ -1,0 +1,9 @@
+# Folders
+node_modules
+coverage
+.github
+dist
+
+# Files
+.env
+.env.test

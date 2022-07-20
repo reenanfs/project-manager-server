@@ -21,7 +21,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "dotenv -e .env.test -- jest -i --config ./test/jest-e2e.json"
+    "db:restart": "docker compose up -d && sleep 5",
+    "pretest:e2e": "npm run db:restart && dotenv -e .env.test -- npx prisma migrate reset --force",
+    "test:e2e": "dotenv -e .env.test -- jest -i --config ./test/jest-e2e.json",
+    "posttest:e2e": "docker compose down"
   },
   "dependencies": {
     "@nestjs/apollo": "^10.0.11",
