@@ -24,7 +24,10 @@
     "db:restart": "docker compose up -d && sleep 5",
     "pretest:e2e": "npm run db:restart && dotenv -e .env.test -- npx prisma migrate reset --force",
     "test:e2e": "dotenv -e .env.test -- jest -i --config ./test/jest-e2e.json",
-    "posttest:e2e": "docker compose down"
+    "posttest:e2e": "docker compose down",
+    "docker:dev": "docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.nonprod.yml up --build",
+    "docker:test": "docker-compose --env-file .env.test -f docker-compose.yml -f docker-compose.nonprod.yml up --build",
+    "docker:prod": "docker-compose up --build"
   },
   "dependencies": {
     "@nestjs/apollo": "^10.0.11",

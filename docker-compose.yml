@@ -2,9 +2,9 @@ version: '3.9'
 services:
   api:
     container_name: task-manager-server
-    depends_on:
-      - db
-    build: .
+    build:
+      context: .
+      target: ${DOCKER_TARGET}
     ports:
       - 4000:4000
     environment:

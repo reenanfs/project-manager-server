@@ -5,5 +5,4 @@ coverage
 dist
 
 # Files
-.env
-.env.test
+.env*
