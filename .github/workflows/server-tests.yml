@@ -1,15 +1,29 @@
 name: server-tests
-on: 
+on:
   - push
   - pull_request
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    env:
+      DOCKER_USER: ${{ secrets.DOCKER_USER }}
+      DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+      DOCKER_TARGET: ci
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres?schema=public"
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - '5432:5432'
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: npm i
-      - name: Run unit tests
-        run: npm run test
-      - name: Run e2e tests
-        run: npm run test:e2e
+
+      - name: Login to DockerHub
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+      - name: Run tests
+        run: npm run docker:ci

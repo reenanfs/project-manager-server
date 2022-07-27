@@ -21,6 +21,11 @@ FROM base As test
 # Run test suites
 CMD ["npm", "run", "test"]
 
+FROM base As ci
+
+# Run test suites
+CMD ["npm", "run", "test:ci"]
+
 FROM base As dev
 
 # Run the server in development mode
