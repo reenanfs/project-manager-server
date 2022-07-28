@@ -31,7 +31,7 @@ describe('TasksResolver', () => {
   });
 
   it('should be defined', () => {
-    expect(resolver).not.toBeDefined();
+    expect(resolver).toBeDefined();
   });
 
   describe('getTasks', () => {

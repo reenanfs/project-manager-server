@@ -628,7 +628,7 @@ describe('Tasks (e2e)', () => {
             },
           },
         });
-      expect(deleteStatus).toBe(200);
+      expect(deleteStatus).not.toBe(200);
       expect(deleteBody.data.deleteTasks.count).toEqual(0);
     });
 
