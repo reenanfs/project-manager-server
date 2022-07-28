@@ -20,5 +20,8 @@ jobs:
       - name: Login to DockerHub
         run: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
+      - name: 'Create dummy env file'
+        run: touch .env.test
+
       - name: Run tests
         run: npm run docker:test
