@@ -22,8 +22,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - run: echo ${DOCKER_USER}
+
       - name: Login to DockerHub
-        run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+        run: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
       - name: Run tests
         run: npm run docker:ci
