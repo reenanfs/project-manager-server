@@ -25,7 +25,7 @@
     "test:ci": "npm run test && npm run test:e2e",
     "test:e2e": "dotenv -e .env.test -- jest -i --config ./test/jest-e2e.json",
     "docker:prod": "docker-compose up --build",
-    "docker:ci": "docker-compose up --build --abort-on-container-exit",
+    "docker:ci": "docker-compose up --build --network=host --abort-on-container-exit",
     "docker:test": "docker-compose --env-file .env.test up --build --abort-on-container-exit",
     "docker:dev": "docker-compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up --build"
   },

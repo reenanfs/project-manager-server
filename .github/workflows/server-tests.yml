@@ -10,6 +10,7 @@ jobs:
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       DOCKER_TARGET: ci
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres"
+      DB_HOST: localhost
     services:
       postgres:
         image: postgres:14-alpine
