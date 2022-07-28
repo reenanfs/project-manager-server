@@ -16,7 +16,7 @@ jobs:
       POSTGRES_PORT: 5432
     steps:
       - uses: actions/checkout@v2
-
+      
       - name: Login to DockerHub
         run: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
