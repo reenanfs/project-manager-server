@@ -4,8 +4,7 @@
 /prisma/generated-types
 
 # Secret
-.env
-.env.test
+.env*
 
 # Logs
 logs
