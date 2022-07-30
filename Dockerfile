@@ -16,11 +16,6 @@ COPY . ./
 # Generate prisma client
 RUN npx prisma generate
 
-FROM base As test
-
-# Run test suites
-CMD ["npm", "run", "test"]
-
 FROM base As dev
 
 # Run the server in development mode

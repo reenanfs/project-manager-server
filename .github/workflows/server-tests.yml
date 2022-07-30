@@ -3,10 +3,10 @@ on:
   - push
   - pull_request
 jobs:
-  run-tests:
+  tests:
     runs-on: ubuntu-latest
     env:
-      DOCKER_TARGET: test
+      DOCKER_TARGET: dev
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres?schema=public
@@ -21,7 +21,7 @@ jobs:
         run: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
       - name: 'Create dummy env file'
-        run: touch .env.test
+        run: touch .env.dev
 
       - name: Run tests
         run: npm run docker:test
