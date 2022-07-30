@@ -6,7 +6,7 @@ jobs:
   run-tests:
     runs-on: ubuntu-latest
     env:
-      DOCKER_TARGET: test
+      DOCKER_TARGET: dev
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres?schema=public
