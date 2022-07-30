@@ -1,6 +1,7 @@
 version: '3.9'
 services:
   api:
+    command: npm run test
     depends_on:
       - db
   db:
