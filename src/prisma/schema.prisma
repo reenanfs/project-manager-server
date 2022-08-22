@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl"]
 }
 
@@ -11,14 +11,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Credential {
+  id       String  @id @default(uuid())
+  email    String
+  password String
+  userId   String? @unique @map("user_id")
+  user     User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("credentials")
+}
+
 model User {
-  id    String @id @default(uuid())
-  name  String
-  role  String
-  email String @unique
-  tasks Task[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id         String      @id @default(uuid())
+  name       String
+  tasks      Task[]
+  projects   Project[]
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+  credential Credential?
 
   @@map("users")
 }
@@ -27,14 +37,37 @@ model Task {
   id             String    @id @default(uuid())
   taskName       String    @map("task_name")
   description    String?
-  userId         String?    @map("user_id")
-  user           User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
-  startDate      DateTime?  @map("start_date")
-  dueDate        DateTime?  @map("due_date")
+  userId         String?   @map("user_id")
+  user           User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  startDate      DateTime? @map("start_date")
+  dueDate        DateTime? @map("due_date")
   completionDate DateTime? @map("completion_date")
   completed      Boolean?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt  @map("updated_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   @@map("tasks")
+}
+
+model Project {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  users       User[]
+  roles       Role[]
+}
+
+model Role {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  permissions Permission[]
+  projects    Project[]
+}
+
+model Permission {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  roles       Role[]
 }

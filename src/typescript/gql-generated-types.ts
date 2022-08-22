@@ -87,8 +87,8 @@ export class Task {
     dueDate?: Nullable<DateTime>;
     completionDate?: Nullable<DateTime>;
     completed?: Nullable<boolean>;
-    createdAt?: Nullable<DateTime>;
-    updatedAt?: Nullable<DateTime>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class BulkOperationResult {
