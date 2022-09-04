@@ -3,8 +3,6 @@ scalar DateTime
 type User {
   id: ID!
   name: String!
-  role: String!
-  email: String!
   tasks: [Task]
   createdAt: DateTime!
   updatedAt: DateTime!

@@ -128,8 +128,6 @@ export abstract class IMutation {
 export class User {
     id: string;
     name: string;
-    role: string;
-    email: string;
     tasks?: Nullable<Nullable<Task>[]>;
     createdAt: DateTime;
     updatedAt: DateTime;
