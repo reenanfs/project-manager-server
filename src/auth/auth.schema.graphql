@@ -1,0 +1,17 @@
+type Credential {
+  id: ID!
+  email: String!
+  password: String!
+  user: User!
+}
+
+input CredentialInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  localSignIn(input: CredentialInput!): String!
+  localSignUp(input: CredentialInput!): String!
+  validateCredential(input: CredentialInput!): String!
+}

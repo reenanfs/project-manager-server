@@ -20,10 +20,6 @@ import { UpdateTaskDto } from './dtos/update-task.dto';
 
 import { TasksService } from './tasks.service';
 
-class test {
-  id: string;
-}
-
 @Resolver('Task')
 export class TasksResolver {
   constructor(private tasksService: TasksService) {}

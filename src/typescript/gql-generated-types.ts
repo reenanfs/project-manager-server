@@ -12,6 +12,11 @@ export enum SortOrder {
     desc = "desc"
 }
 
+export class CredentialInput {
+    email: string;
+    password: string;
+}
+
 export class GetTasksOrderBy {
     dueDate?: Nullable<SortOrder>;
     updatedAt?: Nullable<SortOrder>;
@@ -78,6 +83,37 @@ export class UserWhereUniqueInput {
     id: string;
 }
 
+export class Credential {
+    id: string;
+    email: string;
+    password: string;
+    user: User;
+}
+
+export abstract class IMutation {
+    abstract localSignIn(input: CredentialInput): string | Promise<string>;
+
+    abstract localSignUp(input: CredentialInput): string | Promise<string>;
+
+    abstract validateCredential(input: CredentialInput): string | Promise<string>;
+
+    abstract createTask(input: CreateTaskInput): Nullable<Task> | Promise<Nullable<Task>>;
+
+    abstract updateTask(input: UpdateTaskInput): Nullable<Task> | Promise<Nullable<Task>>;
+
+    abstract deleteTask(input: TaskWhereUniqueInput): Nullable<Task> | Promise<Nullable<Task>>;
+
+    abstract deleteTasks(input?: Nullable<DeleteTasksInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+
+    abstract createUser(input: CreateUserInput): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract updateUser(input: UpdateUserInput): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract deleteUser(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
+
+    abstract deleteUsers(input?: Nullable<DeleteUsersInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+}
+
 export class Task {
     id: string;
     taskName: string;
@@ -105,24 +141,6 @@ export abstract class IQuery {
     abstract users(input?: Nullable<GetUsersInput>): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
 
     abstract user(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
-}
-
-export abstract class IMutation {
-    abstract createTask(input: CreateTaskInput): Nullable<Task> | Promise<Nullable<Task>>;
-
-    abstract updateTask(input: UpdateTaskInput): Nullable<Task> | Promise<Nullable<Task>>;
-
-    abstract deleteTask(input: TaskWhereUniqueInput): Nullable<Task> | Promise<Nullable<Task>>;
-
-    abstract deleteTasks(input?: Nullable<DeleteTasksInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
-
-    abstract createUser(input: CreateUserInput): Nullable<User> | Promise<Nullable<User>>;
-
-    abstract updateUser(input: UpdateUserInput): Nullable<User> | Promise<Nullable<User>>;
-
-    abstract deleteUser(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
-
-    abstract deleteUsers(input?: Nullable<DeleteUsersInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
 }
 
 export class User {
