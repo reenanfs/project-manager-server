@@ -1,0 +1,44 @@
+type Role {
+  id: ID!
+  name: String!
+  description: String
+  permissions: [Permission]
+  projectMemberships: [ProjectMembership]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input GetRolesOrderBy {
+  updatedAt: SortOrder
+}
+
+input GetRolesInput {
+  orderBy: GetProjectsOrderBy
+}
+
+input CreateRoleInput {
+  name: String!
+  description: String
+}
+
+input UpdateRoleInput {
+  id: ID!
+  name: String
+  description: String
+}
+
+input RoleWhereUniqueInput {
+  id: ID!
+}
+
+type Query {
+  roles: [Role]
+  role(input: RoleWhereUniqueInput!): Role
+}
+
+type Mutation {
+  createRole(input: CreateRoleInput!): Role
+  updateRole(input: UpdateRoleInput!): Role
+  deleteRole(input: RoleWhereUniqueInput!): Role
+  deleteRoles(input: DeleteMultipleItemsInput): BulkOperationResult
+}

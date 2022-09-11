@@ -1,25 +1,14 @@
-scalar DateTime
-
 type User {
   id: ID!
   name: String!
+  photoUrl: String
+  isAdmin: Boolean
   tasks: [Task]
+  projects: [Project]
+  projectMemberships: [ProjectMembership]
+  credential: Credential
   createdAt: DateTime!
   updatedAt: DateTime!
-}
-
-type BulkOperationResult {
-  count: Int!
-}
-
-input GetUsersOrderBy {
-  updatedAt: SortOrder
-}
-
-input CreateUserInput {
-  name: String!
-  role: String!
-  email: String!
 }
 
 input GetUsersOrderBy {
@@ -30,15 +19,17 @@ input GetUsersInput {
   orderBy: GetUsersOrderBy
 }
 
+input CreateUserInput {
+  name: String!
+  photoUrl: String
+  isAdmin: Boolean!
+}
+
 input UpdateUserInput {
   id: ID!
   name: String
-  role: String
-  email: String
-}
-
-input DeleteUsersInput {
-  ids: [String!]!
+  photoUrl: String
+  isAdmin: Boolean
 }
 
 input UserWhereUniqueInput {
@@ -54,5 +45,5 @@ type Mutation {
   createUser(input: CreateUserInput!): User
   updateUser(input: UpdateUserInput!): User
   deleteUser(input: UserWhereUniqueInput!): User
-  deleteUsers(input: DeleteUsersInput): BulkOperationResult
+  deleteUsers(input: DeleteMultipleItemsInput): BulkOperationResult
 }

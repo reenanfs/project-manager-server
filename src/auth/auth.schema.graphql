@@ -3,6 +3,8 @@ type Credential {
   email: String!
   password: String!
   user: User!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 input CredentialInput {

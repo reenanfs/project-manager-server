@@ -7,16 +7,14 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { Prisma } from '@prisma/client';
+import { Credential, User, Task, Prisma } from '@prisma/client';
+import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import {
   GetUsersInput,
   UserWhereUniqueInput,
-  User,
-  Task,
-  DeleteUsersInput,
+  CreateUserInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
-import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
 
@@ -49,8 +47,25 @@ export class UsersResolver {
     return this.usersService.getUserTasks(user);
   }
 
+  @ResolveField('projects')
+  async getUserProjects(@Parent() user: User): Promise<Nullable<Task[]>> {
+    return this.usersService.getUserTasks(user);
+  }
+
+  @ResolveField('projectMemberships')
+  async getUserProjectMemberships(
+    @Parent() user: User,
+  ): Promise<Nullable<Task[]>> {
+    return this.usersService.getUserTasks(user);
+  }
+
+  @ResolveField('credential')
+  async getUserCredential(@Parent() user: User): Promise<Nullable<Credential>> {
+    return this.usersService.getUserCredential(user);
+  }
+
   @Mutation()
-  async createUser(@Args('input') input: CreateUserDto): Promise<User> {
+  async createUser(@Args('input') input: CreateUserInput): Promise<User> {
     return this.usersService.createUser(input);
   }
 
@@ -85,7 +100,7 @@ export class UsersResolver {
   @Mutation()
   async deleteUsers(
     @Args('input')
-    input: DeleteUsersInput,
+    input: DeleteMultipleItemsDto,
   ): Promise<Prisma.BatchPayload> {
     return this.usersService.deleteUsers(input);
   }

@@ -17,6 +17,81 @@ export class CredentialInput {
     password: string;
 }
 
+export class DeleteMultipleItemsInput {
+    ids: string[];
+}
+
+export class GetPermissionsOrderBy {
+    updatedAt?: Nullable<SortOrder>;
+}
+
+export class GetPermissionsInput {
+    orderBy?: Nullable<GetProjectsOrderBy>;
+}
+
+export class CreatePermissionInput {
+    name: string;
+    description?: Nullable<string>;
+}
+
+export class UpdatePermissionInput {
+    id: string;
+    name?: Nullable<string>;
+    description?: Nullable<string>;
+}
+
+export class PermissionWhereUniqueInput {
+    id: string;
+}
+
+export class GetProjectsOrderBy {
+    updatedAt?: Nullable<SortOrder>;
+}
+
+export class GetProjectsInput {
+    orderBy?: Nullable<GetProjectsOrderBy>;
+}
+
+export class CreateProjectInput {
+    name: string;
+    description?: Nullable<string>;
+    ownerId: string;
+}
+
+export class UpdateProjectInput {
+    id: string;
+    name?: Nullable<string>;
+    description?: Nullable<string>;
+    ownerId?: Nullable<string>;
+}
+
+export class ProjectWhereUniqueInput {
+    id: string;
+}
+
+export class GetRolesOrderBy {
+    updatedAt?: Nullable<SortOrder>;
+}
+
+export class GetRolesInput {
+    orderBy?: Nullable<GetProjectsOrderBy>;
+}
+
+export class CreateRoleInput {
+    name: string;
+    description?: Nullable<string>;
+}
+
+export class UpdateRoleInput {
+    id: string;
+    name?: Nullable<string>;
+    description?: Nullable<string>;
+}
+
+export class RoleWhereUniqueInput {
+    id: string;
+}
+
 export class GetTasksOrderBy {
     dueDate?: Nullable<SortOrder>;
     updatedAt?: Nullable<SortOrder>;
@@ -27,27 +102,26 @@ export class GetTasksInput {
 }
 
 export class CreateTaskInput {
-    taskName: string;
+    name: string;
     description?: Nullable<string>;
-    userId: string;
     startDate?: Nullable<DateTime>;
     dueDate?: Nullable<DateTime>;
+    completionDate?: Nullable<DateTime>;
     completed: boolean;
+    userId: string;
+    projectId: string;
 }
 
 export class UpdateTaskInput {
     id: string;
-    taskName?: Nullable<string>;
+    name?: Nullable<string>;
     description?: Nullable<string>;
-    userId?: Nullable<string>;
     startDate?: Nullable<DateTime>;
     dueDate?: Nullable<DateTime>;
     completionDate?: Nullable<DateTime>;
     completed?: Nullable<boolean>;
-}
-
-export class DeleteTasksInput {
-    ids: string[];
+    userId?: Nullable<string>;
+    projectId?: Nullable<string>;
 }
 
 export class TaskWhereUniqueInput {
@@ -58,25 +132,21 @@ export class GetUsersOrderBy {
     updatedAt?: Nullable<SortOrder>;
 }
 
-export class CreateUserInput {
-    name: string;
-    role: string;
-    email: string;
-}
-
 export class GetUsersInput {
     orderBy?: Nullable<GetUsersOrderBy>;
+}
+
+export class CreateUserInput {
+    name: string;
+    photoUrl?: Nullable<string>;
+    isAdmin: boolean;
 }
 
 export class UpdateUserInput {
     id: string;
     name?: Nullable<string>;
-    role?: Nullable<string>;
-    email?: Nullable<string>;
-}
-
-export class DeleteUsersInput {
-    ids: string[];
+    photoUrl?: Nullable<string>;
+    isAdmin?: Nullable<boolean>;
 }
 
 export class UserWhereUniqueInput {
@@ -88,6 +158,8 @@ export class Credential {
     email: string;
     password: string;
     user: User;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export abstract class IMutation {
@@ -97,13 +169,37 @@ export abstract class IMutation {
 
     abstract validateCredential(input: CredentialInput): string | Promise<string>;
 
+    abstract createPermission(input: CreatePermissionInput): Nullable<Permission> | Promise<Nullable<Permission>>;
+
+    abstract updatePermission(input: UpdatePermissionInput): Nullable<Permission> | Promise<Nullable<Permission>>;
+
+    abstract deletePermission(input: PermissionWhereUniqueInput): Nullable<Permission> | Promise<Nullable<Permission>>;
+
+    abstract deletePermissions(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+
+    abstract createProject(input: CreateProjectInput): Nullable<Project> | Promise<Nullable<Project>>;
+
+    abstract updateProject(input: UpdateProjectInput): Nullable<Project> | Promise<Nullable<Project>>;
+
+    abstract deleteProject(input: ProjectWhereUniqueInput): Nullable<Project> | Promise<Nullable<Project>>;
+
+    abstract deleteProjects(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+
+    abstract createRole(input: CreateRoleInput): Nullable<Role> | Promise<Nullable<Role>>;
+
+    abstract updateRole(input: UpdateRoleInput): Nullable<Role> | Promise<Nullable<Role>>;
+
+    abstract deleteRole(input: RoleWhereUniqueInput): Nullable<Role> | Promise<Nullable<Role>>;
+
+    abstract deleteRoles(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+
     abstract createTask(input: CreateTaskInput): Nullable<Task> | Promise<Nullable<Task>>;
 
     abstract updateTask(input: UpdateTaskInput): Nullable<Task> | Promise<Nullable<Task>>;
 
     abstract deleteTask(input: TaskWhereUniqueInput): Nullable<Task> | Promise<Nullable<Task>>;
 
-    abstract deleteTasks(input?: Nullable<DeleteTasksInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+    abstract deleteTasks(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
 
     abstract createUser(input: CreateUserInput): Nullable<User> | Promise<Nullable<User>>;
 
@@ -111,27 +207,43 @@ export abstract class IMutation {
 
     abstract deleteUser(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
 
-    abstract deleteUsers(input?: Nullable<DeleteUsersInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
-}
-
-export class Task {
-    id: string;
-    taskName: string;
-    description?: Nullable<string>;
-    user?: Nullable<User>;
-    startDate?: Nullable<DateTime>;
-    dueDate?: Nullable<DateTime>;
-    completionDate?: Nullable<DateTime>;
-    completed?: Nullable<boolean>;
-    createdAt: DateTime;
-    updatedAt: DateTime;
+    abstract deleteUsers(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
 }
 
 export class BulkOperationResult {
     count: number;
 }
 
+export class ProjectMembership {
+    user: User;
+    project: Project;
+    role: Role;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
+export class Permission {
+    id: string;
+    name: string;
+    description?: Nullable<string>;
+    roles?: Nullable<Nullable<Role>[]>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
 export abstract class IQuery {
+    abstract permissions(): Nullable<Nullable<Permission>[]> | Promise<Nullable<Nullable<Permission>[]>>;
+
+    abstract permission(input: PermissionWhereUniqueInput): Nullable<Permission> | Promise<Nullable<Permission>>;
+
+    abstract projects(input?: Nullable<GetProjectsInput>): Nullable<Nullable<Project>[]> | Promise<Nullable<Nullable<Project>[]>>;
+
+    abstract project(input: ProjectWhereUniqueInput): Nullable<Project> | Promise<Nullable<Project>>;
+
+    abstract roles(): Nullable<Nullable<Role>[]> | Promise<Nullable<Nullable<Role>[]>>;
+
+    abstract role(input: RoleWhereUniqueInput): Nullable<Role> | Promise<Nullable<Role>>;
+
     abstract tasks(input?: Nullable<GetTasksInput>): Nullable<Nullable<Task>[]> | Promise<Nullable<Nullable<Task>[]>>;
 
     abstract task(input: TaskWhereUniqueInput): Nullable<Task> | Promise<Nullable<Task>>;
@@ -143,10 +255,50 @@ export abstract class IQuery {
     abstract user(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
 }
 
+export class Project {
+    id: string;
+    name: string;
+    description?: Nullable<string>;
+    owner?: Nullable<User>;
+    projectMemberships?: Nullable<Nullable<ProjectMembership>[]>;
+    tasks?: Nullable<Nullable<Task>[]>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
+export class Role {
+    id: string;
+    name: string;
+    description?: Nullable<string>;
+    permissions?: Nullable<Nullable<Permission>[]>;
+    projectMemberships?: Nullable<Nullable<ProjectMembership>[]>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
+export class Task {
+    id: string;
+    name: string;
+    description?: Nullable<string>;
+    startDate?: Nullable<DateTime>;
+    dueDate?: Nullable<DateTime>;
+    completionDate?: Nullable<DateTime>;
+    completed?: Nullable<boolean>;
+    user?: Nullable<User>;
+    project?: Nullable<Project>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
+}
+
 export class User {
     id: string;
     name: string;
+    photoUrl?: Nullable<string>;
+    isAdmin?: Nullable<boolean>;
     tasks?: Nullable<Nullable<Task>[]>;
+    projects?: Nullable<Nullable<Project>[]>;
+    projectMemberships?: Nullable<Nullable<ProjectMembership>[]>;
+    credential?: Nullable<Credential>;
     createdAt: DateTime;
     updatedAt: DateTime;
 }

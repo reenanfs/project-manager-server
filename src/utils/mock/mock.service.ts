@@ -8,16 +8,16 @@ export class MockService {
     {
       id: 'a13cc5b8-ecee-4bf1-8fad-4b8dc04e4805',
       name: 'Name1',
-      role: 'Role1',
-      email: 'email1@gmail.com',
+      photoUrl: 'https://url.com',
+      isAdmin: true,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
     {
       id: 'fd210632-3ccc-4e0f-b561-f44ddec6d8a7',
       name: 'Name2',
-      role: 'Role2',
-      email: 'email2@gmail.com',
+      photoUrl: 'https://url.com',
+      isAdmin: false,
       createdAt: new Date(),
       updatedAt: new Date('2100-12-12'),
     },
@@ -37,7 +37,7 @@ export class MockService {
   static tasksArray: Task[] = [
     {
       id: '0825f430-8de1-41d2-a24d-afc33f2fc8b7',
-      taskName: 'Task1',
+      name: 'Task1',
       description: 'Description1',
       userId: MockService.userId,
       startDate: new Date(),
@@ -46,10 +46,11 @@ export class MockService {
       completed: true,
       createdAt: new Date(),
       updatedAt: new Date(),
+      projectId: '0825f430-aaaa-41d2-a24d-afc33f2fc8b7',
     },
     {
       id: '36f46331-6a70-4fac-8289-9eb34d1ebf4c',
-      taskName: 'Task2',
+      name: 'Task2',
       description: 'Description2',
       userId: MockService.userIdArray[1],
       startDate: new Date(),
@@ -58,6 +59,7 @@ export class MockService {
       completed: true,
       createdAt: new Date(),
       updatedAt: new Date('2100-12-12'),
+      projectId: '0825f430-bbbb-41d2-a24d-afc33f2fc8b7',
     },
   ];
 

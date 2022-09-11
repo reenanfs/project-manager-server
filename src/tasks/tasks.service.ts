@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { Task, User } from '@prisma/client';
+import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   BulkOperationResult,
   CreateTaskInput,
-  DeleteTasksInput,
   GetTasksOrderBy,
   TaskWhereUniqueInput,
   UpdateTaskInput,
+  User,
+  Task,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 
@@ -74,7 +75,9 @@ export class TasksService {
     return this.prismaService.task.delete({ where });
   }
 
-  async deleteTasks({ ids }: DeleteTasksInput): Promise<BulkOperationResult> {
+  async deleteTasks({
+    ids,
+  }: DeleteMultipleItemsDto): Promise<BulkOperationResult> {
     return this.prismaService.task.deleteMany({
       where: {
         id: { in: ids },

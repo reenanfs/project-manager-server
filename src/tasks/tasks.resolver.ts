@@ -7,12 +7,14 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { Prisma, Task, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import {
   CreateTaskInput,
-  DeleteTasksInput,
   GetTasksInput,
   TaskWhereUniqueInput,
+  User,
+  Task,
 } from 'src/typescript/gql-generated-types';
 
 import { Nullable } from 'src/typescript/types';
@@ -91,7 +93,7 @@ export class TasksResolver {
   @Mutation()
   async deleteTasks(
     @Args('input')
-    input: DeleteTasksInput,
+    input: DeleteMultipleItemsDto,
   ): Promise<Prisma.BatchPayload> {
     return this.tasksService.deleteTasks(input);
   }

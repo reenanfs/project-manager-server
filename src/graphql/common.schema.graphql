@@ -1,0 +1,22 @@
+scalar DateTime
+
+enum SortOrder {
+  asc
+  desc
+}
+
+type BulkOperationResult {
+  count: Int!
+}
+
+type ProjectMembership {
+  user: User!
+  project: Project!
+  role: Role!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input DeleteMultipleItemsInput {
+  ids: [String!]!
+}

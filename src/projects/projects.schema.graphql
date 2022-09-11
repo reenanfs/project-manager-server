@@ -1,0 +1,47 @@
+type Project {
+  id: ID!
+  name: String!
+  description: String
+  owner: User
+  projectMemberships: [ProjectMembership]
+  tasks: [Task]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input GetProjectsOrderBy {
+  updatedAt: SortOrder
+}
+
+input GetProjectsInput {
+  orderBy: GetProjectsOrderBy
+}
+
+input CreateProjectInput {
+  name: String!
+  description: String
+  ownerId: ID!
+}
+
+input UpdateProjectInput {
+  id: ID!
+  name: String
+  description: String
+  ownerId: ID
+}
+
+input ProjectWhereUniqueInput {
+  id: ID!
+}
+
+type Query {
+  projects(input: GetProjectsInput): [Project]
+  project(input: ProjectWhereUniqueInput!): Project
+}
+
+type Mutation {
+  createProject(input: CreateProjectInput!): Project
+  updateProject(input: UpdateProjectInput!): Project
+  deleteProject(input: ProjectWhereUniqueInput!): Project
+  deleteProjects(input: DeleteMultipleItemsInput): BulkOperationResult
+}

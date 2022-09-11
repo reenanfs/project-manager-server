@@ -1,4 +1,7 @@
+import { UseGuards } from '@nestjs/common';
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { AuthGuard } from '@nestjs/passport';
+
 import { AuthService } from './auth.service';
 import { CredentialDto } from './dtos/credential-input.dto';
 
@@ -16,6 +19,7 @@ export class AuthResolver {
     return this.authService.localSignUp(input);
   }
 
+  @UseGuards(AuthGuard('local'))
   @Mutation()
   async localSignIn(@Args('input') input: CredentialDto) {
     return this.authService.localSignIn(input);

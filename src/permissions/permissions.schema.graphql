@@ -1,0 +1,43 @@
+type Permission {
+  id: ID!
+  name: String!
+  description: String
+  roles: [Role]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input GetPermissionsOrderBy {
+  updatedAt: SortOrder
+}
+
+input GetPermissionsInput {
+  orderBy: GetProjectsOrderBy
+}
+
+input CreatePermissionInput {
+  name: String!
+  description: String
+}
+
+input UpdatePermissionInput {
+  id: ID!
+  name: String
+  description: String
+}
+
+input PermissionWhereUniqueInput {
+  id: ID!
+}
+
+type Query {
+  permissions: [Permission]
+  permission(input: PermissionWhereUniqueInput!): Permission
+}
+
+type Mutation {
+  createPermission(input: CreatePermissionInput!): Permission
+  updatePermission(input: UpdatePermissionInput!): Permission
+  deletePermission(input: PermissionWhereUniqueInput!): Permission
+  deletePermissions(input: DeleteMultipleItemsInput): BulkOperationResult
+}

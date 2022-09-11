@@ -1,25 +1,15 @@
-scalar DateTime
-
 type Task {
   id: ID!
-  taskName: String!
+  name: String!
   description: String
-  user: User
   startDate: DateTime
   dueDate: DateTime
   completionDate: DateTime
   completed: Boolean
+  user: User
+  project: Project
   createdAt: DateTime!
   updatedAt: DateTime!
-}
-
-type BulkOperationResult {
-  count: Int!
-}
-
-enum SortOrder {
-  asc
-  desc
 }
 
 input GetTasksOrderBy {
@@ -32,27 +22,26 @@ input GetTasksInput {
 }
 
 input CreateTaskInput {
-  taskName: String!
+  name: String!
   description: String
-  userId: ID!
   startDate: DateTime
   dueDate: DateTime
+  completionDate: DateTime
   completed: Boolean!
+  userId: ID!
+  projectId: ID!
 }
 
 input UpdateTaskInput {
   id: ID!
-  taskName: String
+  name: String
   description: String
-  userId: ID
   startDate: DateTime
   dueDate: DateTime
   completionDate: DateTime
   completed: Boolean
-}
-
-input DeleteTasksInput {
-  ids: [String!]!
+  userId: ID
+  projectId: ID
 }
 
 input TaskWhereUniqueInput {
@@ -69,5 +58,5 @@ type Mutation {
   createTask(input: CreateTaskInput!): Task
   updateTask(input: UpdateTaskInput!): Task
   deleteTask(input: TaskWhereUniqueInput!): Task
-  deleteTasks(input: DeleteTasksInput): BulkOperationResult
+  deleteTasks(input: DeleteMultipleItemsInput): BulkOperationResult
 }

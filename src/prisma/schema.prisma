@@ -12,41 +12,44 @@ datasource db {
 }
 
 model Credential {
-  id       String @id @default(uuid())
-  email    String
-  password String
-  userId   String @unique @map("user_id")
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  userId    String   @unique @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("credentials")
 }
 
 model User {
-  id         String               @id @default(uuid())
-  name       String
-  tasks      Task[]
-  projects   ProjectMemberships[]
-  roleId     String               @map("role_id")
-  role       Role                 @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  createdAt  DateTime             @default(now()) @map("created_at")
-  updatedAt  DateTime             @updatedAt @map("updated_at")
-  credential Credential?
+  id                 String              @id @default(uuid())
+  name               String
+  photoUrl           String?
+  isAdmin            Boolean
+  tasks              Task[]
+  projects           Project[]
+  projectMemberships ProjectMembership[]
+  credential         Credential?
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
 
   @@map("users")
 }
 
 model Task {
   id             String    @id @default(uuid())
-  taskName       String    @map("task_name")
+  name           String    @map("task_name")
   description    String?
+  startDate      DateTime? @map("start_date")
+  dueDate        DateTime? @map("due_date")
+  completionDate DateTime? @map("completion_date")
+  completed      Boolean
   userId         String?   @map("user_id")
   user           User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   projectId      String    @map("project_id")
   project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  startDate      DateTime? @map("start_date")
-  dueDate        DateTime? @map("due_date")
-  completionDate DateTime? @map("completion_date")
-  completed      Boolean?
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
 
@@ -54,53 +57,64 @@ model Task {
 }
 
 model Project {
-  id          String               @id @default(uuid())
-  name        String
-  description String?
-  users       ProjectMemberships[]
-  tasks       Task[]
+  id                 String              @id @default(uuid())
+  name               String
+  description        String?
+  ownerId            String              @map("owner_id")
+  owner              User                @relation(fields: [ownerId], references: [id])
+  projectMemberships ProjectMembership[]
+  tasks              Task[]
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
 
   @@map("projects")
 }
 
-model ProjectMemberships {
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String  @map("user_id")
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId String  @map("project_id")
-  role      Role    @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  roleId    String  @map("role_id")
-
-  @@id([userId, projectId])
-  @@map("project_memberships")
-}
-
 model Role {
-  id          String               @id @default(uuid())
-  name        String               @unique
-  description String?
-  users       User[]
-  permissions GrantedPermissions[]
-  projects    ProjectMemberships[]
+  id                 String              @id @default(uuid())
+  name               String              @unique
+  description        String?
+  grantedPermissions GrantedPermission[]
+  projectMemberships ProjectMembership[]
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
 
   @@map("roles")
 }
 
-model GrantedPermissions {
+model Permission {
+  id                 String              @id @default(uuid())
+  name               String              @unique
+  description        String?
+  grantedPermissions GrantedPermission[]
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+
+  @@map("permissions")
+}
+
+model GrantedPermission {
   role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId       String     @map("role_id")
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
   permissionId String     @map("permission_id")
 
   @@id([roleId, permissionId])
+  @@unique([roleId, permissionId])
   @@map("granted_permissions")
 }
 
-model Permission {
-  id          String               @id @default(uuid())
-  name        String               @unique
-  description String?
-  roles       GrantedPermissions[]
+model ProjectMembership {
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String   @map("project_id")
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  roleId    String   @map("role_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("permissions")
+  @@id([userId, projectId])
+  @@unique([userId, projectId])
+  @@map("project_memberships")
 }
