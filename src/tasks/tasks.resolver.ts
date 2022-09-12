@@ -7,14 +7,12 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { Prisma } from '@prisma/client';
+import { Prisma, Project, Task, User } from '@prisma/client';
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import {
   CreateTaskInput,
   GetTasksInput,
   TaskWhereUniqueInput,
-  User,
-  Task,
 } from 'src/typescript/gql-generated-types';
 
 import { Nullable } from 'src/typescript/types';
@@ -51,12 +49,17 @@ export class TasksResolver {
     return this.tasksService.getTaskUser(task);
   }
 
+  @ResolveField('project')
+  async getTaskProject(@Parent() task: Task): Promise<Project> {
+    return this.tasksService.getTaskProject(task);
+  }
+
   @Mutation()
   async createTask(@Args('input') input: CreateTaskInput): Promise<Task> {
     const task = await this.tasksService.createTask(input);
 
     if (!task) {
-      throw new NotFoundException('User does not exist.');
+      throw new NotFoundException('User or Project does not exist.');
     }
 
     return task;

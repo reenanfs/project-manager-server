@@ -1,15 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { Project, ProjectMembership, Task, User } from '@prisma/client';
+import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   ProjectWhereUniqueInput,
   BulkOperationResult,
-  Project,
-  Permission,
-  DeleteProjectsInput,
   CreateProjectInput,
   UpdateProjectInput,
-  User,
-  Task,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 
@@ -64,28 +61,12 @@ export class ProjectsService {
 
   async deleteProjects({
     ids,
-  }: DeleteProjectsInput): Promise<BulkOperationResult> {
+  }: DeleteMultipleItemsDto): Promise<BulkOperationResult> {
     return this.prismaService.project.deleteMany({
       where: {
         id: { in: ids },
       },
     });
-  }
-
-  async getProjectUsers(project: Project): Promise<Nullable<User[]>> {
-    const { users } = await this.prismaService.project.findUnique({
-      where: {
-        id: project.id,
-      },
-      include: { users: { include: { user: true } } },
-    });
-
-    const cleanUsers = users.map((userAndIds) => {
-      const { user } = userAndIds;
-      return user;
-    });
-
-    return cleanUsers;
   }
 
   async getProjectTasks(project: Project): Promise<Nullable<Task[]>> {
@@ -96,5 +77,23 @@ export class ProjectsService {
         },
       })
       .tasks();
+  }
+
+  async getProjectOwner(project: Project): Promise<Nullable<User>> {
+    return this.prismaService.project
+      .findUnique({
+        where: {
+          id: project.id,
+        },
+      })
+      .owner();
+  }
+
+  async getProjectMemberships(
+    project: Project,
+  ): Promise<Nullable<ProjectMembership[]>> {
+    return this.prismaService.user
+      .findUnique({ where: { id: project.id } })
+      .projectMemberships();
   }
 }

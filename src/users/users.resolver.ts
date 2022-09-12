@@ -7,7 +7,14 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { Credential, User, Task, Prisma } from '@prisma/client';
+import {
+  Credential,
+  User,
+  Task,
+  Prisma,
+  ProjectMembership,
+  Project,
+} from '@prisma/client';
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import {
   GetUsersInput,
@@ -48,15 +55,15 @@ export class UsersResolver {
   }
 
   @ResolveField('projects')
-  async getUserProjects(@Parent() user: User): Promise<Nullable<Task[]>> {
-    return this.usersService.getUserTasks(user);
+  async getUserProjects(@Parent() user: User): Promise<Nullable<Project[]>> {
+    return this.usersService.getUserProjects(user);
   }
 
   @ResolveField('projectMemberships')
-  async getUserProjectMemberships(
+  async getProjectMemberships(
     @Parent() user: User,
-  ): Promise<Nullable<Task[]>> {
-    return this.usersService.getUserTasks(user);
+  ): Promise<Nullable<ProjectMembership[]>> {
+    return this.usersService.getProjectMemberships(user);
   }
 
   @ResolveField('credential')

@@ -1,0 +1,7 @@
+type ProjectMembership {
+  user: User!
+  project: Project!
+  role: Role!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

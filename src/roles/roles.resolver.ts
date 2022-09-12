@@ -7,12 +7,10 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { Prisma } from '@prisma/client';
+import { Permission, Prisma, ProjectMembership, Role } from '@prisma/client';
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import {
   RoleWhereUniqueInput,
-  Role,
-  Permission,
   CreateRoleInput,
   UpdateRoleInput,
 } from 'src/typescript/gql-generated-types';
@@ -44,6 +42,13 @@ export class RolesResolver {
   @ResolveField('permissions')
   async getRoleTasks(@Parent() role: Role): Promise<Nullable<Permission[]>> {
     return this.rolesService.getRolePermissions(role);
+  }
+
+  @ResolveField('projectMemberships')
+  async getProjectMemberships(
+    @Parent() role: Role,
+  ): Promise<Nullable<ProjectMembership[]>> {
+    return this.rolesService.getProjectMemberships(role);
   }
 
   @Mutation()

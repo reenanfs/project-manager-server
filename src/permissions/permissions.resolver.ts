@@ -7,12 +7,10 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { Prisma } from '@prisma/client';
+import { Permission, Prisma, Role } from '@prisma/client';
+import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import {
   PermissionWhereUniqueInput,
-  Permission,
-  Role,
-  DeletePermissionsInput,
   CreatePermissionInput,
   UpdatePermissionInput,
 } from 'src/typescript/gql-generated-types';
@@ -42,7 +40,7 @@ export class PermissionsResolver {
   }
 
   @ResolveField('roles')
-  async getPermissionTasks(
+  async getPermissionRoles(
     @Parent() permission: Permission,
   ): Promise<Nullable<Role[]>> {
     return this.permissionsService.getPermissionRoles(permission);
@@ -86,7 +84,7 @@ export class PermissionsResolver {
   @Mutation()
   async deletePermissions(
     @Args('input')
-    input: DeletePermissionsInput,
+    input: DeleteMultipleItemsDto,
   ): Promise<Prisma.BatchPayload> {
     return this.permissionsService.deletePermissions(input);
   }

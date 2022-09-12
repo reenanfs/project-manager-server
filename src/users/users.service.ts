@@ -93,7 +93,7 @@ export class UsersService {
       .projects();
   }
 
-  async getUserProjectMemberships(
+  async getProjectMemberships(
     user: User,
   ): Promise<Nullable<ProjectMembership[]>> {
     return this.prismaService.user

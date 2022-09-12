@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { Permission, ProjectMembership, Role } from '@prisma/client';
+import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   RoleWhereUniqueInput,
   BulkOperationResult,
-  Role,
-  Permission,
-  DeleteRolesInput,
   CreateRoleInput,
   UpdateRoleInput,
 } from 'src/typescript/gql-generated-types';
@@ -58,7 +57,9 @@ export class RolesService {
     return this.prismaService.role.delete({ where });
   }
 
-  async deleteRoles({ ids }: DeleteRolesInput): Promise<BulkOperationResult> {
+  async deleteRoles({
+    ids,
+  }: DeleteMultipleItemsDto): Promise<BulkOperationResult> {
     return this.prismaService.role.deleteMany({
       where: {
         id: { in: ids },
@@ -66,19 +67,30 @@ export class RolesService {
     });
   }
 
-  async getRolePermissions(role: Role): Promise<Nullable<Role[]>> {
-    const { permissions } = await this.prismaService.role.findUnique({
-      where: {
-        id: role.id,
+  async getRolePermissions(role: Role): Promise<Nullable<Permission[]>> {
+    const { grantedPermissions } =
+      await this.prismaService.permission.findUnique({
+        where: {
+          id: role.id,
+        },
+        include: { grantedPermissions: { include: { permission: true } } },
+      });
+
+    const permissions = grantedPermissions.map(
+      (grantedPermissionAndPermission) => {
+        const { permission } = grantedPermissionAndPermission;
+        return permission;
       },
-      include: { permissions: { include: { permission: true } } },
-    });
+    );
 
-    const cleanPermissions = permissions.map((permissionAndIds) => {
-      const { permission } = permissionAndIds;
-      return permission;
-    });
+    return permissions;
+  }
 
-    return cleanPermissions;
+  async getProjectMemberships(
+    role: Role,
+  ): Promise<Nullable<ProjectMembership[]>> {
+    return this.prismaService.user
+      .findUnique({ where: { id: role.id } })
+      .projectMemberships();
   }
 }

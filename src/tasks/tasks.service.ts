@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Project, Task, User } from '@prisma/client';
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
@@ -7,8 +8,6 @@ import {
   GetTasksOrderBy,
   TaskWhereUniqueInput,
   UpdateTaskInput,
-  User,
-  Task,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 
@@ -31,13 +30,21 @@ export class TasksService {
   }
 
   async createTask(data: CreateTaskInput): Promise<Task> {
-    const { userId } = data;
+    const { userId, projectId } = data;
 
     const user = await this.prismaService.user.findUnique({
       where: { id: userId },
     });
 
     if (!user) {
+      return null;
+    }
+
+    const project = await this.prismaService.project.findUnique({
+      where: { id: projectId },
+    });
+
+    if (!project) {
       return null;
     }
 
@@ -89,5 +96,11 @@ export class TasksService {
     return this.prismaService.task
       .findUnique({ where: { id: task.id } })
       .user();
+  }
+
+  async getTaskProject(task: Task): Promise<Nullable<Project>> {
+    return this.prismaService.task
+      .findUnique({ where: { id: task.id } })
+      .project();
   }
 }

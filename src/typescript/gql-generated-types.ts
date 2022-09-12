@@ -214,14 +214,6 @@ export class BulkOperationResult {
     count: number;
 }
 
-export class ProjectMembership {
-    user: User;
-    project: Project;
-    role: Role;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-}
-
 export class Permission {
     id: string;
     name: string;
@@ -253,6 +245,14 @@ export abstract class IQuery {
     abstract users(input?: Nullable<GetUsersInput>): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
 
     abstract user(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
+}
+
+export class ProjectMembership {
+    user: User;
+    project: Project;
+    role: Role;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class Project {

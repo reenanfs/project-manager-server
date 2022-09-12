@@ -12,6 +12,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ProjectsModule } from './projects/projects.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
+import { ProjectMembershipsModule } from './project-memberships/project-memberships.module';
 
 @Module({
   providers: [
@@ -34,6 +35,7 @@ import { RolesModule } from './roles/roles.module';
     RolesModule,
     ProjectsModule,
     PermissionsModule,
+    ProjectMembershipsModule,
   ],
 })
 export class AppModule {}

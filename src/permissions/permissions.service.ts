@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { Permission, ProjectMembership, Role } from '@prisma/client';
+import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   PermissionWhereUniqueInput,
   BulkOperationResult,
-  Permission,
-  Role,
-  DeletePermissionsInput,
   CreatePermissionInput,
   UpdatePermissionInput,
 } from 'src/typescript/gql-generated-types';
@@ -66,7 +65,7 @@ export class PermissionsService {
 
   async deletePermissions({
     ids,
-  }: DeletePermissionsInput): Promise<BulkOperationResult> {
+  }: DeleteMultipleItemsDto): Promise<BulkOperationResult> {
     return this.prismaService.permission.deleteMany({
       where: {
         id: { in: ids },
@@ -75,18 +74,19 @@ export class PermissionsService {
   }
 
   async getPermissionRoles(permission: Permission): Promise<Nullable<Role[]>> {
-    const { roles } = await this.prismaService.permission.findUnique({
-      where: {
-        id: permission.id,
-      },
-      include: { roles: { include: { role: true } } },
-    });
+    const { grantedPermissions } =
+      await this.prismaService.permission.findUnique({
+        where: {
+          id: permission.id,
+        },
+        include: { grantedPermissions: { include: { role: true } } },
+      });
 
-    const cleanRoles = roles.map((roleAndIds) => {
-      const { role } = roleAndIds;
+    const roles = grantedPermissions.map((grantedPermissionAndRole) => {
+      const { role } = grantedPermissionAndRole;
       return role;
     });
 
-    return cleanRoles;
+    return roles;
   }
 }

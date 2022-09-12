@@ -26,8 +26,8 @@ model Credential {
 model User {
   id                 String              @id @default(uuid())
   name               String
-  photoUrl           String?
-  isAdmin            Boolean
+  photoUrl           String?             @map("photo_url")
+  isAdmin            Boolean             @map("is_admin")
   tasks              Task[]
   projects           Project[]
   projectMemberships ProjectMembership[]

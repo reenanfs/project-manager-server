@@ -7,13 +7,10 @@ import {
   ResolveField,
   Parent,
 } from '@nestjs/graphql';
-import { Prisma } from '@prisma/client';
+import { Prisma, Project, ProjectMembership, Task, User } from '@prisma/client';
+import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import {
   ProjectWhereUniqueInput,
-  Project,
-  Task,
-  User,
-  DeleteProjectsInput,
   CreateProjectInput,
   UpdateProjectInput,
 } from 'src/typescript/gql-generated-types';
@@ -42,9 +39,16 @@ export class ProjectsResolver {
     return project;
   }
 
-  @ResolveField('users')
-  async getProjectUsers(@Parent() project: Project): Promise<Nullable<User[]>> {
-    return this.projectsService.getProjectUsers(project);
+  @ResolveField('owner')
+  async getProjectUsers(@Parent() project: Project): Promise<Nullable<User>> {
+    return this.projectsService.getProjectOwner(project);
+  }
+
+  @ResolveField('projectMemberships')
+  async getProjectMemberships(
+    @Parent() project: Project,
+  ): Promise<Nullable<ProjectMembership[]>> {
+    return this.projectsService.getProjectMemberships(project);
   }
 
   @ResolveField('tasks')
@@ -90,7 +94,7 @@ export class ProjectsResolver {
   @Mutation()
   async deleteProjects(
     @Args('input')
-    input: DeleteProjectsInput,
+    input: DeleteMultipleItemsDto,
   ): Promise<Prisma.BatchPayload> {
     return this.projectsService.deleteProjects(input);
   }

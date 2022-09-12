@@ -2,7 +2,7 @@ type User {
   id: ID!
   name: String!
   photoUrl: String
-  isAdmin: Boolean
+  isAdmin: Boolean!
   tasks: [Task]
   projects: [Project]
   projectMemberships: [ProjectMembership]
