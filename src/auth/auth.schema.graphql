@@ -1,19 +1,20 @@
-type Credential {
-  id: ID!
-  email: String!
-  password: String!
-  user: User!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+type AuthResponse {
+  access_token: String!
+  credential: Credential
 }
 
-input CredentialInput {
+input LocalSignupInput {
+  email: String!
+  password: String!
+  userId: ID!
+}
+
+input LocalSigninInput {
   email: String!
   password: String!
 }
 
 type Mutation {
-  localSignIn(input: CredentialInput!): String!
-  localSignUp(input: CredentialInput!): String!
-  validateCredential(input: CredentialInput!): String!
+  localSignin(input: LocalSigninInput!): AuthResponse!
+  localSignup(input: LocalSignupInput!): Credential!
 }

@@ -1,42 +1,34 @@
-import { UseGuards } from '@nestjs/common';
-import {
-  Resolver,
-  Mutation,
-  Args,
-  Parent,
-  ResolveField,
-} from '@nestjs/graphql';
-import { AuthGuard } from '@nestjs/passport';
-import { Credential, User } from '@prisma/client';
-import { Nullable } from 'src/typescript/types';
-
+import { NotFoundException, UseGuards } from '@nestjs/common';
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Credential } from '@prisma/client';
 import { AuthService } from './auth.service';
-import { CredentialDto } from './dtos/credential-input.dto';
+import { CurrentUser } from './decorators/current-credential.decorator';
+import { AuthResponse } from './dtos/auth-response.dto';
+import { LocalSignupDto } from './dtos/local-signup.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Resolver('Credential')
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @ResolveField('user')
-  async getCredentialUser(
-    @Parent() credential: Credential,
-  ): Promise<Nullable<User>> {
-    return this.authService.getCredentialUser(credential);
+  @Mutation()
+  async localSignup(@Args('input') input: LocalSignupDto): Promise<Credential> {
+    const credential = await this.authService.localSignup(input);
+
+    if (!credential) {
+      throw new NotFoundException(
+        'Email already in use or associated User does not exist.',
+      );
+    }
+
+    return credential;
   }
 
+  @UseGuards(LocalAuthGuard)
   @Mutation()
-  async validateCredential(@Args('input') input: CredentialDto) {
-    return this.authService.validateCredential(input);
-  }
-
-  @Mutation()
-  async localSignUp(@Args('input') input: CredentialDto) {
-    return this.authService.localSignUp(input);
-  }
-
-  @UseGuards(AuthGuard('local'))
-  @Mutation()
-  async localSignIn(@Args('input') input: CredentialDto) {
-    return this.authService.localSignIn(input);
+  async localSignin(
+    @CurrentUser() credential: Credential,
+  ): Promise<AuthResponse> {
+    return this.authService.localSignin(credential);
   }
 }

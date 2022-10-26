@@ -12,9 +12,34 @@ export enum SortOrder {
     desc = "desc"
 }
 
-export class CredentialInput {
+export class LocalSignupInput {
     email: string;
     password: string;
+    userId: string;
+}
+
+export class LocalSigninInput {
+    email: string;
+    password: string;
+}
+
+export class GetCredentialsOrderBy {
+    updatedAt?: Nullable<SortOrder>;
+}
+
+export class GetCredentialsInput {
+    orderBy?: Nullable<GetCredentialsOrderBy>;
+}
+
+export class CreateCredentialInput {
+    email: string;
+    password: string;
+    userId: string;
+}
+
+export class CredentialWhereUniqueInput {
+    id?: Nullable<string>;
+    email?: Nullable<string>;
 }
 
 export class DeleteMultipleItemsInput {
@@ -153,21 +178,17 @@ export class UserWhereUniqueInput {
     id: string;
 }
 
-export class Credential {
-    id: string;
-    email: string;
-    password: string;
-    user: User;
-    createdAt: DateTime;
-    updatedAt: DateTime;
+export class AuthResponse {
+    access_token: string;
+    credential?: Nullable<Credential>;
 }
 
 export abstract class IMutation {
-    abstract localSignIn(input: CredentialInput): string | Promise<string>;
+    abstract localSignin(input: LocalSigninInput): AuthResponse | Promise<AuthResponse>;
 
-    abstract localSignUp(input: CredentialInput): string | Promise<string>;
+    abstract localSignup(input: LocalSignupInput): Credential | Promise<Credential>;
 
-    abstract validateCredential(input: CredentialInput): string | Promise<string>;
+    abstract createCredential(input: CreateCredentialInput): Nullable<Credential> | Promise<Nullable<Credential>>;
 
     abstract createPermission(input: CreatePermissionInput): Nullable<Permission> | Promise<Nullable<Permission>>;
 
@@ -210,20 +231,19 @@ export abstract class IMutation {
     abstract deleteUsers(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
 }
 
-export class BulkOperationResult {
-    count: number;
-}
-
-export class Permission {
+export class Credential {
     id: string;
-    name: string;
-    description?: Nullable<string>;
-    roles?: Nullable<Nullable<Role>[]>;
+    email: string;
+    user: User;
     createdAt: DateTime;
     updatedAt: DateTime;
 }
 
 export abstract class IQuery {
+    abstract credentials(input?: Nullable<CredentialWhereUniqueInput>): Nullable<Nullable<Credential>[]> | Promise<Nullable<Nullable<Credential>[]>>;
+
+    abstract credential(input: CredentialWhereUniqueInput): Nullable<Credential> | Promise<Nullable<Credential>>;
+
     abstract permissions(): Nullable<Nullable<Permission>[]> | Promise<Nullable<Nullable<Permission>[]>>;
 
     abstract permission(input: PermissionWhereUniqueInput): Nullable<Permission> | Promise<Nullable<Permission>>;
@@ -245,6 +265,19 @@ export abstract class IQuery {
     abstract users(input?: Nullable<GetUsersInput>): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
 
     abstract user(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
+}
+
+export class BulkOperationResult {
+    count: number;
+}
+
+export class Permission {
+    id: string;
+    name: string;
+    description?: Nullable<string>;
+    roles?: Nullable<Nullable<Role>[]>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class ProjectMembership {
@@ -294,7 +327,7 @@ export class User {
     id: string;
     name: string;
     photoUrl?: Nullable<string>;
-    isAdmin?: Nullable<boolean>;
+    isAdmin: boolean;
     tasks?: Nullable<Nullable<Task>[]>;
     projects?: Nullable<Nullable<Project>[]>;
     projectMemberships?: Nullable<Nullable<ProjectMembership>[]>;
