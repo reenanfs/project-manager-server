@@ -1,6 +1,7 @@
 type AuthResponse {
   access_token: String!
-  credential: Credential
+  refresh_token: String!
+  credential: Credential!
 }
 
 input LocalSignupInput {
@@ -16,5 +17,5 @@ input LocalSigninInput {
 
 type Mutation {
   localSignin(input: LocalSigninInput!): AuthResponse!
-  localSignup(input: LocalSignupInput!): Credential!
+  localSignup(input: LocalSignupInput!): AuthResponse!
 }

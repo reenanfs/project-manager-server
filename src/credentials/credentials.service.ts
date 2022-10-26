@@ -8,6 +8,7 @@ import {
   GetCredentialsOrderBy,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
+import { UpdateCredentialDto } from './dtos/update-credential.dto';
 
 @Injectable()
 export class CredentialsService {
@@ -41,5 +42,24 @@ export class CredentialsService {
       .user();
 
     return user;
+  }
+
+  async updateCredential(
+    data: UpdateCredentialDto,
+  ): Promise<Nullable<Credential>> {
+    const { id } = data;
+
+    const credential = await this.prismaService.credential.findUnique({
+      where: { id },
+    });
+
+    if (!credential) {
+      return null;
+    }
+
+    return this.prismaService.credential.update({
+      where: { id },
+      data,
+    });
   }
 }

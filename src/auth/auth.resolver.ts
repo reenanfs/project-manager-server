@@ -12,7 +12,9 @@ export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
   @Mutation()
-  async localSignup(@Args('input') input: LocalSignupDto): Promise<Credential> {
+  async localSignup(
+    @Args('input') input: LocalSignupDto,
+  ): Promise<AuthResponse> {
     const credential = await this.authService.localSignup(input);
 
     if (!credential) {

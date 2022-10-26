@@ -34,7 +34,15 @@ export class GetCredentialsInput {
 export class CreateCredentialInput {
     email: string;
     password: string;
+    refreshToken?: Nullable<string>;
     userId: string;
+}
+
+export class UpdateCredentialInput {
+    id: string;
+    email?: Nullable<string>;
+    refreshToken?: Nullable<string>;
+    userId?: Nullable<string>;
 }
 
 export class CredentialWhereUniqueInput {
@@ -180,15 +188,18 @@ export class UserWhereUniqueInput {
 
 export class AuthResponse {
     access_token: string;
-    credential?: Nullable<Credential>;
+    refresh_token: string;
+    credential: Credential;
 }
 
 export abstract class IMutation {
     abstract localSignin(input: LocalSigninInput): AuthResponse | Promise<AuthResponse>;
 
-    abstract localSignup(input: LocalSignupInput): Credential | Promise<Credential>;
+    abstract localSignup(input: LocalSignupInput): AuthResponse | Promise<AuthResponse>;
 
     abstract createCredential(input: CreateCredentialInput): Nullable<Credential> | Promise<Nullable<Credential>>;
+
+    abstract updateCredential(input: UpdateCredentialInput): Nullable<Credential> | Promise<Nullable<Credential>>;
 
     abstract createPermission(input: CreatePermissionInput): Nullable<Permission> | Promise<Nullable<Permission>>;
 
@@ -235,6 +246,7 @@ export class Credential {
     id: string;
     email: string;
     user: User;
+    refreshToken?: Nullable<string>;
     createdAt: DateTime;
     updatedAt: DateTime;
 }
