@@ -2,6 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExecutionContext, Injectable } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { JwtPayload } from 'src/typescript/types';
 
 @Injectable()
 export class RtJwtStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +14,7 @@ export class RtJwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(context: ExecutionContext, payload: any) {
+  async validate(context: ExecutionContext, payload: JwtPayload) {
     const ctx = GqlExecutionContext.create(context);
     const refreshToken = ctx
       .getContext()
