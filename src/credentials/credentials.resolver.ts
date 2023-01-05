@@ -32,10 +32,10 @@ export class CredentialsResolver {
     return credential;
   }
 
-  @ResolveField('user')
-  async getCredentialUser(
+  @ResolveField('users')
+  async getCredentialUsers(
     @Parent() credential: Credential,
-  ): Promise<Nullable<User>> {
-    return this.credentialsService.getCredentialUser(credential);
+  ): Promise<Nullable<User[]>> {
+    return this.credentialsService.getCredentialUsers(credential);
   }
 }

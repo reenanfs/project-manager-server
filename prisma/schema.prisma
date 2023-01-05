@@ -15,9 +15,8 @@ model Credential {
   id           String   @id @default(uuid())
   email        String   @unique
   password     String
-  userId       String   @unique @map("user_id")
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   refreshToken String?  @map("refresh_token")
+  users        User[]
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -29,10 +28,11 @@ model User {
   name               String
   photoUrl           String?             @map("photo_url")
   isAdmin            Boolean             @map("is_admin")
+  credentialId       String?             @map("credential_id")
+  credential         Credential?         @relation(fields: [credentialId], references: [id])
   tasks              Task[]
   projects           Project[]
   projectMemberships ProjectMembership[]
-  credential         Credential?
   createdAt          DateTime            @default(now()) @map("created_at")
   updatedAt          DateTime            @updatedAt @map("updated_at")
 
@@ -110,7 +110,7 @@ model ProjectMembership {
   userId    String   @map("user_id")
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId String   @map("project_id")
-  role      Role     @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId    String   @map("role_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

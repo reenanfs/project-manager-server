@@ -7,7 +7,7 @@ import { AuthResponse } from './dtos/auth-response.dto';
 import { LocalSignupDto } from './dtos/local-signup.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
-@Resolver('Credential')
+@Resolver('Auth')
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
@@ -18,9 +18,7 @@ export class AuthResolver {
     const credential = await this.authService.localSignup(input);
 
     if (!credential) {
-      throw new NotFoundException(
-        'Email already in use or associated User does not exist.',
-      );
+      throw new NotFoundException('Email already in use.');
     }
 
     return credential;
@@ -31,6 +29,15 @@ export class AuthResolver {
   async localSignin(
     @CurrentUser() credential: Credential,
   ): Promise<AuthResponse> {
+    console.log('3');
+    console.log(credential);
     return this.authService.localSignin(credential);
+  }
+
+  @Mutation()
+  async localSignout(
+    @CurrentUser() { id: credentialId }: Credential,
+  ): Promise<Credential> {
+    return this.authService.localSignout(credentialId);
   }
 }

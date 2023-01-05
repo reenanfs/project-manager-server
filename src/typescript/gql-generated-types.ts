@@ -15,12 +15,15 @@ export enum SortOrder {
 export class LocalSignupInput {
     email: string;
     password: string;
-    userId: string;
 }
 
 export class LocalSigninInput {
     email: string;
     password: string;
+}
+
+export class LocalSignoutInput {
+    id: string;
 }
 
 export class GetCredentialsOrderBy {
@@ -35,14 +38,12 @@ export class CreateCredentialInput {
     email: string;
     password: string;
     refreshToken?: Nullable<string>;
-    userId: string;
 }
 
 export class UpdateCredentialInput {
     id: string;
     email?: Nullable<string>;
     refreshToken?: Nullable<string>;
-    userId?: Nullable<string>;
 }
 
 export class CredentialWhereUniqueInput {
@@ -173,6 +174,7 @@ export class CreateUserInput {
     name: string;
     photoUrl?: Nullable<string>;
     isAdmin: boolean;
+    credentialId?: Nullable<string>;
 }
 
 export class UpdateUserInput {
@@ -180,6 +182,7 @@ export class UpdateUserInput {
     name?: Nullable<string>;
     photoUrl?: Nullable<string>;
     isAdmin?: Nullable<boolean>;
+    credentialId?: Nullable<string>;
 }
 
 export class UserWhereUniqueInput {
@@ -196,6 +199,8 @@ export abstract class IMutation {
     abstract localSignin(input: LocalSigninInput): AuthResponse | Promise<AuthResponse>;
 
     abstract localSignup(input: LocalSignupInput): AuthResponse | Promise<AuthResponse>;
+
+    abstract localSignout(input: LocalSignoutInput): Credential | Promise<Credential>;
 
     abstract createCredential(input: CreateCredentialInput): Nullable<Credential> | Promise<Nullable<Credential>>;
 
@@ -245,7 +250,7 @@ export abstract class IMutation {
 export class Credential {
     id: string;
     email: string;
-    user: User;
+    users?: Nullable<Nullable<User>[]>;
     refreshToken?: Nullable<string>;
     createdAt: DateTime;
     updatedAt: DateTime;

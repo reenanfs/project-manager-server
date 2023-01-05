@@ -4,6 +4,11 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
+  constructor() {
+    super({
+      property: 'credential',
+    });
+  }
   getRequest(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context);
     const gqlReq = ctx.getContext().req;
@@ -12,6 +17,7 @@ export class LocalAuthGuard extends AuthGuard('local') {
       gqlReq.body = input;
       return gqlReq;
     }
+    console.log(context.switchToHttp().getRequest());
     return context.switchToHttp().getRequest();
   }
 }

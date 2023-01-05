@@ -23,6 +23,7 @@ input CreateUserInput {
   name: String!
   photoUrl: String
   isAdmin: Boolean!
+  credentialId: ID
 }
 
 input UpdateUserInput {
@@ -30,6 +31,7 @@ input UpdateUserInput {
   name: String
   photoUrl: String
   isAdmin: Boolean
+  credentialId: ID
 }
 
 input UserWhereUniqueInput {

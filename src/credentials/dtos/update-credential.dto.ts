@@ -4,8 +4,4 @@ import { UpdateCredentialInput } from 'src/typescript/gql-generated-types';
 export class UpdateCredentialDto extends UpdateCredentialInput {
   @IsEmail()
   email?: string;
-
-  @ValidateIf((object, value) => value !== undefined)
-  @IsNotEmpty()
-  userId?: string;
 }

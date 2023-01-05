@@ -7,7 +7,6 @@ type AuthResponse {
 input LocalSignupInput {
   email: String!
   password: String!
-  userId: ID!
 }
 
 input LocalSigninInput {
@@ -15,7 +14,12 @@ input LocalSigninInput {
   password: String!
 }
 
+input LocalSignoutInput {
+  id: String!
+}
+
 type Mutation {
   localSignin(input: LocalSigninInput!): AuthResponse!
   localSignup(input: LocalSignupInput!): AuthResponse!
+  localSignout(input: LocalSignoutInput!): Credential!
 }

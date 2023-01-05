@@ -19,35 +19,27 @@ export class AuthService {
   ) {}
 
   async localSignup(data: LocalSignupDto): Promise<AuthResponse> {
-    const credential = await this.credentialsService.getCredential({
+    const existingCredential = await this.credentialsService.getCredential({
       email: data.email,
     });
 
-    if (credential) {
-      return null;
-    }
-
-    const user = await this.usersService.getUser({
-      id: data.userId,
-    });
-
-    if (!user) {
+    if (existingCredential) {
       return null;
     }
 
     data.password = await this.hashService.hash(data.password);
 
-    await this.credentialsService.createCredential(data);
+    let newCredential = await this.credentialsService.createCredential(data);
 
-    const tokens = await this.getTokens(credential.id);
+    const tokens = await this.getTokens(newCredential.id);
 
-    await this.updateCredentialRefreshToken(
-      credential.id,
+    newCredential = await this.updateCredentialRefreshToken(
+      newCredential.id,
       tokens.refresh_token,
     );
 
     return {
-      credential,
+      credential: newCredential,
       ...tokens,
     };
   }
@@ -66,7 +58,7 @@ export class AuthService {
     };
   }
 
-  async logout(credentialId: string): Promise<Credential> {
+  async localSignout(credentialId: string): Promise<Credential> {
     return this.credentialsService.updateCredential({
       id: credentialId,
       refreshToken: null,
@@ -81,12 +73,16 @@ export class AuthService {
       email,
     });
 
+    if (!credential) {
+      return null;
+    }
+
     const isPasswordCorrect = await this.hashService.compare(
       password,
       credential.password,
     );
 
-    if (!credential || !isPasswordCorrect) {
+    if (!isPasswordCorrect) {
       return null;
     }
 
@@ -96,9 +92,9 @@ export class AuthService {
   private async updateCredentialRefreshToken(
     credentialId: string,
     refreshToken: string,
-  ): Promise<void> {
+  ): Promise<Credential> {
     const hashedRefreshToken = await this.hashService.hash(refreshToken);
-    await this.credentialsService.updateCredential({
+    return await this.credentialsService.updateCredential({
       id: credentialId,
       refreshToken: hashedRefreshToken,
     });
