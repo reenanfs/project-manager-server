@@ -109,7 +109,7 @@ export class AuthService {
           sub: credentialId,
         },
         {
-          secret: process.env.JWT_SECRET_AT,
+          secret: process.env.JWT_SECRET_ACCESS_TOKEN,
           expiresIn: '15m',
         },
       ),
@@ -118,7 +118,7 @@ export class AuthService {
           sub: credentialId,
         },
         {
-          secret: process.env.JWT_SECRET_RT,
+          secret: process.env.JWT_SECRET_REFRESH_TOKEN,
           expiresIn: '7d',
         },
       ),

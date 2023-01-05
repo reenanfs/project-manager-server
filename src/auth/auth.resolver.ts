@@ -5,7 +5,12 @@ import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-credential.decorator';
 import { AuthResponse } from './dtos/auth-response.dto';
 import { LocalSignupDto } from './dtos/local-signup.dto';
+import { AccessTokenGuard } from './guards/access-token-jwt.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+
+type CredentialId = {
+  credentialId: string;
+};
 
 @Resolver('Auth')
 export class AuthResolver {
@@ -29,14 +34,13 @@ export class AuthResolver {
   async localSignin(
     @CurrentUser() credential: Credential,
   ): Promise<AuthResponse> {
-    console.log('3');
-    console.log(credential);
     return this.authService.localSignin(credential);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Mutation()
   async localSignout(
-    @CurrentUser() { id: credentialId }: Credential,
+    @CurrentUser() { credentialId }: CredentialId,
   ): Promise<Credential> {
     return this.authService.localSignout(credentialId);
   }

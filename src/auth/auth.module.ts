@@ -7,8 +7,8 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CredentialsModule } from 'src/credentials/credentials.module';
-import { AtJwtStrategy } from './strategies/access-token-jwt.strategy';
-import { RtJwtStrategy } from './strategies/refresh-token-jwt.strategy';
+import { AccessTokenStrategy } from './strategies/access-token-jwt.strategy';
+import { RefreshTokenStrategy } from './strategies/refresh-token-jwt.strategy';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
@@ -24,8 +24,8 @@ import { PrismaModule } from 'src/prisma/prisma.module';
     AuthResolver,
     AuthService,
     LocalStrategy,
-    AtJwtStrategy,
-    RtJwtStrategy,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
   ],
   exports: [AuthService],
 })

@@ -5,12 +5,15 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtPayload } from 'src/typescript/types';
 
 @Injectable()
-export class RtJwtStrategy extends PassportStrategy(Strategy) {
+export class RefreshTokenStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh',
+) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET_RT,
+      secretOrKey: process.env.JWT_SECRET_REFRESH_TOKEN,
     });
   }
 
