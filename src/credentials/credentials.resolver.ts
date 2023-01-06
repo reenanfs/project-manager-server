@@ -1,6 +1,7 @@
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
 import { Resolver, Args, Parent, ResolveField, Query } from '@nestjs/graphql';
 import { Credential, User } from '@prisma/client';
+import { AccessTokenGuard } from 'src/common/guards/access-token-jwt.guard';
 import {
   CredentialWhereUniqueInput,
   GetCredentialsInput,
@@ -12,6 +13,7 @@ import { CredentialsService } from './credentials.service';
 export class CredentialsResolver {
   constructor(private readonly credentialsService: CredentialsService) {}
 
+  @UseGuards(AccessTokenGuard)
   @Query('credentials')
   async getCredentials(
     @Args('input') input: GetCredentialsInput,

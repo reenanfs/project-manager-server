@@ -11,6 +11,8 @@ import { ProjectsModule } from './projects/projects.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
 import { ProjectMembershipsModule } from './project-memberships/project-memberships.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AccessTokenGuard } from './common/guards/access-token-jwt.guard';
 
 @Module({
   imports: [
@@ -28,6 +30,12 @@ import { ProjectMembershipsModule } from './project-memberships/project-membersh
     ProjectsModule,
     PermissionsModule,
     ProjectMembershipsModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AccessTokenGuard,
+    },
   ],
 })
 export class AppModule {}

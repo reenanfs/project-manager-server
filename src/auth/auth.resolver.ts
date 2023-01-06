@@ -1,34 +1,41 @@
-import { NotFoundException, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { Credential } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-credential.decorator';
 import { AuthResponse } from './dtos/auth-response.dto';
-import { LocalSignupDto } from './dtos/local-signup.dto';
-import { AccessTokenGuard } from './guards/access-token-jwt.guard';
+import { AuthInputDto } from './dtos/auth-input.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { RefreshTokenGuard } from './guards/refresh-token-jwt.guard';
+import { IgnoreAccessTokenGuard } from 'src/common/decorators/ignore-access-token.decorator';
+import { Console } from 'console';
 
-type CredentialId = {
+interface ICurrentUser {
   credentialId: string;
-};
+  refreshToken?: string;
+}
 
 @Resolver('Auth')
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
+  @IgnoreAccessTokenGuard()
   @Mutation()
-  async localSignup(
-    @Args('input') input: LocalSignupDto,
-  ): Promise<AuthResponse> {
-    const credential = await this.authService.localSignup(input);
+  async localSignup(@Args('input') input: AuthInputDto): Promise<AuthResponse> {
+    const authResponse = await this.authService.localSignup(input);
 
-    if (!credential) {
-      throw new NotFoundException('Email already in use.');
+    if (!authResponse) {
+      throw new BadRequestException('Email already in use.');
     }
 
-    return credential;
+    return authResponse;
   }
 
+  @IgnoreAccessTokenGuard()
   @UseGuards(LocalAuthGuard)
   @Mutation()
   async localSignin(
@@ -37,11 +44,28 @@ export class AuthResolver {
     return this.authService.localSignin(credential);
   }
 
-  @UseGuards(AccessTokenGuard)
   @Mutation()
   async localSignout(
-    @CurrentUser() { credentialId }: CredentialId,
+    @CurrentUser() { credentialId }: ICurrentUser,
   ): Promise<Credential> {
     return this.authService.localSignout(credentialId);
+  }
+
+  @IgnoreAccessTokenGuard()
+  @UseGuards(RefreshTokenGuard)
+  @Mutation()
+  async refreshToken(
+    @CurrentUser() { credentialId, refreshToken }: ICurrentUser,
+  ): Promise<AuthResponse> {
+    const authResponse = await this.authService.refreshTokens(
+      credentialId,
+      refreshToken,
+    );
+
+    if (!authResponse) {
+      throw new UnauthorizedException('Access denied');
+    }
+
+    return authResponse;
   }
 }

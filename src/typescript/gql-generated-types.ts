@@ -12,12 +12,7 @@ export enum SortOrder {
     desc = "desc"
 }
 
-export class LocalSignupInput {
-    email: string;
-    password: string;
-}
-
-export class LocalSigninInput {
+export class AuthInput {
     email: string;
     password: string;
 }
@@ -196,11 +191,13 @@ export class AuthResponse {
 }
 
 export abstract class IMutation {
-    abstract localSignin(input: LocalSigninInput): AuthResponse | Promise<AuthResponse>;
+    abstract localSignin(input: AuthInput): AuthResponse | Promise<AuthResponse>;
 
-    abstract localSignup(input: LocalSignupInput): AuthResponse | Promise<AuthResponse>;
+    abstract localSignup(input: AuthInput): AuthResponse | Promise<AuthResponse>;
 
     abstract localSignout(input: LocalSignoutInput): Credential | Promise<Credential>;
+
+    abstract refreshToken(): AuthResponse | Promise<AuthResponse>;
 
     abstract createCredential(input: CreateCredentialInput): Nullable<Credential> | Promise<Nullable<Credential>>;
 

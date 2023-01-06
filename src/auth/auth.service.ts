@@ -6,19 +6,17 @@ import { CredentialsService } from 'src/credentials/credentials.service';
 import { UsersService } from 'src/users/users.service';
 import { HashService } from 'src/utils/hash/hash.service';
 import { AuthResponse } from './dtos/auth-response.dto';
-import { LocalSigninDto } from './dtos/local-signin.dto';
-import { LocalSignupDto } from './dtos/local-signup.dto';
+import { AuthInputDto } from './dtos/auth-input.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private hashService: HashService,
-    private usersService: UsersService,
     private credentialsService: CredentialsService,
     private jwtService: JwtService,
   ) {}
 
-  async localSignup(data: LocalSignupDto): Promise<AuthResponse> {
+  async localSignup(data: AuthInputDto): Promise<AuthResponse> {
     const existingCredential = await this.credentialsService.getCredential({
       email: data.email,
     });
@@ -68,7 +66,7 @@ export class AuthService {
   async validateCredential({
     email,
     password,
-  }: LocalSigninDto): Promise<Credential> {
+  }: AuthInputDto): Promise<Credential> {
     const credential = await this.credentialsService.getCredential({
       email,
     });
@@ -87,6 +85,40 @@ export class AuthService {
     }
 
     return credential;
+  }
+
+  async refreshTokens(
+    credentialId: string,
+    refreshToken: string,
+  ): Promise<AuthResponse> {
+    const credential = await this.credentialsService.getCredential({
+      id: credentialId,
+    });
+
+    if (!credential || !credential.refreshToken) {
+      return null;
+    }
+
+    const isRefreshTokenValid = await this.hashService.compare(
+      refreshToken,
+      credential.refreshToken,
+    );
+
+    if (!isRefreshTokenValid) {
+      return null;
+    }
+
+    const tokens = await this.getTokens(credential.id);
+
+    await this.updateCredentialRefreshToken(
+      credential.id,
+      tokens.refresh_token,
+    );
+
+    return {
+      credential,
+      ...tokens,
+    };
   }
 
   private async updateCredentialRefreshToken(

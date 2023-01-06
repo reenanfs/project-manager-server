@@ -1,8 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExecutionContext, Injectable } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
-import { JwtPayload } from 'src/typescript/types';
+import { Injectable } from '@nestjs/common';
+import { Request } from 'express';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -14,15 +13,13 @@ export class RefreshTokenStrategy extends PassportStrategy(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET_REFRESH_TOKEN,
+      passReqToCallback: true,
     });
   }
 
-  async validate(context: ExecutionContext, payload: JwtPayload) {
-    const ctx = GqlExecutionContext.create(context);
-    const refreshToken = ctx
-      .getContext()
-      .req.refresh_token.replace('Bearer', '')
-      .trim();
-    return { userId: payload.sub, refreshToken };
+  async validate(req: Request, payload: any) {
+    const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
+
+    return { credentialId: payload.sub, refreshToken };
   }
 }
