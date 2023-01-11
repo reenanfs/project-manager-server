@@ -45,9 +45,7 @@ export class UsersService {
   async updateUser(data: UpdateUserDto): Promise<Nullable<User>> {
     const { id } = data;
 
-    const user = await this.prismaService.user.findUnique({
-      where: { id },
-    });
+    const user = await this.getUser({ id });
 
     if (!user) {
       return null;
@@ -60,9 +58,7 @@ export class UsersService {
   }
 
   async deleteUser(where: UserWhereUniqueInput): Promise<Nullable<User>> {
-    const user = await this.prismaService.user.findUnique({
-      where: { id: where.id },
-    });
+    const user = await this.getUser({ id: where.id });
 
     if (!user) {
       return null;

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Project, Task, User } from '@prisma/client';
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ProjectsService } from 'src/projects/projects.service';
 import {
   BulkOperationResult,
   CreateTaskInput,
@@ -10,10 +11,15 @@ import {
   UpdateTaskInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TasksService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private usersService: UsersService,
+    private projectsService: ProjectsService,
+  ) {}
 
   async getTasks(params: {
     orderBy?: GetTasksOrderBy;
@@ -32,17 +38,13 @@ export class TasksService {
   async createTask(data: CreateTaskInput): Promise<Task> {
     const { userId, projectId } = data;
 
-    const user = await this.prismaService.user.findUnique({
-      where: { id: userId },
-    });
+    const user = await this.usersService.getUser({ id: userId });
 
     if (!user) {
       return null;
     }
 
-    const project = await this.prismaService.project.findUnique({
-      where: { id: projectId },
-    });
+    const project = await this.projectsService.getProject({ id: projectId });
 
     if (!project) {
       return null;
@@ -56,9 +58,7 @@ export class TasksService {
   async updateTask(data: UpdateTaskInput): Promise<Nullable<Task>> {
     const { id } = data;
 
-    const task = await this.prismaService.task.findUnique({
-      where: { id },
-    });
+    const task = await this.getTask({ id });
 
     if (!task) {
       return null;
@@ -71,9 +71,7 @@ export class TasksService {
   }
 
   async deleteTask(where: TaskWhereUniqueInput): Promise<Nullable<Task>> {
-    const task = await this.prismaService.task.findUnique({
-      where: { id: where.id },
-    });
+    const task = await this.getTask({ id: where.id });
 
     if (!task) {
       return null;

@@ -8,5 +8,6 @@ import { RolesModule } from 'src/roles/roles.module';
 @Module({
   providers: [ProjectsResolver, ProjectsService],
   imports: [PrismaModule, UsersModule, RolesModule],
+  exports: [ProjectsService],
 })
 export class ProjectsModule {}

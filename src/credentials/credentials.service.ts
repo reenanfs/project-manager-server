@@ -43,9 +43,7 @@ export class CredentialsService {
   ): Promise<Nullable<Credential>> {
     const { id } = data;
 
-    const credential = await this.prismaService.credential.findUnique({
-      where: { id },
-    });
+    const credential = await this.getCredential({ id });
 
     if (!credential) {
       return null;
@@ -60,9 +58,7 @@ export class CredentialsService {
   async deleteCredential(
     where: CredentialWhereUniqueInput,
   ): Promise<Nullable<Credential>> {
-    const credential = await this.prismaService.credential.findUnique({
-      where: { id: where.id },
-    });
+    const credential = await this.getCredential({ id: where.id });
 
     if (!credential) {
       return null;

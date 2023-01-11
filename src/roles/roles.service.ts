@@ -32,9 +32,7 @@ export class RolesService {
   async updateRole(data: UpdateRoleInput): Promise<Nullable<Role>> {
     const { id } = data;
 
-    const role = await this.prismaService.role.findUnique({
-      where: { id },
-    });
+    const role = await this.getRole({ id });
 
     if (!role) {
       return null;
@@ -47,9 +45,7 @@ export class RolesService {
   }
 
   async deleteRole(where: RoleWhereUniqueInput): Promise<Nullable<Role>> {
-    const role = await this.prismaService.role.findUnique({
-      where: { id: where.id },
-    });
+    const role = await this.getRole({ id: where.id });
 
     if (!role) {
       return null;
@@ -99,9 +95,7 @@ export class RolesService {
   ): Promise<Nullable<Role>> {
     const { roleId, permissionIds } = data;
 
-    const role = await this.prismaService.role.findUnique({
-      where: { id: roleId },
-    });
+    const role = await this.getRole({ id: roleId });
 
     if (!role) {
       return null;

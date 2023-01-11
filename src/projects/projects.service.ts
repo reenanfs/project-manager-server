@@ -38,9 +38,7 @@ export class ProjectsService {
   async updateProject(data: UpdateProjectInput): Promise<Nullable<Project>> {
     const { id } = data;
 
-    const project = await this.prismaService.project.findUnique({
-      where: { id },
-    });
+    const project = await this.getProject({ id });
 
     if (!project) {
       return null;
@@ -55,9 +53,7 @@ export class ProjectsService {
   async deleteProject(
     where: ProjectWhereUniqueInput,
   ): Promise<Nullable<Project>> {
-    const project = await this.prismaService.project.findUnique({
-      where: { id: where.id },
-    });
+    const project = await this.getProject({ id: where.id });
 
     if (!project) {
       return null;

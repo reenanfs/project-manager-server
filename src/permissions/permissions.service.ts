@@ -35,9 +35,7 @@ export class PermissionsService {
   ): Promise<Nullable<Permission>> {
     const { id } = data;
 
-    const permission = await this.prismaService.permission.findUnique({
-      where: { id },
-    });
+    const permission = await this.getPermission({ id });
 
     if (!permission) {
       return null;
@@ -52,9 +50,7 @@ export class PermissionsService {
   async deletePermission(
     where: PermissionWhereUniqueInput,
   ): Promise<Nullable<Permission>> {
-    const permission = await this.prismaService.permission.findUnique({
-      where: { id: where.id },
-    });
+    const permission = await this.getPermission({ id: where.id });
 
     if (!permission) {
       return null;
