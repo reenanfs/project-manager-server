@@ -13,6 +13,7 @@ import {
   ProjectWhereUniqueInput,
   CreateProjectInput,
   UpdateProjectInput,
+  AddMembershipInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { ProjectsService } from './projects.service';
@@ -97,5 +98,19 @@ export class ProjectsResolver {
     input: DeleteMultipleItemsDto,
   ): Promise<Prisma.BatchPayload> {
     return this.projectsService.deleteProjects(input);
+  }
+
+  @Mutation()
+  async addMembership(
+    @Args('input')
+    input: AddMembershipInput,
+  ): Promise<Nullable<Project>> {
+    const project = await this.projectsService.addMembership(input);
+
+    if (!project) {
+      throw new NotFoundException('Role, Project or User does not exist.');
+    }
+
+    return project;
   }
 }

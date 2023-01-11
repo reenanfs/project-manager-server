@@ -21,6 +21,10 @@ export class LocalSignoutInput {
     id: string;
 }
 
+export class DeleteMultipleItemsInput {
+    ids: string[];
+}
+
 export class GetCredentialsOrderBy {
     updatedAt?: Nullable<SortOrder>;
 }
@@ -44,10 +48,6 @@ export class UpdateCredentialInput {
 export class CredentialWhereUniqueInput {
     id?: Nullable<string>;
     email?: Nullable<string>;
-}
-
-export class DeleteMultipleItemsInput {
-    ids: string[];
 }
 
 export class GetPermissionsOrderBy {
@@ -98,6 +98,12 @@ export class ProjectWhereUniqueInput {
     id: string;
 }
 
+export class AddMembershipInput {
+    userId: string;
+    projectId: string;
+    roleId: string;
+}
+
 export class GetRolesOrderBy {
     updatedAt?: Nullable<SortOrder>;
 }
@@ -119,6 +125,11 @@ export class UpdateRoleInput {
 
 export class RoleWhereUniqueInput {
     id: string;
+}
+
+export class AddPermissionsOnRoleInput {
+    roleId: string;
+    permissionIds: string[];
 }
 
 export class GetTasksOrderBy {
@@ -203,6 +214,10 @@ export abstract class IMutation {
 
     abstract updateCredential(input: UpdateCredentialInput): Nullable<Credential> | Promise<Nullable<Credential>>;
 
+    abstract deleteCredential(input: PermissionWhereUniqueInput): Nullable<Permission> | Promise<Nullable<Permission>>;
+
+    abstract deleteCredentials(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+
     abstract createPermission(input: CreatePermissionInput): Nullable<Permission> | Promise<Nullable<Permission>>;
 
     abstract updatePermission(input: UpdatePermissionInput): Nullable<Permission> | Promise<Nullable<Permission>>;
@@ -219,6 +234,8 @@ export abstract class IMutation {
 
     abstract deleteProjects(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
 
+    abstract addMembership(input: AddMembershipInput): Nullable<Project> | Promise<Nullable<Project>>;
+
     abstract createRole(input: CreateRoleInput): Nullable<Role> | Promise<Nullable<Role>>;
 
     abstract updateRole(input: UpdateRoleInput): Nullable<Role> | Promise<Nullable<Role>>;
@@ -226,6 +243,8 @@ export abstract class IMutation {
     abstract deleteRole(input: RoleWhereUniqueInput): Nullable<Role> | Promise<Nullable<Role>>;
 
     abstract deleteRoles(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+
+    abstract addPermissions(input: AddPermissionsOnRoleInput): Nullable<Role> | Promise<Nullable<Role>>;
 
     abstract createTask(input: CreateTaskInput): Nullable<Task> | Promise<Nullable<Task>>;
 
@@ -242,6 +261,10 @@ export abstract class IMutation {
     abstract deleteUser(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
 
     abstract deleteUsers(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
+}
+
+export class BulkOperationResult {
+    count: number;
 }
 
 export class Credential {
@@ -279,10 +302,6 @@ export abstract class IQuery {
     abstract users(input?: Nullable<GetUsersInput>): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
 
     abstract user(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
-}
-
-export class BulkOperationResult {
-    count: number;
 }
 
 export class Permission {

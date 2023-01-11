@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Credential, User } from '@prisma/client';
+import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
+  BulkOperationResult,
   CreateCredentialInput,
   CredentialWhereUniqueInput,
   GetCredentialsOrderBy,
@@ -36,12 +38,6 @@ export class CredentialsService {
     });
   }
 
-  async getCredentialUsers(credential: Credential): Promise<Nullable<User[]>> {
-    return await this.prismaService.credential
-      .findUnique({ where: { id: credential.id } })
-      .users();
-  }
-
   async updateCredential(
     data: UpdateCredentialDto,
   ): Promise<Nullable<Credential>> {
@@ -59,5 +55,35 @@ export class CredentialsService {
       where: { id },
       data,
     });
+  }
+
+  async deleteCredential(
+    where: CredentialWhereUniqueInput,
+  ): Promise<Nullable<Credential>> {
+    const credential = await this.prismaService.credential.findUnique({
+      where: { id: where.id },
+    });
+
+    if (!credential) {
+      return null;
+    }
+
+    return this.prismaService.credential.delete({ where });
+  }
+
+  async deleteCredentials({
+    ids,
+  }: DeleteMultipleItemsDto): Promise<BulkOperationResult> {
+    return this.prismaService.credential.deleteMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+  }
+
+  async getCredentialUsers(credential: Credential): Promise<Nullable<User[]>> {
+    return await this.prismaService.credential
+      .findUnique({ where: { id: credential.id } })
+      .users();
   }
 }

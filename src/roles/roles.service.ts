@@ -7,6 +7,7 @@ import {
   BulkOperationResult,
   CreateRoleInput,
   UpdateRoleInput,
+  AddPermissionsOnRoleInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 
@@ -68,13 +69,12 @@ export class RolesService {
   }
 
   async getRolePermissions(role: Role): Promise<Nullable<Permission[]>> {
-    const { grantedPermissions } =
-      await this.prismaService.permission.findUnique({
-        where: {
-          id: role.id,
-        },
-        include: { grantedPermissions: { include: { permission: true } } },
-      });
+    const { grantedPermissions } = await this.prismaService.role.findUnique({
+      where: {
+        id: role.id,
+      },
+      include: { grantedPermissions: { include: { permission: true } } },
+    });
 
     const permissions = grantedPermissions.map(
       (grantedPermissionAndPermission) => {
@@ -89,8 +89,35 @@ export class RolesService {
   async getProjectMemberships(
     role: Role,
   ): Promise<Nullable<ProjectMembership[]>> {
-    return this.prismaService.user
+    return this.prismaService.role
       .findUnique({ where: { id: role.id } })
       .projectMemberships();
+  }
+
+  async addPermissions(
+    data: AddPermissionsOnRoleInput,
+  ): Promise<Nullable<Role>> {
+    const { roleId, permissionIds } = data;
+
+    const role = await this.prismaService.role.findUnique({
+      where: { id: roleId },
+    });
+
+    if (!role) {
+      return null;
+    }
+
+    const formattedPermissionIds = permissionIds.map((permissionId) => ({
+      permission: { connect: { id: permissionId } },
+    }));
+
+    return this.prismaService.role.update({
+      where: { id: roleId },
+      data: {
+        grantedPermissions: {
+          create: formattedPermissionIds,
+        },
+      },
+    });
   }
 }

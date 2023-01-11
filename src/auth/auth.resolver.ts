@@ -12,7 +12,6 @@ import { AuthInputDto } from './dtos/auth-input.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token-jwt.guard';
 import { IgnoreAccessTokenGuard } from 'src/common/decorators/ignore-access-token.decorator';
-import { Console } from 'console';
 
 interface ICurrentUser {
   credentialId: string;

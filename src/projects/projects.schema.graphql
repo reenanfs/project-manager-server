@@ -34,6 +34,12 @@ input ProjectWhereUniqueInput {
   id: ID!
 }
 
+input AddMembershipInput {
+  userId: String!
+  projectId: ID!
+  roleId: ID!
+}
+
 type Query {
   projects(input: GetProjectsInput): [Project]
   project(input: ProjectWhereUniqueInput!): Project
@@ -44,4 +50,5 @@ type Mutation {
   updateProject(input: UpdateProjectInput!): Project
   deleteProject(input: ProjectWhereUniqueInput!): Project
   deleteProjects(input: DeleteMultipleItemsInput): BulkOperationResult
+  addMembership(input: AddMembershipInput!): Project
 }

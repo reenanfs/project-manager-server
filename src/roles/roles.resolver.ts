@@ -13,6 +13,7 @@ import {
   RoleWhereUniqueInput,
   CreateRoleInput,
   UpdateRoleInput,
+  AddPermissionsOnRoleInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { RolesService } from './roles.service';
@@ -40,7 +41,9 @@ export class RolesResolver {
   }
 
   @ResolveField('permissions')
-  async getRoleTasks(@Parent() role: Role): Promise<Nullable<Permission[]>> {
+  async getRolePermissions(
+    @Parent() role: Role,
+  ): Promise<Nullable<Permission[]>> {
     return this.rolesService.getRolePermissions(role);
   }
 
@@ -90,5 +93,19 @@ export class RolesResolver {
     input: DeleteMultipleItemsDto,
   ): Promise<Prisma.BatchPayload> {
     return this.rolesService.deleteRoles(input);
+  }
+
+  @Mutation()
+  async addPermissions(
+    @Args('input')
+    input: AddPermissionsOnRoleInput,
+  ): Promise<Nullable<Role>> {
+    const role = await this.rolesService.addPermissions(input);
+
+    if (!role) {
+      throw new NotFoundException('Role does not exist.');
+    }
+
+    return role;
   }
 }
