@@ -26,6 +26,8 @@ model Credential {
 model User {
   id                 String              @id @default(uuid())
   name               String
+  email              String?
+  role               String?
   photoUrl           String?             @map("photo_url")
   isAdmin            Boolean             @map("is_admin")
   credentialId       String?             @map("credential_id")

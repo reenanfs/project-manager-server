@@ -13,10 +13,13 @@ import { RolesModule } from './roles/roles.module';
 import { ProjectMembershipsModule } from './project-memberships/project-memberships.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './common/guards/access-token-jwt.guard';
+import { CORS_CONFIG } from './common/constants';
 
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
+      context: ({ req, res }) => ({ req, res }),
+      cors: CORS_CONFIG,
       driver: ApolloDriver,
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],

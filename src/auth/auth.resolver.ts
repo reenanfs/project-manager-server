@@ -3,8 +3,9 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context } from '@nestjs/graphql';
 import { Credential } from '@prisma/client';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-credential.decorator';
 import { AuthResponse } from './dtos/auth-response.dto';
@@ -24,8 +25,11 @@ export class AuthResolver {
 
   @IgnoreAccessTokenGuard()
   @Mutation()
-  async localSignup(@Args('input') input: AuthInputDto): Promise<AuthResponse> {
-    const authResponse = await this.authService.localSignup(input);
+  async localSignup(
+    @Args('input') input: AuthInputDto,
+    @Context('res') res: Response,
+  ): Promise<AuthResponse> {
+    const authResponse = await this.authService.localSignup(res, input);
 
     if (!authResponse) {
       throw new BadRequestException('Email already in use.');
@@ -39,15 +43,17 @@ export class AuthResolver {
   @Mutation()
   async localSignin(
     @CurrentUser() credential: Credential,
+    @Context('res') res: Response,
   ): Promise<AuthResponse> {
-    return this.authService.localSignin(credential);
+    return this.authService.localSignin(res, credential);
   }
 
   @Mutation()
   async localSignout(
     @CurrentUser() { credentialId }: ICurrentUser,
+    @Context('res') res: Response,
   ): Promise<Credential> {
-    return this.authService.localSignout(credentialId);
+    return this.authService.localSignout(res, credentialId);
   }
 
   @IgnoreAccessTokenGuard()

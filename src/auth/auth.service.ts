@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Credential } from '@prisma/client';
+import { Response } from 'express';
 import { CredentialsService } from 'src/credentials/credentials.service';
 
 import { UsersService } from 'src/users/users.service';
 import { HashService } from 'src/utils/hash/hash.service';
 import { AuthResponse } from './dtos/auth-response.dto';
 import { AuthInputDto } from './dtos/auth-input.dto';
+
+interface IAuthToken {
+  access_token: string;
+  refresh_token: string;
+}
 
 @Injectable()
 export class AuthService {
@@ -16,7 +22,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async localSignup(data: AuthInputDto): Promise<AuthResponse> {
+  async localSignup(res: Response, data: AuthInputDto): Promise<AuthResponse> {
     const existingCredential = await this.credentialsService.getCredential({
       email: data.email,
     });
@@ -36,13 +42,18 @@ export class AuthService {
       tokens.refresh_token,
     );
 
+    await this.storeTokenInCookie(res, tokens);
+
     return {
       credential: newCredential,
       ...tokens,
     };
   }
 
-  async localSignin(credential: Credential): Promise<AuthResponse> {
+  async localSignin(
+    res: Response,
+    credential: Credential,
+  ): Promise<AuthResponse> {
     const tokens = await this.getTokens(credential.id);
 
     await this.updateCredentialRefreshToken(
@@ -50,13 +61,17 @@ export class AuthService {
       tokens.refresh_token,
     );
 
+    await this.storeTokenInCookie(res, tokens);
+
     return {
       credential,
       ...tokens,
     };
   }
 
-  async localSignout(credentialId: string): Promise<Credential> {
+  async localSignout(res: Response, credentialId: string): Promise<Credential> {
+    res.clearCookie('access_token');
+    res.clearCookie('refresh_token');
     return this.credentialsService.updateCredential({
       id: credentialId,
       refreshToken: null,
@@ -160,5 +175,10 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken,
     };
+  }
+
+  private async storeTokenInCookie(res: Response, authToken: IAuthToken) {
+    res.cookie('access_token', authToken.access_token, { httpOnly: true });
+    res.cookie('refresh_token', authToken.refresh_token, { httpOnly: true });
   }
 }

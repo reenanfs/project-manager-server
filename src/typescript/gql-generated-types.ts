@@ -359,6 +359,8 @@ export class Task {
 export class User {
     id: string;
     name: string;
+    email?: Nullable<string>;
+    role?: Nullable<string>;
     photoUrl?: Nullable<string>;
     isAdmin: boolean;
     tasks?: Nullable<Nullable<Task>[]>;
