@@ -8,6 +8,7 @@ import { UsersService } from 'src/users/users.service';
 import { HashService } from 'src/utils/hash/hash.service';
 import { AuthResponse } from './dtos/auth-response.dto';
 import { AuthInputDto } from './dtos/auth-input.dto';
+import { BlacklistService } from 'src/utils/blacklist/blacklist.service';
 
 interface IAuthToken {
   access_token: string;
@@ -18,6 +19,7 @@ interface IAuthToken {
 export class AuthService {
   constructor(
     private hashService: HashService,
+    private blacklistService: BlacklistService,
     private credentialsService: CredentialsService,
     private jwtService: JwtService,
   ) {}
@@ -70,8 +72,10 @@ export class AuthService {
   }
 
   async localSignout(res: Response, credentialId: string): Promise<Credential> {
+    const token = res.get('access_token');
     res.clearCookie('access_token');
     res.clearCookie('refresh_token');
+    this.blacklistService.addToken(token);
     return this.credentialsService.updateCredential({
       id: credentialId,
       refreshToken: null,
@@ -157,7 +161,7 @@ export class AuthService {
         },
         {
           secret: process.env.JWT_SECRET_ACCESS_TOKEN,
-          expiresIn: '15m',
+          expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
         },
       ),
       this.jwtService.signAsync(
@@ -166,7 +170,7 @@ export class AuthService {
         },
         {
           secret: process.env.JWT_SECRET_REFRESH_TOKEN,
-          expiresIn: '7d',
+          expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
         },
       ),
     ]);

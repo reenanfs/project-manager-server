@@ -3,6 +3,7 @@ services:
   api:
     depends_on:
       - db
+      - cache
     volumes:
       - /app/node_modules
       - ./:/app
@@ -17,5 +18,15 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
+  cache:
+    container_name: redis
+    image: redis:7.0
+    restart: always
+    ports:
+      - ${REDIS_PORT}:6379
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
 volumes:
   pgdata:
+  redis-data:

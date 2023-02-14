@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { DateTimeResolver } from 'graphql-scalars';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import { redisStore } from 'cache-manager-redis-yet';
+import type { RedisClientOptions } from 'redis';
 
 import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
@@ -25,6 +27,13 @@ import { CORS_CONFIG } from './common/constants';
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       typePaths: ['./**/*.graphql'],
       resolvers: { DateTime: DateTimeResolver },
+    }),
+    CacheModule.registerAsync<any>({
+      useFactory: async () => ({
+        store: await redisStore({ ttl: Number(process.env.REDIS_TTL) }),
+        host: process.env.REDIS_HOST,
+        port: process.env.REDIS_PORT,
+      }),
     }),
     TasksModule,
     UsersModule,

@@ -43,6 +43,8 @@
     "@types/cookie-parser": "^1.4.3",
     "apollo-server-express": "^3.7.0",
     "bcrypt": "^5.0.1",
+    "cache-manager": "^5.1.6",
+    "cache-manager-redis-yet": "^4.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "cookie-parser": "^1.4.6",

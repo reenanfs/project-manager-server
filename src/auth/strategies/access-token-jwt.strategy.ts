@@ -1,11 +1,12 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
+import { BlacklistService } from 'src/utils/blacklist/blacklist.service';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor() {
+  constructor(private blacklistService: BlacklistService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         AccessTokenStrategy.extractJWT,
@@ -24,6 +25,16 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: any) {
+    const token = AccessTokenStrategy.extractJWT(payload.req);
+
+    const isTokenBlacklisted = await this.blacklistService.isTokenBlacklisted(
+      token,
+    );
+
+    if (isTokenBlacklisted) {
+      throw new UnauthorizedException();
+    }
+
     return { credentialId: payload.sub };
   }
 }
