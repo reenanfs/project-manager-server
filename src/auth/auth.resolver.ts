@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Resolver, Mutation, Args, Context } from '@nestjs/graphql';
 import { Credential } from '@prisma/client';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-credential.decorator';
 import { AuthResponse } from './dtos/auth-response.dto';
@@ -52,8 +52,9 @@ export class AuthResolver {
   async localSignout(
     @CurrentUser() { credentialId }: ICurrentUser,
     @Context('res') res: Response,
+    @Context('req') req: Request,
   ): Promise<Credential> {
-    return this.authService.localSignout(res, credentialId);
+    return this.authService.localSignout(res, req, credentialId);
   }
 
   @IgnoreAccessTokenGuard()

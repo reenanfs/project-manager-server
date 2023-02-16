@@ -5,17 +5,33 @@ import { Cache } from 'cache-manager';
 export class BlacklistService {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  async addToken(token: string): Promise<void> {
-    this.cacheManager.set(token, 'blacklisted');
+  async addTokenToBlacklist(
+    accessToken: string,
+    credentialId: string,
+  ): Promise<void> {
+    const key = `credential:${credentialId}:access_tokens`;
+    const tokens = (await this.cacheManager.get<string[]>(key)) || [];
+    tokens.push(accessToken);
+    await this.cacheManager.set(key, tokens);
   }
 
-  async isTokenBlacklisted(token: string): Promise<boolean> {
-    const res = await this.cacheManager.get(token);
+  async isTokenBlacklisted(
+    accessToken: string,
+    credentialId: string,
+  ): Promise<boolean> {
+    const key = `credential:${credentialId}:access_tokens`;
+    const tokens = await this.cacheManager.get<string[]>(key);
+    return !!tokens && tokens.includes(accessToken);
+  }
 
-    if (!res) {
-      return false;
+  async getCredentialsWithBlacklistedTokens(): Promise<Set<string>> {
+    const pattern = 'credential:*:access_tokens';
+    const keys = await this.cacheManager.store.keys(pattern);
+    const blacklistedUsers = new Set<string>();
+    for (const key of keys) {
+      const userId = key.split(':')[1];
+      blacklistedUsers.add(userId);
     }
-
-    return res === 'blacklisted';
+    return blacklistedUsers;
   }
 }

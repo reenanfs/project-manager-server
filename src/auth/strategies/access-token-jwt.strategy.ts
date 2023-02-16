@@ -14,6 +14,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
       ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET_ACCESS_TOKEN,
+      passReqToCallback: true,
     });
   }
 
@@ -21,20 +22,28 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (req.cookies && 'access_token' in req.cookies) {
       return req.cookies.access_token;
     }
+
     return null;
   }
 
-  async validate(payload: any) {
-    const token = AccessTokenStrategy.extractJWT(payload.req);
+  async validate(req: Request, payload: any) {
+    let accessToken = req.cookies.access_token;
+
+    if (!accessToken) {
+      accessToken = req.get('Authorization').replace('Bearer', '').trim();
+    }
+
+    const credentialId = payload.sub;
 
     const isTokenBlacklisted = await this.blacklistService.isTokenBlacklisted(
-      token,
+      accessToken,
+      credentialId,
     );
 
     if (isTokenBlacklisted) {
       throw new UnauthorizedException();
     }
 
-    return { credentialId: payload.sub };
+    return { credentialId };
   }
 }

@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Credential } from '@prisma/client';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { CredentialsService } from 'src/credentials/credentials.service';
 
-import { UsersService } from 'src/users/users.service';
 import { HashService } from 'src/utils/hash/hash.service';
 import { AuthResponse } from './dtos/auth-response.dto';
 import { AuthInputDto } from './dtos/auth-input.dto';
@@ -71,11 +70,20 @@ export class AuthService {
     };
   }
 
-  async localSignout(res: Response, credentialId: string): Promise<Credential> {
-    const token = res.get('access_token');
+  async localSignout(
+    res: Response,
+    req: Request,
+    credentialId: string,
+  ): Promise<Credential> {
+    let accessToken = req.cookies.access_token;
+
+    if (!accessToken) {
+      accessToken = req.get('Authorization').replace('Bearer', '').trim();
+    }
+
     res.clearCookie('access_token');
     res.clearCookie('refresh_token');
-    this.blacklistService.addToken(token);
+    this.blacklistService.addTokenToBlacklist(accessToken, credentialId);
     return this.credentialsService.updateCredential({
       id: credentialId,
       refreshToken: null,
