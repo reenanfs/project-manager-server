@@ -6,6 +6,5 @@ export class AuthInputDto extends AuthInput {
   email: string;
 
   @IsString()
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{12,}$/)
   password: string;
 }
