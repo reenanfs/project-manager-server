@@ -5,6 +5,7 @@ type AuthResponse {
 }
 
 input AuthInput {
+  name: String
   email: String!
   password: String!
 }
@@ -18,4 +19,8 @@ type Mutation {
   localSignup(input: AuthInput!): AuthResponse!
   localSignout(input: LocalSignoutInput!): Credential!
   refreshToken: AuthResponse!
+}
+
+type Query {
+  getTokens: AuthResponse!
 }

@@ -1,8 +1,6 @@
 type User {
   id: ID!
   name: String!
-  email: String
-  role: String
   photoUrl: String
   isAdmin: Boolean!
   tasks: [Task]
@@ -25,7 +23,6 @@ input CreateUserInput {
   name: String!
   photoUrl: String
   isAdmin: Boolean!
-  credentialId: ID
 }
 
 input UpdateUserInput {
@@ -33,7 +30,6 @@ input UpdateUserInput {
   name: String
   photoUrl: String
   isAdmin: Boolean
-  credentialId: ID
 }
 
 input UserWhereUniqueInput {

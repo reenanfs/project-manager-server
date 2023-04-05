@@ -44,11 +44,11 @@ export class CredentialsResolver {
     return credential;
   }
 
-  @ResolveField('users')
-  async getCredentialUsers(
+  @ResolveField('user')
+  async getCredentialUser(
     @Parent() credential: Credential,
-  ): Promise<Nullable<User[]>> {
-    return this.credentialsService.getCredentialUsers(credential);
+  ): Promise<Nullable<User>> {
+    return this.credentialsService.getCredentialUser(credential);
   }
 
   @Mutation()

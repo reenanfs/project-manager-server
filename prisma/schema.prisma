@@ -16,7 +16,8 @@ model Credential {
   email        String   @unique
   password     String
   refreshToken String?  @map("refresh_token")
-  users        User[]
+  userId       String   @unique @map("user_id")
+  user         User     @relation(fields: [userId], references: [id])
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
@@ -26,12 +27,9 @@ model Credential {
 model User {
   id                 String              @id @default(uuid())
   name               String
-  email              String?
-  role               String?
   photoUrl           String?             @map("photo_url")
   isAdmin            Boolean             @map("is_admin")
-  credentialId       String?             @map("credential_id")
-  credential         Credential?         @relation(fields: [credentialId], references: [id])
+  credential         Credential?
   tasks              Task[]
   projects           Project[]
   projectMemberships ProjectMembership[]

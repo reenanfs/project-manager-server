@@ -77,9 +77,9 @@ export class CredentialsService {
     });
   }
 
-  async getCredentialUsers(credential: Credential): Promise<Nullable<User[]>> {
+  async getCredentialUser(credential: Credential): Promise<Nullable<User>> {
     return await this.prismaService.credential
       .findUnique({ where: { id: credential.id } })
-      .users();
+      .user();
   }
 }

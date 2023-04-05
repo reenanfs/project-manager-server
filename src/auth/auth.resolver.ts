@@ -3,7 +3,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { Resolver, Mutation, Args, Context } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context, Query } from '@nestjs/graphql';
 import { Credential } from '@prisma/client';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
@@ -73,5 +73,13 @@ export class AuthResolver {
     }
 
     return authResponse;
+  }
+
+  @Query()
+  async getTokens(
+    @Context('req') req: Request,
+  ): Promise<Omit<AuthResponse, 'credential'>> {
+    const { access_token, refresh_token } = req.cookies;
+    return { access_token, refresh_token };
   }
 }

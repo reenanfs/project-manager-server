@@ -13,6 +13,7 @@ export enum SortOrder {
 }
 
 export class AuthInput {
+    name?: Nullable<string>;
     email: string;
     password: string;
 }
@@ -37,17 +38,20 @@ export class CreateCredentialInput {
     email: string;
     password: string;
     refreshToken?: Nullable<string>;
+    userId: string;
 }
 
 export class UpdateCredentialInput {
     id: string;
     email?: Nullable<string>;
     refreshToken?: Nullable<string>;
+    userId?: Nullable<string>;
 }
 
 export class CredentialWhereUniqueInput {
     id?: Nullable<string>;
     email?: Nullable<string>;
+    userId?: Nullable<string>;
 }
 
 export class GetPermissionsOrderBy {
@@ -180,7 +184,6 @@ export class CreateUserInput {
     name: string;
     photoUrl?: Nullable<string>;
     isAdmin: boolean;
-    credentialId?: Nullable<string>;
 }
 
 export class UpdateUserInput {
@@ -188,7 +191,6 @@ export class UpdateUserInput {
     name?: Nullable<string>;
     photoUrl?: Nullable<string>;
     isAdmin?: Nullable<boolean>;
-    credentialId?: Nullable<string>;
 }
 
 export class UserWhereUniqueInput {
@@ -270,7 +272,7 @@ export class BulkOperationResult {
 export class Credential {
     id: string;
     email: string;
-    users?: Nullable<Nullable<User>[]>;
+    user?: Nullable<User>;
     refreshToken?: Nullable<string>;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -359,8 +361,6 @@ export class Task {
 export class User {
     id: string;
     name: string;
-    email?: Nullable<string>;
-    role?: Nullable<string>;
     photoUrl?: Nullable<string>;
     isAdmin: boolean;
     tasks?: Nullable<Nullable<Task>[]>;

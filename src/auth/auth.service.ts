@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Credential } from '@prisma/client';
+import { Credential, User } from '@prisma/client';
 import { Response, Request } from 'express';
 import { CredentialsService } from 'src/credentials/credentials.service';
 
@@ -8,6 +8,7 @@ import { HashService } from 'src/utils/hash/hash.service';
 import { AuthResponse } from './dtos/auth-response.dto';
 import { AuthInputDto } from './dtos/auth-input.dto';
 import { BlacklistService } from 'src/utils/blacklist/blacklist.service';
+import { UsersService } from 'src/users/users.service';
 
 interface IAuthToken {
   access_token: string;
@@ -20,10 +21,12 @@ export class AuthService {
     private hashService: HashService,
     private blacklistService: BlacklistService,
     private credentialsService: CredentialsService,
+    private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
 
   async localSignup(res: Response, data: AuthInputDto): Promise<AuthResponse> {
+    // Validating data
     const existingCredential = await this.credentialsService.getCredential({
       email: data.email,
     });
@@ -32,10 +35,27 @@ export class AuthService {
       return null;
     }
 
+    // Create user if name is provided
+    let user: User;
+
+    if (data.name) {
+      user = await this.usersService.createUser({
+        name: data.name,
+        isAdmin: false,
+      });
+    }
+
+    // Hash password and create credential
     data.password = await this.hashService.hash(data.password);
 
-    let newCredential = await this.credentialsService.createCredential(data);
+    const { name, ...createCredentialInput } = data; //removing name from input
 
+    let newCredential = await this.credentialsService.createCredential({
+      ...createCredentialInput,
+      userId: user ? user.id : undefined,
+    });
+
+    // Generate tokens and store in cookie
     const tokens = await this.getTokens(newCredential.id);
 
     newCredential = await this.updateCredentialRefreshToken(
