@@ -59,11 +59,13 @@ export class AuthResolver {
 
   @IgnoreAccessTokenGuard()
   @UseGuards(RefreshTokenGuard)
-  @Mutation()
+  @Query()
   async refreshToken(
+    @Context('res') res: Response,
     @CurrentUser() { credentialId, refreshToken }: ICurrentUser,
   ): Promise<AuthResponse> {
     const authResponse = await this.authService.refreshTokens(
+      res,
       credentialId,
       refreshToken,
     );

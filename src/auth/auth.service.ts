@@ -135,6 +135,7 @@ export class AuthService {
   }
 
   async refreshTokens(
+    res: Response,
     credentialId: string,
     refreshToken: string,
   ): Promise<AuthResponse> {
@@ -161,6 +162,8 @@ export class AuthService {
       credential.id,
       tokens.refresh_token,
     );
+
+    await this.storeTokenInCookie(res, tokens);
 
     return {
       credential,

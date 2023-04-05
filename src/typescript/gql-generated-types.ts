@@ -210,8 +210,6 @@ export abstract class IMutation {
 
     abstract localSignout(input: LocalSignoutInput): Credential | Promise<Credential>;
 
-    abstract refreshToken(): AuthResponse | Promise<AuthResponse>;
-
     abstract createCredential(input: CreateCredentialInput): Nullable<Credential> | Promise<Nullable<Credential>>;
 
     abstract updateCredential(input: UpdateCredentialInput): Nullable<Credential> | Promise<Nullable<Credential>>;
@@ -266,7 +264,9 @@ export abstract class IMutation {
 }
 
 export abstract class IQuery {
-    abstract getTokens(): AuthResponse | Promise<AuthResponse>;
+    abstract whoAmI(): AuthResponse | Promise<AuthResponse>;
+
+    abstract refreshToken(): AuthResponse | Promise<AuthResponse>;
 
     abstract credentials(input?: Nullable<CredentialWhereUniqueInput>): Nullable<Nullable<Credential>[]> | Promise<Nullable<Nullable<Credential>[]>>;
 

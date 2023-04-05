@@ -18,9 +18,9 @@ type Mutation {
   localSignin(input: AuthInput!): AuthResponse!
   localSignup(input: AuthInput!): AuthResponse!
   localSignout(input: LocalSignoutInput!): Credential!
-  refreshToken: AuthResponse!
 }
 
 type Query {
   whoAmI: AuthResponse!
+  refreshToken: AuthResponse!
 }
