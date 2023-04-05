@@ -168,6 +168,10 @@ export class AuthService {
     };
   }
 
+  async whoAmI(credentialId: string): Promise<Credential> {
+    return await this.credentialsService.getCredential({ id: credentialId });
+  }
+
   private async updateCredentialRefreshToken(
     credentialId: string,
     refreshToken: string,

@@ -22,5 +22,5 @@ type Mutation {
 }
 
 type Query {
-  getTokens: AuthResponse!
+  whoAmI: AuthResponse!
 }

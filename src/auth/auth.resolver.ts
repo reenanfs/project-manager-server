@@ -76,10 +76,13 @@ export class AuthResolver {
   }
 
   @Query()
-  async getTokens(
+  async whoAmI(
     @Context('req') req: Request,
-  ): Promise<Omit<AuthResponse, 'credential'>> {
+    @CurrentUser() { credentialId }: ICurrentUser,
+  ): Promise<AuthResponse> {
     const { access_token, refresh_token } = req.cookies;
-    return { access_token, refresh_token };
+    const credential = await this.authService.whoAmI(credentialId);
+
+    return { access_token, refresh_token, credential };
   }
 }

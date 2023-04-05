@@ -265,20 +265,9 @@ export abstract class IMutation {
     abstract deleteUsers(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
 }
 
-export class BulkOperationResult {
-    count: number;
-}
-
-export class Credential {
-    id: string;
-    email: string;
-    user?: Nullable<User>;
-    refreshToken?: Nullable<string>;
-    createdAt: DateTime;
-    updatedAt: DateTime;
-}
-
 export abstract class IQuery {
+    abstract getTokens(): AuthResponse | Promise<AuthResponse>;
+
     abstract credentials(input?: Nullable<CredentialWhereUniqueInput>): Nullable<Nullable<Credential>[]> | Promise<Nullable<Nullable<Credential>[]>>;
 
     abstract credential(input: CredentialWhereUniqueInput): Nullable<Credential> | Promise<Nullable<Credential>>;
@@ -304,6 +293,19 @@ export abstract class IQuery {
     abstract users(input?: Nullable<GetUsersInput>): Nullable<Nullable<User>[]> | Promise<Nullable<Nullable<User>[]>>;
 
     abstract user(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
+}
+
+export class BulkOperationResult {
+    count: number;
+}
+
+export class Credential {
+    id: string;
+    email: string;
+    user?: Nullable<User>;
+    refreshToken?: Nullable<string>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class Permission {
