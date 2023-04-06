@@ -83,10 +83,16 @@ export class UsersService {
       .tasks();
   }
 
-  async getUserProjects(user: User): Promise<Nullable<Project[]>> {
+  async getUserProjectsOwned(user: User): Promise<Nullable<Project[]>> {
     return this.prismaService.user
       .findUnique({ where: { id: user.id } })
-      .projects();
+      .projectsOwned();
+  }
+
+  async getUserCurrentProject(user: User): Promise<Nullable<Project>> {
+    return this.prismaService.user
+      .findUnique({ where: { id: user.id } })
+      .currentProject();
   }
 
   async getProjectMemberships(

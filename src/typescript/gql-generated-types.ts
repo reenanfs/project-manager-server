@@ -184,6 +184,7 @@ export class CreateUserInput {
     name: string;
     photoUrl?: Nullable<string>;
     isAdmin: boolean;
+    currentProjectId?: Nullable<string>;
 }
 
 export class UpdateUserInput {
@@ -191,6 +192,7 @@ export class UpdateUserInput {
     name?: Nullable<string>;
     photoUrl?: Nullable<string>;
     isAdmin?: Nullable<boolean>;
+    currentProjectId?: Nullable<string>;
 }
 
 export class UserWhereUniqueInput {
@@ -330,6 +332,7 @@ export class Project {
     name: string;
     description?: Nullable<string>;
     owner?: Nullable<User>;
+    usersCurrentProject?: Nullable<Nullable<User>[]>;
     projectMemberships?: Nullable<Nullable<ProjectMembership>[]>;
     tasks?: Nullable<Nullable<Task>[]>;
     createdAt: DateTime;
@@ -366,7 +369,8 @@ export class User {
     photoUrl?: Nullable<string>;
     isAdmin: boolean;
     tasks?: Nullable<Nullable<Task>[]>;
-    projects?: Nullable<Nullable<Project>[]>;
+    currentProject?: Nullable<Project>;
+    projectsOwned?: Nullable<Nullable<Project>[]>;
     projectMemberships?: Nullable<Nullable<ProjectMembership>[]>;
     credential?: Nullable<Credential>;
     createdAt: DateTime;

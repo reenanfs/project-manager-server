@@ -4,7 +4,8 @@ type User {
   photoUrl: String
   isAdmin: Boolean!
   tasks: [Task]
-  projects: [Project]
+  currentProject: Project
+  projectsOwned: [Project]
   projectMemberships: [ProjectMembership]
   credential: Credential
   createdAt: DateTime!
@@ -23,6 +24,7 @@ input CreateUserInput {
   name: String!
   photoUrl: String
   isAdmin: Boolean!
+  currentProjectId: ID
 }
 
 input UpdateUserInput {
@@ -30,6 +32,7 @@ input UpdateUserInput {
   name: String
   photoUrl: String
   isAdmin: Boolean
+  currentProjectId: ID
 }
 
 input UserWhereUniqueInput {

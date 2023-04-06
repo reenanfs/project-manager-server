@@ -92,6 +92,16 @@ export class ProjectsService {
       .owner();
   }
 
+  async getCurrentProjectUsers(project: Project): Promise<Nullable<User[]>> {
+    return this.prismaService.project
+      .findUnique({
+        where: {
+          id: project.id,
+        },
+      })
+      .usersCurrentProject();
+  }
+
   async getProjectMemberships(
     project: Project,
   ): Promise<Nullable<ProjectMembership[]>> {

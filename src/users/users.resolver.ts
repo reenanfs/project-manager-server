@@ -54,9 +54,18 @@ export class UsersResolver {
     return this.usersService.getUserTasks(user);
   }
 
-  @ResolveField('projects')
-  async getUserProjects(@Parent() user: User): Promise<Nullable<Project[]>> {
-    return this.usersService.getUserProjects(user);
+  @ResolveField('projectsOwned')
+  async getUserProjectsOwned(
+    @Parent() user: User,
+  ): Promise<Nullable<Project[]>> {
+    return this.usersService.getUserProjectsOwned(user);
+  }
+
+  @ResolveField('currentProject')
+  async getUserCurrentProject(
+    @Parent() user: User,
+  ): Promise<Nullable<Project>> {
+    return this.usersService.getUserCurrentProject(user);
   }
 
   @ResolveField('projectMemberships')

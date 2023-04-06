@@ -29,9 +29,11 @@ model User {
   name               String
   photoUrl           String?             @map("photo_url")
   isAdmin            Boolean             @map("is_admin")
+  currentProjectId   String?             @map("current_project_id")
+  currentProject     Project?            @relation(name: "UserCurrentProject", fields: [currentProjectId], references: [id])
   credential         Credential?
   tasks              Task[]
-  projects           Project[]
+  projectsOwned      Project[]           @relation("ProjectOwner")
   projectMemberships ProjectMembership[]
   createdAt          DateTime            @default(now()) @map("created_at")
   updatedAt          DateTime            @updatedAt @map("updated_at")
@@ -58,15 +60,16 @@ model Task {
 }
 
 model Project {
-  id                 String              @id @default(uuid())
-  name               String
-  description        String?
-  ownerId            String              @map("owner_id")
-  owner              User                @relation(fields: [ownerId], references: [id])
-  projectMemberships ProjectMembership[]
-  tasks              Task[]
-  createdAt          DateTime            @default(now()) @map("created_at")
-  updatedAt          DateTime            @updatedAt @map("updated_at")
+  id                  String              @id @default(uuid())
+  name                String
+  description         String?
+  ownerId             String              @map("owner_id")
+  owner               User                @relation("ProjectOwner", fields: [ownerId], references: [id])
+  usersCurrentProject User[]              @relation(name: "UserCurrentProject")
+  projectMemberships  ProjectMembership[]
+  tasks               Task[]
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
 
   @@map("projects")
 }

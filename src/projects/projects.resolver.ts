@@ -41,8 +41,15 @@ export class ProjectsResolver {
   }
 
   @ResolveField('owner')
-  async getProjectUsers(@Parent() project: Project): Promise<Nullable<User>> {
+  async getProjectOwner(@Parent() project: Project): Promise<Nullable<User>> {
     return this.projectsService.getProjectOwner(project);
+  }
+
+  @ResolveField('usersCurrentProject')
+  async getCurrentProjectUsers(
+    @Parent() project: Project,
+  ): Promise<Nullable<User[]>> {
+    return this.projectsService.getCurrentProjectUsers(project);
   }
 
   @ResolveField('projectMemberships')
