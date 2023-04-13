@@ -12,5 +12,5 @@ export class UpdateUserDto extends UpdateUserInput {
   isAdmin: boolean;
 
   @ValidateIf((object, value) => value !== undefined)
-  photoFile?: FileUpload;
+  photoFile?: FileUpload | null;
 }

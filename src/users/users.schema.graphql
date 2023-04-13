@@ -33,6 +33,7 @@ input UpdateUserInput {
   photoFile: Upload
   isAdmin: Boolean
   currentProjectId: ID
+  removePicture: Boolean
 }
 
 input UserWhereUniqueInput {

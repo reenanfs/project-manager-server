@@ -193,6 +193,7 @@ export class UpdateUserInput {
     photoFile?: Nullable<Upload>;
     isAdmin?: Nullable<boolean>;
     currentProjectId?: Nullable<string>;
+    removePicture?: Nullable<boolean>;
 }
 
 export class UserWhereUniqueInput {

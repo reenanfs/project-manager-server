@@ -27,7 +27,7 @@ model Credential {
 model User {
   id                 String              @id @default(uuid())
   name               String
-  photoUrl           String?             @map("photo_url")
+  profilePictureName String?             @map("profile_picture_name")
   isAdmin            Boolean             @map("is_admin")
   currentProjectId   String?             @map("current_project_id")
   currentProject     Project?            @relation(name: "UserCurrentProject", fields: [currentProjectId], references: [id])

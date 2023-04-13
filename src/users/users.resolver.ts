@@ -15,9 +15,6 @@ import {
   ProjectMembership,
   Project,
 } from '@prisma/client';
-import { FileInterceptor } from '@nestjs/platform-express';
-import * as GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
-import * as FileUpload from 'graphql-upload/Upload.js';
 
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import {
@@ -29,10 +26,14 @@ import { Nullable } from 'src/typescript/types';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { S3StorageService } from 'src/utils/file-uploader/services/s3-storage.service';
 
 @Resolver('User')
 export class UsersResolver {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private s3StorageService: S3StorageService,
+  ) {}
 
   @Query('users')
   async getUsers(
@@ -52,6 +53,15 @@ export class UsersResolver {
     }
 
     return user;
+  }
+
+  @ResolveField('photoUrl')
+  async getPhotoUrl(@Parent() user: User): Promise<string | null> {
+    if (!user.profilePictureName) {
+      return null;
+    }
+
+    return this.s3StorageService.generateSignedUrl(user.profilePictureName);
   }
 
   @ResolveField('tasks')
@@ -125,15 +135,4 @@ export class UsersResolver {
   ): Promise<Prisma.BatchPayload> {
     return this.usersService.deleteUsers(input);
   }
-}
-function UseInterceptors(
-  arg0: any,
-): (
-  target: UsersResolver,
-  propertyKey: 'createUser',
-  descriptor: TypedPropertyDescriptor<
-    (input: CreateUserInput) => Promise<User>
-  >,
-) => void | TypedPropertyDescriptor<(input: CreateUserInput) => Promise<User>> {
-  throw new Error('Function not implemented.');
 }

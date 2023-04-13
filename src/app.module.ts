@@ -19,6 +19,8 @@ import { ConfigModule } from '@nestjs/config';
 
 const ENV = process.env.NODE_ENV;
 
+console.log(ENV);
+
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -32,7 +34,7 @@ const ENV = process.env.NODE_ENV;
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: !ENV ? '.env' : `.env.${ENV}`,
+      envFilePath: `config/.env.${ENV}`,
     }),
     TasksModule,
     UsersModule,

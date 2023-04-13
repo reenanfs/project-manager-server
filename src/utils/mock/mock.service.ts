@@ -8,7 +8,7 @@ export class MockService {
     {
       id: 'a13cc5b8-ecee-4bf1-8fad-4b8dc04e4805',
       name: 'Name1',
-      photoUrl: 'https://url.com',
+      profilePictureName: 'sdfsdfsdfsdfs.jpg',
       currentProjectId: null,
       isAdmin: false,
       createdAt: new Date(),
@@ -17,7 +17,7 @@ export class MockService {
     {
       id: 'fd210632-3ccc-4e0f-b561-f44ddec6d8a7',
       name: 'Name2',
-      photoUrl: 'https://url.com',
+      profilePictureName: 'sdfsdfsdfsdfs.jpg',
       currentProjectId: null,
       isAdmin: false,
       createdAt: new Date(),

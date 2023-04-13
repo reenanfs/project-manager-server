@@ -5,6 +5,7 @@
 
 # Secret
 .env*
+/config
 
 # Logs
 logs

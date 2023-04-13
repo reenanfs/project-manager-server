@@ -13,7 +13,6 @@ import {
   GetUsersOrderBy,
   UserWhereUniqueInput,
   BulkOperationResult,
-  CreateUserInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -42,22 +41,24 @@ export class UsersService {
   }
 
   async createUser(data: CreateUserDto): Promise<User> {
-    let photoUrl: string;
+    let profilePictureName: string;
 
     if (data.photoFile) {
-      photoUrl = await this.fileUploaderService.uploadFile(data.photoFile);
+      profilePictureName = await this.fileUploaderService.uploadFile(
+        data.photoFile,
+      );
 
       delete data.photoFile;
     }
 
     return this.prismaService.user.create({
-      data: { ...data, photoUrl },
+      data: { ...data, profilePictureName },
     });
   }
 
   async updateUser(data: UpdateUserDto): Promise<Nullable<User>> {
     const { id } = data;
-    let photoUrl: string;
+    let profilePictureName: string | null;
 
     const user = await this.getUser({ id });
 
@@ -65,17 +66,29 @@ export class UsersService {
       return null;
     }
 
-    if (data.photoFile) {
-      photoUrl = await this.fileUploaderService.uploadFile(data.photoFile);
-
-      delete data.photoFile;
+    //Remove picture from storage if photoFile is null
+    if (data.photoFile === null && user.profilePictureName) {
+      await this.fileUploaderService.deleteFile(user.profilePictureName);
     }
+
+    //if photoFile was sent, upload it to storage and delete the old one if there is one
+    if (data.photoFile) {
+      profilePictureName = await this.fileUploaderService.uploadFile(
+        data.photoFile,
+      );
+
+      if (user.profilePictureName) {
+        await this.fileUploaderService.deleteFile(user.profilePictureName);
+      }
+    }
+
+    delete data.photoFile;
 
     return this.prismaService.user.update({
       where: { id },
       data: {
         ...data,
-        photoUrl,
+        profilePictureName,
       },
     });
   }
