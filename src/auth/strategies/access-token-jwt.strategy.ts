@@ -3,17 +3,21 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { BlacklistService } from 'src/utils/blacklist/blacklist.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private blacklistService: BlacklistService) {
+  constructor(
+    private blacklistService: BlacklistService,
+    configService: ConfigService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         AccessTokenStrategy.extractJWT,
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET_ACCESS_TOKEN,
+      secretOrKey: configService.get<string>('JWT_SECRET_ACCESS_TOKEN'),
       passReqToCallback: true,
     });
   }

@@ -113,7 +113,7 @@ describe('Users (e2e)', () => {
           query: `query Query($input: UserWhereUniqueInput!) {
             user(input: $input) {
               tasks {
-                taskName
+                name
               }
             }
           }`,
@@ -124,9 +124,7 @@ describe('Users (e2e)', () => {
           },
         });
       expect(status).toBe(200);
-      expect(body.data.user.tasks[0].taskName).toEqual(
-        MockService.task.taskName,
-      );
+      expect(body.data.user.tasks[0].name).toEqual(MockService.task.name);
     });
   });
 

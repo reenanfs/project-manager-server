@@ -4,9 +4,11 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { CORS_CONFIG } from './common/constants';
 import { PrismaService } from './prisma/prisma.service';
+import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(graphqlUploadExpress({ maxFileSize: 1000000, maxFiles: 1 }));
   app.enableCors(CORS_CONFIG);
   app.use(cookieParser());
 

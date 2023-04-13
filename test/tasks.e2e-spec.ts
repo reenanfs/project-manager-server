@@ -33,12 +33,10 @@ describe('Tasks (e2e)', () => {
       const { status, body } = await request(app.getHttpServer())
         .post(gql)
         .send({
-          query: `{tasks { id taskName updatedAt }}`,
+          query: `{tasks { id name updatedAt }}`,
         });
       expect(status).toBe(200);
-      expect(body.data.tasks[0].taskName).toEqual(
-        MockService.tasksArray[0].taskName,
-      );
+      expect(body.data.tasks[0].name).toEqual(MockService.tasksArray[0].name);
     });
 
     it('should return ordered array of tasks', async () => {
@@ -47,7 +45,7 @@ describe('Tasks (e2e)', () => {
         .send({
           query: `query Query($input: GetTasksInput) {
             tasks(input: $input) {
-              taskName
+              name
             }
           }`,
           variables: {
@@ -60,9 +58,7 @@ describe('Tasks (e2e)', () => {
         });
 
       expect(status).toBe(200);
-      expect(body.data.tasks[0].taskName).toEqual(
-        MockService.tasksArray[1].taskName,
-      );
+      expect(body.data.tasks[0].name).toEqual(MockService.tasksArray[1].name);
     });
   });
 
@@ -73,7 +69,7 @@ describe('Tasks (e2e)', () => {
         .send({
           query: `query Query($input: TaskWhereUniqueInput!) {
             task(input: $input) {
-              taskName
+              name
             }
           }`,
           variables: {
@@ -83,7 +79,7 @@ describe('Tasks (e2e)', () => {
           },
         });
       expect(status).toBe(200);
-      expect(body.data.task.taskName).toEqual(MockService.task.taskName);
+      expect(body.data.task.name).toEqual(MockService.task.name);
     });
 
     it('should return nestjs error if task does not exist', async () => {
@@ -146,7 +142,7 @@ describe('Tasks (e2e)', () => {
           }`,
           variables: {
             input: {
-              taskName: 'Task3',
+              name: 'Task3',
               userId: MockService.userId,
               completed: false,
             },
@@ -160,7 +156,7 @@ describe('Tasks (e2e)', () => {
         .send({
           query: `query Query($input: TaskWhereUniqueInput!) {
             task(input: $input) {
-              taskName
+              name
             }
           }`,
           variables: {
@@ -170,7 +166,7 @@ describe('Tasks (e2e)', () => {
           },
         });
       expect(status).toBe(200);
-      expect(body.data.task.taskName).toEqual('Task3');
+      expect(body.data.task.name).toEqual('Task3');
     });
 
     it('should return nestjs error if user related to task does not exist', async () => {
@@ -184,7 +180,7 @@ describe('Tasks (e2e)', () => {
           }`,
           variables: {
             input: {
-              taskName: 'Task3',
+              name: 'Task3',
               userId: 'wrongId',
               completed: false,
             },
@@ -197,7 +193,7 @@ describe('Tasks (e2e)', () => {
       expect(body.errors[0].extensions.code).toEqual('404');
     });
 
-    it('should return graphql error if taskName is empty', async () => {
+    it('should return graphql error if name is empty', async () => {
       return request(app.getHttpServer())
         .post(gql)
         .send({
@@ -208,7 +204,7 @@ describe('Tasks (e2e)', () => {
           }`,
           variables: {
             input: {
-              taskName: null,
+              name: null,
               userId: MockService.userId,
               completed: false,
             },
@@ -217,7 +213,7 @@ describe('Tasks (e2e)', () => {
         .expect(400);
     });
 
-    it('should return graphql error if taskName is not a string', async () => {
+    it('should return graphql error if name is not a string', async () => {
       return request(app.getHttpServer())
         .post(gql)
         .send({
@@ -228,7 +224,7 @@ describe('Tasks (e2e)', () => {
           }`,
           variables: {
             input: {
-              taskName: 24,
+              name: 24,
               userId: MockService.userId,
               completed: false,
             },
@@ -248,7 +244,7 @@ describe('Tasks (e2e)', () => {
           }`,
           variables: {
             input: {
-              taskName: 'Task4',
+              name: 'Task4',
               userId: null,
               completed: false,
             },
@@ -268,7 +264,7 @@ describe('Tasks (e2e)', () => {
           }`,
           variables: {
             input: {
-              taskName: 'Task4',
+              name: 'Task4',
               userId: MockService.userId,
               completed: false,
               startDate: 'sdsds',
@@ -289,7 +285,7 @@ describe('Tasks (e2e)', () => {
           }`,
           variables: {
             input: {
-              taskName: 'Task4',
+              name: 'Task4',
               userId: MockService.userId,
               completed: false,
               dueDate: 'sdsds',
@@ -315,7 +311,7 @@ describe('Tasks (e2e)', () => {
           variables: {
             input: {
               id: MockService.taskId,
-              taskName: 'Task5',
+              name: 'Task5',
             },
           },
         });
@@ -327,7 +323,7 @@ describe('Tasks (e2e)', () => {
         .send({
           query: `query Query($input: TaskWhereUniqueInput!) {
             task(input: $input) {
-              taskName
+              name
             }
           }`,
           variables: {
@@ -337,7 +333,7 @@ describe('Tasks (e2e)', () => {
           },
         });
       expect(status).toBe(200);
-      expect(body.data.task.taskName).toEqual('Task5');
+      expect(body.data.task.name).toEqual('Task5');
     });
 
     it('should return nestjs error if task does not exist', async () => {
@@ -352,7 +348,7 @@ describe('Tasks (e2e)', () => {
           variables: {
             input: {
               id: 'wrongId',
-              taskName: 'Task6',
+              name: 'Task6',
             },
           },
         });
@@ -363,7 +359,7 @@ describe('Tasks (e2e)', () => {
       expect(body.errors[0].extensions.code).toEqual('404');
     });
 
-    it('should return nestjs error if taskName is empty', async () => {
+    it('should return nestjs error if name is empty', async () => {
       const { status, body } = await request(app.getHttpServer())
         .post(gql)
         .send({
@@ -375,7 +371,7 @@ describe('Tasks (e2e)', () => {
           variables: {
             input: {
               id: MockService.taskId,
-              taskName: null,
+              name: null,
             },
           },
         });
@@ -385,7 +381,7 @@ describe('Tasks (e2e)', () => {
       expect(body.errors[0].message).toEqual('Bad Request Exception');
     });
 
-    it('should return  graphql error if taskName is not a string', async () => {
+    it('should return  graphql error if name is not a string', async () => {
       return request(app.getHttpServer())
         .post(gql)
         .send({
@@ -397,7 +393,7 @@ describe('Tasks (e2e)', () => {
           variables: {
             input: {
               id: MockService.taskId,
-              taskName: 24,
+              name: 24,
             },
           },
         })
@@ -551,7 +547,7 @@ describe('Tasks (e2e)', () => {
         .send({
           query: `query Query($input: TaskWhereUniqueInput!) {
             task(input: $input) {
-              taskName
+              name
             }
           }`,
           variables: {

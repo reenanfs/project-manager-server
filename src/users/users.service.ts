@@ -17,10 +17,15 @@ import {
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { FileUploaderService } from 'src/utils/file-uploader/file-uploader.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private fileUploaderService: FileUploaderService,
+  ) {}
 
   async getUsers(params: {
     orderBy?: GetUsersOrderBy;
@@ -36,14 +41,23 @@ export class UsersService {
     return this.prismaService.user.findUnique({ where });
   }
 
-  async createUser(data: CreateUserInput): Promise<User> {
+  async createUser(data: CreateUserDto): Promise<User> {
+    let photoUrl: string;
+
+    if (data.photoFile) {
+      photoUrl = await this.fileUploaderService.uploadFile(data.photoFile);
+
+      delete data.photoFile;
+    }
+
     return this.prismaService.user.create({
-      data,
+      data: { ...data, photoUrl },
     });
   }
 
   async updateUser(data: UpdateUserDto): Promise<Nullable<User>> {
     const { id } = data;
+    let photoUrl: string;
 
     const user = await this.getUser({ id });
 
@@ -51,9 +65,18 @@ export class UsersService {
       return null;
     }
 
+    if (data.photoFile) {
+      photoUrl = await this.fileUploaderService.uploadFile(data.photoFile);
+
+      delete data.photoFile;
+    }
+
     return this.prismaService.user.update({
       where: { id },
-      data,
+      data: {
+        ...data,
+        photoUrl,
+      },
     });
   }
 

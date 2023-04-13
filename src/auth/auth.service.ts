@@ -9,6 +9,7 @@ import { AuthResponse } from './dtos/auth-response.dto';
 import { AuthInputDto } from './dtos/auth-input.dto';
 import { BlacklistService } from 'src/utils/blacklist/blacklist.service';
 import { UsersService } from 'src/users/users.service';
+import { ConfigService } from '@nestjs/config';
 
 interface IAuthToken {
   access_token: string;
@@ -23,6 +24,7 @@ export class AuthService {
     private credentialsService: CredentialsService,
     private usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async localSignup(res: Response, data: AuthInputDto): Promise<AuthResponse> {
@@ -195,8 +197,8 @@ export class AuthService {
           sub: credentialId,
         },
         {
-          secret: process.env.JWT_SECRET_ACCESS_TOKEN,
-          expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+          secret: this.configService.get<string>('JWT_SECRET_ACCESS_TOKEN'),
+          expiresIn: this.configService.get<string>('ACCESS_TOKEN_EXPIRES_IN'),
         },
       ),
       this.jwtService.signAsync(
@@ -204,8 +206,8 @@ export class AuthService {
           sub: credentialId,
         },
         {
-          secret: process.env.JWT_SECRET_REFRESH_TOKEN,
-          expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
+          secret: this.configService.get<string>('JWT_SECRET_REFRESH_TOKEN'),
+          expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN'),
         },
       ),
     ]);

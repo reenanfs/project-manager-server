@@ -182,7 +182,7 @@ export class GetUsersInput {
 
 export class CreateUserInput {
     name: string;
-    photoUrl?: Nullable<string>;
+    photoFile?: Nullable<Upload>;
     isAdmin: boolean;
     currentProjectId?: Nullable<string>;
 }
@@ -190,7 +190,7 @@ export class CreateUserInput {
 export class UpdateUserInput {
     id: string;
     name?: Nullable<string>;
-    photoUrl?: Nullable<string>;
+    photoFile?: Nullable<Upload>;
     isAdmin?: Nullable<boolean>;
     currentProjectId?: Nullable<string>;
 }
@@ -377,5 +377,11 @@ export class User {
     updatedAt: DateTime;
 }
 
+export class Test {
+    id?: Nullable<string>;
+    url?: Nullable<string>;
+}
+
 export type DateTime = Date;
+export type Upload = any;
 type Nullable<T> = T | null;

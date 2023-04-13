@@ -22,7 +22,7 @@ input GetUsersInput {
 
 input CreateUserInput {
   name: String!
-  photoUrl: String
+  photoFile: Upload
   isAdmin: Boolean!
   currentProjectId: ID
 }
@@ -30,7 +30,7 @@ input CreateUserInput {
 input UpdateUserInput {
   id: ID!
   name: String
-  photoUrl: String
+  photoFile: Upload
   isAdmin: Boolean
   currentProjectId: ID
 }
@@ -42,6 +42,11 @@ input UserWhereUniqueInput {
 type Query {
   users(input: GetUsersInput): [User]
   user(input: UserWhereUniqueInput!): User
+}
+
+type Test {
+  id: String
+  url: String
 }
 
 type Mutation {

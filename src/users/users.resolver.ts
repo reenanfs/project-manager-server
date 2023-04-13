@@ -1,4 +1,4 @@
-import { NotFoundException, UseGuards } from '@nestjs/common';
+import { NotFoundException, UploadedFile } from '@nestjs/common';
 import {
   Resolver,
   Args,
@@ -15,6 +15,10 @@ import {
   ProjectMembership,
   Project,
 } from '@prisma/client';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
+import * as FileUpload from 'graphql-upload/Upload.js';
+
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
 import {
   GetUsersInput,
@@ -24,6 +28,7 @@ import {
 import { Nullable } from 'src/typescript/types';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
+import { CreateUserDto } from './dtos/create-user.dto';
 
 @Resolver('User')
 export class UsersResolver {
@@ -81,7 +86,7 @@ export class UsersResolver {
   }
 
   @Mutation()
-  async createUser(@Args('input') input: CreateUserInput): Promise<User> {
+  async createUser(@Args('input') input: CreateUserDto): Promise<User> {
     return this.usersService.createUser(input);
   }
 
@@ -120,4 +125,15 @@ export class UsersResolver {
   ): Promise<Prisma.BatchPayload> {
     return this.usersService.deleteUsers(input);
   }
+}
+function UseInterceptors(
+  arg0: any,
+): (
+  target: UsersResolver,
+  propertyKey: 'createUser',
+  descriptor: TypedPropertyDescriptor<
+    (input: CreateUserInput) => Promise<User>
+  >,
+) => void | TypedPropertyDescriptor<(input: CreateUserInput) => Promise<User>> {
+  throw new Error('Function not implemented.');
 }

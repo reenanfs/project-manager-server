@@ -3,6 +3,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { DateTimeResolver } from 'graphql-scalars';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import * as GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
 
 import { TasksModule } from './tasks/tasks.module';
 import { UsersModule } from './users/users.module';
@@ -14,6 +15,9 @@ import { ProjectMembershipsModule } from './project-memberships/project-membersh
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './common/guards/access-token-jwt.guard';
 import { CORS_CONFIG } from './common/constants';
+import { ConfigModule } from '@nestjs/config';
+
+const ENV = process.env.NODE_ENV;
 
 @Module({
   imports: [
@@ -24,7 +28,11 @@ import { CORS_CONFIG } from './common/constants';
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       typePaths: ['./**/*.graphql'],
-      resolvers: { DateTime: DateTimeResolver },
+      resolvers: { DateTime: DateTimeResolver, Upload: GraphQLUpload },
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: !ENV ? '.env' : `.env.${ENV}`,
     }),
     TasksModule,
     UsersModule,
