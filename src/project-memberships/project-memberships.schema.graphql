@@ -5,3 +5,18 @@ type ProjectMembership {
   createdAt: DateTime!
   updatedAt: DateTime!
 }
+
+input UserIdProjectId {
+  userId: ID!
+  projectId: ID!
+}
+
+input ProjectMembershipWhereUniqueInput {
+  userId_projectId: UserIdProjectId
+}
+
+type Query {
+  projectMembership(
+    input: ProjectMembershipWhereUniqueInput!
+  ): ProjectMembership
+}

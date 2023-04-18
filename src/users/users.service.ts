@@ -14,6 +14,7 @@ import {
   UserWhereUniqueInput,
   BulkOperationResult,
   CreateUserToProjectInput,
+  UpdateUserInProjectInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -21,12 +22,14 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { FileUploaderService } from 'src/utils/file-uploader/file-uploader.service';
 import { RolesService } from 'src/roles/roles.service';
 import { ProjectsService } from 'src/projects/projects.service';
+import { ProjectMembershipsService } from 'src/project-memberships/project-memberships.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject(forwardRef(() => ProjectsService))
     private projectsService: ProjectsService,
+    private projectMembershipsService: ProjectMembershipsService,
     private prismaService: PrismaService,
     private fileUploaderService: FileUploaderService,
     private rolesService: RolesService,
@@ -177,6 +180,62 @@ export class UsersService {
           create: {
             projectId,
             roleId,
+          },
+        },
+      },
+    });
+  }
+
+  async updateUserInProject(
+    data: UpdateUserInProjectInput,
+  ): Promise<Nullable<User>> {
+    const { id, name, roleId, projectId } = data;
+
+    const user = await this.getUser({ id });
+
+    if (!user) {
+      return null;
+    }
+
+    const project = await this.projectsService.getProject({ id: projectId });
+
+    if (!project) {
+      return null;
+    }
+
+    const membership =
+      await this.projectMembershipsService.getProjectMembership({
+        userId_projectId: {
+          userId: id,
+          projectId,
+        },
+      });
+
+    if (!membership) {
+      return null;
+    }
+
+    const role = await this.rolesService.getRole({ id: roleId });
+
+    if (!role) {
+      return null;
+    }
+
+    return this.prismaService.user.update({
+      where: { id },
+      data: {
+        name,
+        projectMemberships: {
+          update: {
+            where: {
+              userId_projectId: {
+                userId: id,
+                projectId,
+              },
+            },
+            data: {
+              roleId,
+            },
           },
         },
       },

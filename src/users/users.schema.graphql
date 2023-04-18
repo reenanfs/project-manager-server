@@ -42,6 +42,13 @@ input UpdateUserInput {
   removePicture: Boolean
 }
 
+input UpdateUserInProjectInput {
+  id: String!
+  name: String!
+  projectId: ID!
+  roleId: ID!
+}
+
 input UserWhereUniqueInput {
   id: ID!
 }
@@ -51,15 +58,11 @@ type Query {
   user(input: UserWhereUniqueInput!): User
 }
 
-type Test {
-  id: String
-  url: String
-}
-
 type Mutation {
   createUser(input: CreateUserInput!): User
   createUserToProject(input: CreateUserToProjectInput!): User
   updateUser(input: UpdateUserInput!): User
+  updateUserInProject(input: UpdateUserInProjectInput!): User
   deleteUser(input: UserWhereUniqueInput!): User
   deleteUsers(input: DeleteMultipleItemsInput): BulkOperationResult
 }

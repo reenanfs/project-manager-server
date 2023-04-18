@@ -77,6 +77,15 @@ export class PermissionWhereUniqueInput {
     id: string;
 }
 
+export class UserIdProjectId {
+    userId: string;
+    projectId: string;
+}
+
+export class ProjectMembershipWhereUniqueInput {
+    userId_projectId?: Nullable<UserIdProjectId>;
+}
+
 export class GetProjectsOrderBy {
     updatedAt?: Nullable<SortOrder>;
 }
@@ -202,6 +211,13 @@ export class UpdateUserInput {
     removePicture?: Nullable<boolean>;
 }
 
+export class UpdateUserInProjectInput {
+    id: string;
+    name: string;
+    projectId: string;
+    roleId: string;
+}
+
 export class UserWhereUniqueInput {
     id: string;
 }
@@ -269,6 +285,8 @@ export abstract class IMutation {
 
     abstract updateUser(input: UpdateUserInput): Nullable<User> | Promise<Nullable<User>>;
 
+    abstract updateUserInProject(input: UpdateUserInProjectInput): Nullable<User> | Promise<Nullable<User>>;
+
     abstract deleteUser(input: UserWhereUniqueInput): Nullable<User> | Promise<Nullable<User>>;
 
     abstract deleteUsers(input?: Nullable<DeleteMultipleItemsInput>): Nullable<BulkOperationResult> | Promise<Nullable<BulkOperationResult>>;
@@ -286,6 +304,8 @@ export abstract class IQuery {
     abstract permissions(): Nullable<Nullable<Permission>[]> | Promise<Nullable<Nullable<Permission>[]>>;
 
     abstract permission(input: PermissionWhereUniqueInput): Nullable<Permission> | Promise<Nullable<Permission>>;
+
+    abstract projectMembership(input: ProjectMembershipWhereUniqueInput): Nullable<ProjectMembership> | Promise<Nullable<ProjectMembership>>;
 
     abstract projects(input?: Nullable<GetProjectsInput>): Nullable<Nullable<Project>[]> | Promise<Nullable<Nullable<Project>[]>>;
 
@@ -384,11 +404,6 @@ export class User {
     credential?: Nullable<Credential>;
     createdAt: DateTime;
     updatedAt: DateTime;
-}
-
-export class Test {
-    id?: Nullable<string>;
-    url?: Nullable<string>;
 }
 
 export type DateTime = Date;

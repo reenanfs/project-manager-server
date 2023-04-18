@@ -1,13 +1,29 @@
-import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Project, ProjectMembership, Role, User } from '@prisma/client';
 import { Nullable } from 'src/typescript/types';
 import { ProjectMembershipsService } from './project-memberships.service';
+import { NotFoundException } from '@nestjs/common';
+import { ProjectMembershipWhereUniqueInput } from 'src/typescript/gql-generated-types';
 
 @Resolver('ProjectMembership')
 export class ProjectMembershipsResolver {
   constructor(
     private readonly projectMembershipsService: ProjectMembershipsService,
   ) {}
+
+  @Query('projectMembership')
+  async getProjectMembership(
+    @Args('input') input: ProjectMembershipWhereUniqueInput,
+  ): Promise<Nullable<ProjectMembership>> {
+    const projectMembership =
+      await this.projectMembershipsService.getProjectMembership(input);
+
+    if (!projectMembership) {
+      throw new NotFoundException('Membership does not exist.');
+    }
+
+    return projectMembership;
+  }
 
   @ResolveField('user')
   async getProjectMembershipUser(

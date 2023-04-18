@@ -22,6 +22,7 @@ import {
   UserWhereUniqueInput,
   CreateUserInput,
   CreateUserToProjectInput,
+  UpdateUserInProjectInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -124,6 +125,22 @@ export class UsersResolver {
 
     if (!user) {
       throw new NotFoundException('User does not exist.');
+    }
+
+    return user;
+  }
+
+  @Mutation()
+  async updateUserInProject(
+    @Args('input')
+    input: UpdateUserInProjectInput,
+  ): Promise<Nullable<User>> {
+    const user = await this.usersService.updateUserInProject(input);
+
+    if (!user) {
+      throw new NotFoundException(
+        'User, Role, Project or Membership does not exist.',
+      );
     }
 
     return user;
