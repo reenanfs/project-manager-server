@@ -21,6 +21,7 @@ import {
   GetUsersInput,
   UserWhereUniqueInput,
   CreateUserInput,
+  CreateUserToProjectInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -98,6 +99,20 @@ export class UsersResolver {
   @Mutation()
   async createUser(@Args('input') input: CreateUserDto): Promise<User> {
     return this.usersService.createUser(input);
+  }
+
+  @Mutation()
+  async createUserToProject(
+    @Args('input')
+    input: CreateUserToProjectInput,
+  ): Promise<Nullable<User>> {
+    const user = await this.usersService.createUserToProject(input);
+
+    if (!user) {
+      throw new NotFoundException('Role or Project does not exist.');
+    }
+
+    return user;
   }
 
   @Mutation()

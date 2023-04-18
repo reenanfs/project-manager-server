@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import {
   Credential,
   Project,
@@ -13,17 +13,23 @@ import {
   GetUsersOrderBy,
   UserWhereUniqueInput,
   BulkOperationResult,
+  CreateUserToProjectInput,
 } from 'src/typescript/gql-generated-types';
 import { Nullable } from 'src/typescript/types';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { FileUploaderService } from 'src/utils/file-uploader/file-uploader.service';
+import { RolesService } from 'src/roles/roles.service';
+import { ProjectsService } from 'src/projects/projects.service';
 
 @Injectable()
 export class UsersService {
   constructor(
+    @Inject(forwardRef(() => ProjectsService))
+    private projectsService: ProjectsService,
     private prismaService: PrismaService,
     private fileUploaderService: FileUploaderService,
+    private rolesService: RolesService,
   ) {}
 
   async getUsers(params: {
@@ -143,5 +149,37 @@ export class UsersService {
     return this.prismaService.user
       .findUnique({ where: { id: user.id } })
       .credential();
+  }
+
+  async createUserToProject(
+    data: CreateUserToProjectInput,
+  ): Promise<Nullable<User>> {
+    const { name, projectId, roleId } = data;
+
+    const project = await this.projectsService.getProject({ id: projectId });
+
+    if (!project) {
+      return null;
+    }
+
+    const role = await this.rolesService.getRole({ id: roleId });
+
+    if (!role) {
+      return null;
+    }
+
+    return this.prismaService.user.create({
+      data: {
+        name,
+        currentProjectId: projectId,
+        isAdmin: false,
+        projectMemberships: {
+          create: {
+            projectId,
+            roleId,
+          },
+        },
+      },
+    });
   }
 }

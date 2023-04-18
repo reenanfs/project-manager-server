@@ -27,6 +27,12 @@ input CreateUserInput {
   currentProjectId: ID
 }
 
+input CreateUserToProjectInput {
+  name: String!
+  projectId: ID!
+  roleId: ID!
+}
+
 input UpdateUserInput {
   id: ID!
   name: String
@@ -52,6 +58,7 @@ type Test {
 
 type Mutation {
   createUser(input: CreateUserInput!): User
+  createUserToProject(input: CreateUserToProjectInput!): User
   updateUser(input: UpdateUserInput!): User
   deleteUser(input: UserWhereUniqueInput!): User
   deleteUsers(input: DeleteMultipleItemsInput): BulkOperationResult
