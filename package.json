@@ -28,7 +28,9 @@
     "docker:dev": "docker-compose --env-file config/.env.dev -f docker-compose.yml -f docker-compose.dev.yml up",
     "docker:dev:migration": "docker-compose --env-file config/.env.dev -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.migration.yml up --abort-on-container-exit",
     "docker:dev:build": "docker-compose --env-file config/.env.dev -f docker-compose.yml -f docker-compose.dev.yml up --build --force-recreate --no-deps",
-    "docker:test": "docker-compose --env-file config/.env.dev -f docker-compose.yml -f docker-compose.test.yml up --abort-on-container-exit"
+    "docker:test": "docker-compose --env-file config/.env.dev -f docker-compose.yml -f docker-compose.test.yml up --abort-on-container-exit",
+    "docker:prod:build": "docker-compose --env-file config/.env.prod up --build --force-recreate --no-deps",
+    "docker:prod": "docker-compose --env-file config/.env.prod up"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.312.0",

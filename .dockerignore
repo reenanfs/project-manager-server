@@ -3,6 +3,7 @@ node_modules
 coverage
 .github
 dist
-
+.git
 # Files
 .env*
+*.pem

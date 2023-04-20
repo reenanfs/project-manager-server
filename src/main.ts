@@ -11,7 +11,6 @@ async function bootstrap() {
   app.use(graphqlUploadExpress({ maxFileSize: 1000000, maxFiles: 1 }));
   app.enableCors(CORS_CONFIG);
   app.use(cookieParser());
-
   app.useGlobalPipes(new ValidationPipe());
 
   const prismaService = app.get(PrismaService);

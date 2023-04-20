@@ -18,7 +18,7 @@ import { CORS_CONFIG } from './common/constants';
 import { ConfigModule } from '@nestjs/config';
 
 const ENV = process.env.NODE_ENV;
-
+console.log(ENV);
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
