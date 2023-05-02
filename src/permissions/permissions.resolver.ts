@@ -14,7 +14,7 @@ import {
   CreatePermissionInput,
   UpdatePermissionInput,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
+
 import { PermissionsService } from './permissions.service';
 
 @Resolver('Permission')
@@ -22,27 +22,19 @@ export class PermissionsResolver {
   constructor(private permissionsService: PermissionsService) {}
 
   @Query('permissions')
-  async getPermissions(): Promise<Nullable<Permission[]>> {
+  async getPermissions(): Promise<Permission[]> {
     return this.permissionsService.getPermissions();
   }
 
   @Query('permission')
   async getPermission(
     @Args('input') input: PermissionWhereUniqueInput,
-  ): Promise<Nullable<Permission>> {
-    const permission = await this.permissionsService.getPermission(input);
-
-    if (!permission) {
-      throw new NotFoundException('Permission does not exist.');
-    }
-
-    return permission;
+  ): Promise<Permission> {
+    return this.permissionsService.getPermission(input);
   }
 
   @ResolveField('roles')
-  async getPermissionRoles(
-    @Parent() permission: Permission,
-  ): Promise<Nullable<Role[]>> {
+  async getPermissionRoles(@Parent() permission: Permission): Promise<Role[]> {
     return this.permissionsService.getPermissionRoles(permission);
   }
 
@@ -57,28 +49,16 @@ export class PermissionsResolver {
   async updatePermission(
     @Args('input')
     input: UpdatePermissionInput,
-  ): Promise<Nullable<Permission>> {
-    const permission = await this.permissionsService.updatePermission(input);
-
-    if (!permission) {
-      throw new NotFoundException('Permission does not exist.');
-    }
-
-    return permission;
+  ): Promise<Permission> {
+    return this.permissionsService.updatePermission(input);
   }
 
   @Mutation()
   async deletePermission(
     @Args('input')
     input: PermissionWhereUniqueInput,
-  ): Promise<Nullable<Permission>> {
-    const permission = await this.permissionsService.deletePermission(input);
-
-    if (!permission) {
-      throw new NotFoundException('Permission does not exist.');
-    }
-
-    return permission;
+  ): Promise<Permission> {
+    return this.permissionsService.deletePermission(input);
   }
 
   @Mutation()

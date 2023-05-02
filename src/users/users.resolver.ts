@@ -23,7 +23,7 @@ import {
   CreateUserToProjectInput,
   UpdateUserInProjectInput,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
+
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
@@ -37,23 +37,13 @@ export class UsersResolver {
   ) {}
 
   @Query('users')
-  async getUsers(
-    @Args('input') input: GetUsersInput,
-  ): Promise<Nullable<User[]>> {
+  async getUsers(@Args('input') input: GetUsersInput): Promise<User[]> {
     return this.usersService.getUsers(input);
   }
 
   @Query('user')
-  async getUser(
-    @Args('input') input: UserWhereUniqueInput,
-  ): Promise<Nullable<User>> {
-    const user = await this.usersService.getUser(input);
-
-    if (!user) {
-      throw new NotFoundException('User does not exist.');
-    }
-
-    return user;
+  async getUser(@Args('input') input: UserWhereUniqueInput): Promise<User> {
+    return this.usersService.getUser(input);
   }
 
   @ResolveField('photoUrl')
@@ -66,33 +56,29 @@ export class UsersResolver {
   }
 
   @ResolveField('tasks')
-  async getUserTasks(@Parent() user: User): Promise<Nullable<Task[]>> {
+  async getUserTasks(@Parent() user: User): Promise<Task[]> {
     return this.usersService.getUserTasks(user);
   }
 
   @ResolveField('projectsOwned')
-  async getUserProjectsOwned(
-    @Parent() user: User,
-  ): Promise<Nullable<Project[]>> {
+  async getUserProjectsOwned(@Parent() user: User): Promise<Project[]> {
     return this.usersService.getUserProjectsOwned(user);
   }
 
   @ResolveField('currentProject')
-  async getUserCurrentProject(
-    @Parent() user: User,
-  ): Promise<Nullable<Project>> {
+  async getUserCurrentProject(@Parent() user: User): Promise<Project> {
     return this.usersService.getUserCurrentProject(user);
   }
 
   @ResolveField('projectMemberships')
   async getProjectMemberships(
     @Parent() user: User,
-  ): Promise<Nullable<ProjectMembership[]>> {
+  ): Promise<ProjectMembership[]> {
     return this.usersService.getProjectMemberships(user);
   }
 
   @ResolveField('credential')
-  async getUserCredential(@Parent() user: User): Promise<Nullable<Credential>> {
+  async getUserCredential(@Parent() user: User): Promise<Credential> {
     return this.usersService.getUserCredential(user);
   }
 
@@ -105,54 +91,32 @@ export class UsersResolver {
   async createUserToProject(
     @Args('input')
     input: CreateUserToProjectInput,
-  ): Promise<Nullable<User>> {
-    const user = await this.usersService.createUserToProject(input);
-
-    if (!user) {
-      throw new NotFoundException('Role or Project does not exist.');
-    }
-
-    return user;
+  ): Promise<User> {
+    return this.usersService.createUserToProject(input);
   }
 
   @Mutation()
   async updateUser(
     @Args('input')
     input: UpdateUserDto,
-  ): Promise<Nullable<User>> {
-    const user = await this.usersService.updateUser(input);
-
-    return user;
+  ): Promise<User> {
+    return this.usersService.updateUser(input);
   }
 
   @Mutation()
   async updateUserInProject(
     @Args('input')
     input: UpdateUserInProjectInput,
-  ): Promise<Nullable<User>> {
-    const user = await this.usersService.updateUserInProject(input);
-
-    if (!user) {
-      throw new NotFoundException(
-        'User, Role, Project or Membership does not exist.',
-      );
-    }
-
-    return user;
+  ): Promise<User> {
+    return this.usersService.updateUserInProject(input);
   }
 
   @Mutation()
   async deleteUser(
     @Args('input')
     input: UserWhereUniqueInput,
-  ): Promise<Nullable<User>> {
-    const user = await this.usersService.deleteUser(input);
-
-    if (!user) {
-      throw new NotFoundException('User does not exist.');
-    }
-
-    return user;
+  ): Promise<User> {
+    return this.usersService.deleteUser(input);
   }
 
   @Mutation()

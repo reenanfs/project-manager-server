@@ -16,7 +16,7 @@ import {
   GetCredentialsInput,
   UpdateCredentialInput,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
+
 import { CredentialsService } from './credentials.service';
 
 @Resolver('Credential')
@@ -27,14 +27,14 @@ export class CredentialsResolver {
   @Query('credentials')
   async getCredentials(
     @Args('input') input: GetCredentialsInput,
-  ): Promise<Nullable<Credential[]>> {
+  ): Promise<Credential[]> {
     return this.credentialsService.getCredentials(input);
   }
 
   @Query('credential')
   async getCredential(
     @Args('input') input: CredentialWhereUniqueInput,
-  ): Promise<Nullable<Credential>> {
+  ): Promise<Credential> {
     const credential = await this.credentialsService.getCredential(input);
 
     if (!credential) {
@@ -45,9 +45,7 @@ export class CredentialsResolver {
   }
 
   @ResolveField('user')
-  async getCredentialUser(
-    @Parent() credential: Credential,
-  ): Promise<Nullable<User>> {
+  async getCredentialUser(@Parent() credential: Credential): Promise<User> {
     return this.credentialsService.getCredentialUser(credential);
   }
 
@@ -62,7 +60,7 @@ export class CredentialsResolver {
   async updateCredential(
     @Args('input')
     input: UpdateCredentialInput,
-  ): Promise<Nullable<Credential>> {
+  ): Promise<Credential> {
     const credential = await this.credentialsService.updateCredential(input);
 
     if (!credential) {
@@ -76,7 +74,7 @@ export class CredentialsResolver {
   async deleteCredential(
     @Args('input')
     input: CredentialWhereUniqueInput,
-  ): Promise<Nullable<Credential>> {
+  ): Promise<Credential> {
     const credential = await this.credentialsService.deleteCredential(input);
 
     if (!credential) {

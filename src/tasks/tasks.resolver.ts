@@ -15,7 +15,6 @@ import {
   TaskWhereUniqueInput,
 } from 'src/typescript/gql-generated-types';
 
-import { Nullable } from 'src/typescript/types';
 import { UpdateTaskDto } from './dtos/update-task.dto';
 
 import { TasksService } from './tasks.service';
@@ -25,23 +24,13 @@ export class TasksResolver {
   constructor(private tasksService: TasksService) {}
 
   @Query('tasks')
-  async getTasks(
-    @Args('input') input: GetTasksInput,
-  ): Promise<Nullable<Task[]>> {
+  async getTasks(@Args('input') input: GetTasksInput): Promise<Task[]> {
     return this.tasksService.getTasks(input);
   }
 
   @Query('task')
-  async getTask(
-    @Args('input') input: TaskWhereUniqueInput,
-  ): Promise<Nullable<Task>> {
-    const task = await this.tasksService.getTask(input);
-
-    if (!task) {
-      throw new NotFoundException('Task does not exist.');
-    }
-
-    return task;
+  async getTask(@Args('input') input: TaskWhereUniqueInput): Promise<Task> {
+    return this.tasksService.getTask(input);
   }
 
   @ResolveField('user')
@@ -56,41 +45,23 @@ export class TasksResolver {
 
   @Mutation()
   async createTask(@Args('input') input: CreateTaskInput): Promise<Task> {
-    const task = await this.tasksService.createTask(input);
-
-    if (!task) {
-      throw new NotFoundException('User or Project does not exist.');
-    }
-
-    return task;
+    return this.tasksService.createTask(input);
   }
 
   @Mutation()
   async updateTask(
     @Args('input')
     input: UpdateTaskDto,
-  ): Promise<Nullable<Task>> {
-    const task = await this.tasksService.updateTask(input);
-
-    if (!task) {
-      throw new NotFoundException('Task does not exist.');
-    }
-
-    return task;
+  ): Promise<Task> {
+    return this.tasksService.updateTask(input);
   }
 
   @Mutation()
   async deleteTask(
     @Args('input')
     input: TaskWhereUniqueInput,
-  ): Promise<Nullable<Task>> {
-    const task = await this.tasksService.deleteTask(input);
-
-    if (!task) {
-      throw new NotFoundException('Task does not exist.');
-    }
-
-    return task;
+  ): Promise<Task> {
+    return this.tasksService.deleteTask(input);
   }
 
   @Mutation()

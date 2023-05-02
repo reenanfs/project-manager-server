@@ -10,6 +10,8 @@ import { AuthInputDto } from './dtos/auth-input.dto';
 import { BlacklistService } from 'src/utils/blacklist/blacklist.service';
 import { UsersService } from 'src/users/users.service';
 import { ConfigService } from '@nestjs/config';
+import { CustomBadRequestException } from 'src/common/errors/custom-exceptions/bad-request.exception';
+import { CustomForbiddenException } from 'src/common/errors/custom-exceptions/forbidden.exception';
 
 interface IAuthToken {
   access_token: string;
@@ -29,13 +31,9 @@ export class AuthService {
 
   async localSignup(res: Response, data: AuthInputDto): Promise<AuthResponse> {
     // Validating data
-    const existingCredential = await this.credentialsService.getCredential({
+    await this.credentialsService.getCredential({
       email: data.email,
     });
-
-    if (existingCredential) {
-      return null;
-    }
 
     // Create user if name is provided
     let user: User;
@@ -120,10 +118,6 @@ export class AuthService {
       email,
     });
 
-    if (!credential) {
-      return null;
-    }
-
     const isPasswordCorrect = await this.hashService.compare(
       password,
       credential.password,
@@ -145,8 +139,8 @@ export class AuthService {
       id: credentialId,
     });
 
-    if (!credential || !credential.refreshToken) {
-      return null;
+    if (!credential.refreshToken) {
+      throw new CustomBadRequestException('Credential has no token.');
     }
 
     const isRefreshTokenValid = await this.hashService.compare(
@@ -155,7 +149,7 @@ export class AuthService {
     );
 
     if (!isRefreshTokenValid) {
-      return null;
+      throw new CustomForbiddenException('Refresh token is not valid.');
     }
 
     const tokens = await this.getTokens(credential.id);
@@ -174,7 +168,7 @@ export class AuthService {
   }
 
   async whoAmI(credentialId: string): Promise<Credential> {
-    return await this.credentialsService.getCredential({ id: credentialId });
+    return this.credentialsService.getCredential({ id: credentialId });
   }
 
   private async updateCredentialRefreshToken(
@@ -182,7 +176,7 @@ export class AuthService {
     refreshToken: string,
   ): Promise<Credential> {
     const hashedRefreshToken = await this.hashService.hash(refreshToken);
-    return await this.credentialsService.updateCredential({
+    return this.credentialsService.updateCredential({
       id: credentialId,
       refreshToken: hashedRefreshToken,
     });

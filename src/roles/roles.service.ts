@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Permission, ProjectMembership, Role } from '@prisma/client';
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
+import { CustomNotFoundException } from 'src/common/errors/custom-exceptions/not-found.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   RoleWhereUniqueInput,
@@ -9,18 +10,23 @@ import {
   UpdateRoleInput,
   AddPermissionsOnRoleInput,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
 
 @Injectable()
 export class RolesService {
   constructor(private prismaService: PrismaService) {}
 
-  async getRoles(): Promise<Nullable<Role[]>> {
+  async getRoles(): Promise<Role[]> {
     return this.prismaService.role.findMany();
   }
 
-  async getRole(where: RoleWhereUniqueInput): Promise<Nullable<Role>> {
-    return this.prismaService.role.findUnique({ where });
+  async getRole(where: RoleWhereUniqueInput): Promise<Role> {
+    const role = await this.prismaService.role.findUnique({ where });
+
+    if (!role) {
+      throw new CustomNotFoundException('Role not found.');
+    }
+
+    return role;
   }
 
   async createRole(data: CreateRoleInput): Promise<Role> {
@@ -29,14 +35,10 @@ export class RolesService {
     });
   }
 
-  async updateRole(data: UpdateRoleInput): Promise<Nullable<Role>> {
+  async updateRole(data: UpdateRoleInput): Promise<Role> {
     const { id } = data;
 
-    const role = await this.getRole({ id });
-
-    if (!role) {
-      return null;
-    }
+    await this.getRole({ id });
 
     return this.prismaService.role.update({
       where: { id },
@@ -44,12 +46,8 @@ export class RolesService {
     });
   }
 
-  async deleteRole(where: RoleWhereUniqueInput): Promise<Nullable<Role>> {
-    const role = await this.getRole({ id: where.id });
-
-    if (!role) {
-      return null;
-    }
+  async deleteRole(where: RoleWhereUniqueInput): Promise<Role> {
+    await this.getRole({ id: where.id });
 
     return this.prismaService.role.delete({ where });
   }
@@ -64,7 +62,7 @@ export class RolesService {
     });
   }
 
-  async getRolePermissions(role: Role): Promise<Nullable<Permission[]>> {
+  async getRolePermissions(role: Role): Promise<Permission[]> {
     const { grantedPermissions } = await this.prismaService.role.findUnique({
       where: {
         id: role.id,
@@ -82,24 +80,16 @@ export class RolesService {
     return permissions;
   }
 
-  async getProjectMemberships(
-    role: Role,
-  ): Promise<Nullable<ProjectMembership[]>> {
+  async getProjectMemberships(role: Role): Promise<ProjectMembership[]> {
     return this.prismaService.role
       .findUnique({ where: { id: role.id } })
       .projectMemberships();
   }
 
-  async addPermissions(
-    data: AddPermissionsOnRoleInput,
-  ): Promise<Nullable<Role>> {
+  async addPermissions(data: AddPermissionsOnRoleInput): Promise<Role> {
     const { roleId, permissionIds } = data;
 
-    const role = await this.getRole({ id: roleId });
-
-    if (!role) {
-      return null;
-    }
+    await this.getRole({ id: roleId });
 
     const formattedPermissionIds = permissionIds.map((permissionId) => ({
       permission: { connect: { id: permissionId } },

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Project, ProjectMembership, Role, User } from '@prisma/client';
+import { CustomNotFoundException } from 'src/common/errors/custom-exceptions/not-found.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ProjectMembershipWhereUniqueInput } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
 
 @Injectable()
 export class ProjectMembershipsService {
@@ -10,13 +10,21 @@ export class ProjectMembershipsService {
 
   async getProjectMembership(
     where: ProjectMembershipWhereUniqueInput,
-  ): Promise<Nullable<ProjectMembership>> {
-    return this.prismaService.projectMembership.findUnique({ where });
+  ): Promise<ProjectMembership> {
+    const membership = await this.prismaService.projectMembership.findUnique({
+      where,
+    });
+
+    if (!membership) {
+      throw new CustomNotFoundException('Memberhsip not found.');
+    }
+
+    return membership;
   }
 
   async getProjectMembershipUser(
     projectMembership: ProjectMembership,
-  ): Promise<Nullable<User>> {
+  ): Promise<User> {
     return this.prismaService.projectMembership
       .findUnique({
         where: {
@@ -31,7 +39,7 @@ export class ProjectMembershipsService {
 
   async getProjectMembershipProject(
     projectMembership: ProjectMembership,
-  ): Promise<Nullable<Project>> {
+  ): Promise<Project> {
     return this.prismaService.projectMembership
       .findUnique({
         where: {
@@ -46,7 +54,7 @@ export class ProjectMembershipsService {
 
   async getProjectMembershipRole(
     projectMembership: ProjectMembership,
-  ): Promise<Nullable<Role>> {
+  ): Promise<Role> {
     return this.prismaService.projectMembership
       .findUnique({
         where: {

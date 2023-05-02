@@ -9,8 +9,9 @@ import {
   CredentialWhereUniqueInput,
   GetCredentialsOrderBy,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
+
 import { UpdateCredentialDto } from './dtos/update-credential.dto';
+import { CustomNotFoundException } from 'src/common/errors/custom-exceptions/not-found.exception';
 
 @Injectable()
 export class CredentialsService {
@@ -18,7 +19,7 @@ export class CredentialsService {
 
   async getCredentials(params: {
     orderBy?: GetCredentialsOrderBy;
-  }): Promise<Nullable<Credential[]>> {
+  }): Promise<Credential[]> {
     const { orderBy } = params || {};
 
     return this.prismaService.credential.findMany({
@@ -26,10 +27,16 @@ export class CredentialsService {
     });
   }
 
-  async getCredential(
-    where: CredentialWhereUniqueInput,
-  ): Promise<Nullable<Credential>> {
-    return this.prismaService.credential.findUnique({ where });
+  async getCredential(where: CredentialWhereUniqueInput): Promise<Credential> {
+    const credential = await this.prismaService.credential.findUnique({
+      where,
+    });
+
+    if (!credential) {
+      throw new CustomNotFoundException('Credential not found.');
+    }
+
+    return credential;
   }
 
   async createCredential(data: CreateCredentialInput): Promise<Credential> {
@@ -38,16 +45,10 @@ export class CredentialsService {
     });
   }
 
-  async updateCredential(
-    data: UpdateCredentialDto,
-  ): Promise<Nullable<Credential>> {
+  async updateCredential(data: UpdateCredentialDto): Promise<Credential> {
     const { id } = data;
 
-    const credential = await this.getCredential({ id });
-
-    if (!credential) {
-      return null;
-    }
+    await this.getCredential({ id });
 
     return this.prismaService.credential.update({
       where: { id },
@@ -57,12 +58,8 @@ export class CredentialsService {
 
   async deleteCredential(
     where: CredentialWhereUniqueInput,
-  ): Promise<Nullable<Credential>> {
-    const credential = await this.getCredential({ id: where.id });
-
-    if (!credential) {
-      return null;
-    }
+  ): Promise<Credential> {
+    await this.getCredential({ id: where.id });
 
     return this.prismaService.credential.delete({ where });
   }
@@ -77,7 +74,7 @@ export class CredentialsService {
     });
   }
 
-  async getCredentialUser(credential: Credential): Promise<Nullable<User>> {
+  async getCredentialUser(credential: Credential): Promise<User> {
     return await this.prismaService.credential
       .findUnique({ where: { id: credential.id } })
       .user();

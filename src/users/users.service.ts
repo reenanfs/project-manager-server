@@ -7,7 +7,6 @@ import {
   ProjectMembership,
 } from '@prisma/client';
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
-
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   GetUsersOrderBy,
@@ -16,14 +15,13 @@ import {
   CreateUserToProjectInput,
   UpdateUserInProjectInput,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { FileUploaderService } from 'src/utils/file-uploader/file-uploader.service';
 import { RolesService } from 'src/roles/roles.service';
 import { ProjectsService } from 'src/projects/projects.service';
 import { ProjectMembershipsService } from 'src/project-memberships/project-memberships.service';
-import { CustomNotFoundException } from 'src/common/errors/custom-exception';
+import { CustomNotFoundException } from 'src/common/errors/custom-exceptions/not-found.exception';
 
 @Injectable()
 export class UsersService {
@@ -36,9 +34,7 @@ export class UsersService {
     private rolesService: RolesService,
   ) {}
 
-  async getUsers(params: {
-    orderBy?: GetUsersOrderBy;
-  }): Promise<Nullable<User[]>> {
+  async getUsers(params: { orderBy?: GetUsersOrderBy }): Promise<User[]> {
     const { orderBy } = params || {};
 
     return this.prismaService.user.findMany({
@@ -46,8 +42,14 @@ export class UsersService {
     });
   }
 
-  async getUser(where: UserWhereUniqueInput): Promise<Nullable<User>> {
-    return this.prismaService.user.findUnique({ where });
+  async getUser(where: UserWhereUniqueInput): Promise<User> {
+    const user = await this.prismaService.user.findUnique({ where });
+
+    if (!user) {
+      throw new CustomNotFoundException('User not found.');
+    }
+
+    return user;
   }
 
   async createUser(data: CreateUserDto): Promise<User> {
@@ -66,15 +68,11 @@ export class UsersService {
     });
   }
 
-  async updateUser(data: UpdateUserDto): Promise<Nullable<User>> {
+  async updateUser(data: UpdateUserDto): Promise<User> {
     const { id } = data;
     let profilePictureName: string | null;
 
     const user = await this.getUser({ id });
-
-    if (!user) {
-      throw new CustomNotFoundException('User not found');
-    }
 
     //Remove picture from storage if photoFile is null
     if (data.photoFile === null && user.profilePictureName) {
@@ -103,12 +101,8 @@ export class UsersService {
     });
   }
 
-  async deleteUser(where: UserWhereUniqueInput): Promise<Nullable<User>> {
-    const user = await this.getUser({ id: where.id });
-
-    if (!user) {
-      return null;
-    }
+  async deleteUser(where: UserWhereUniqueInput): Promise<User> {
+    await this.getUser({ id: where.id });
 
     return this.prismaService.user.delete({ where });
   }
@@ -123,54 +117,41 @@ export class UsersService {
     });
   }
 
-  async getUserTasks(user: User): Promise<Nullable<Task[]>> {
+  async getUserTasks(user: User): Promise<Task[]> {
     return this.prismaService.user
       .findUnique({ where: { id: user.id } })
       .tasks();
   }
 
-  async getUserProjectsOwned(user: User): Promise<Nullable<Project[]>> {
+  async getUserProjectsOwned(user: User): Promise<Project[]> {
     return this.prismaService.user
       .findUnique({ where: { id: user.id } })
       .projectsOwned();
   }
 
-  async getUserCurrentProject(user: User): Promise<Nullable<Project>> {
+  async getUserCurrentProject(user: User): Promise<Project> {
     return this.prismaService.user
       .findUnique({ where: { id: user.id } })
       .currentProject();
   }
 
-  async getProjectMemberships(
-    user: User,
-  ): Promise<Nullable<ProjectMembership[]>> {
+  async getProjectMemberships(user: User): Promise<ProjectMembership[]> {
     return this.prismaService.user
       .findUnique({ where: { id: user.id } })
       .projectMemberships();
   }
 
-  async getUserCredential(user: User): Promise<Nullable<Credential>> {
+  async getUserCredential(user: User): Promise<Credential> {
     return this.prismaService.user
       .findUnique({ where: { id: user.id } })
       .credential();
   }
 
-  async createUserToProject(
-    data: CreateUserToProjectInput,
-  ): Promise<Nullable<User>> {
+  async createUserToProject(data: CreateUserToProjectInput): Promise<User> {
     const { name, projectId, roleId } = data;
 
-    const project = await this.projectsService.getProject({ id: projectId });
-
-    if (!project) {
-      return null;
-    }
-
-    const role = await this.rolesService.getRole({ id: roleId });
-
-    if (!role) {
-      return null;
-    }
+    await this.projectsService.getProject({ id: projectId });
+    await this.rolesService.getRole({ id: roleId });
 
     return this.prismaService.user.create({
       data: {
@@ -187,40 +168,18 @@ export class UsersService {
     });
   }
 
-  async updateUserInProject(
-    data: UpdateUserInProjectInput,
-  ): Promise<Nullable<User>> {
+  async updateUserInProject(data: UpdateUserInProjectInput): Promise<User> {
     const { id, name, roleId, projectId } = data;
 
-    const user = await this.getUser({ id });
-
-    if (!user) {
-      return null;
-    }
-
-    const project = await this.projectsService.getProject({ id: projectId });
-
-    if (!project) {
-      return null;
-    }
-
-    const membership =
-      await this.projectMembershipsService.getProjectMembership({
-        userId_projectId: {
-          userId: id,
-          projectId,
-        },
-      });
-
-    if (!membership) {
-      return null;
-    }
-
-    const role = await this.rolesService.getRole({ id: roleId });
-
-    if (!role) {
-      return null;
-    }
+    await this.getUser({ id });
+    await this.projectsService.getProject({ id: projectId });
+    await this.projectMembershipsService.getProjectMembership({
+      userId_projectId: {
+        userId: id,
+        projectId,
+      },
+    });
+    await this.rolesService.getRole({ id: roleId });
 
     return this.prismaService.user.update({
       where: { id },

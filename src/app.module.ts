@@ -16,7 +16,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './common/guards/access-token-jwt.guard';
 import { CORS_CONFIG } from './common/constants';
 import { ConfigModule } from '@nestjs/config';
-import { GraphqlExceptionFilter } from './common/errors/filter/GraphqlExceptionFilter';
+import { GraphqlExceptionFilter } from './common/errors/filter/graphql-exception.filter';
 
 const ENV = process.env.NODE_ENV;
 

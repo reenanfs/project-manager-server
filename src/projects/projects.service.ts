@@ -1,6 +1,7 @@
 import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { Project, ProjectMembership, Task, User } from '@prisma/client';
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
+import { CustomNotFoundException } from 'src/common/errors/custom-exceptions/not-found.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RolesService } from 'src/roles/roles.service';
 import {
@@ -10,7 +11,7 @@ import {
   UpdateProjectInput,
   AddMembershipInput,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
+
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -22,12 +23,18 @@ export class ProjectsService {
     private rolesService: RolesService,
   ) {}
 
-  async getProjects(): Promise<Nullable<Project[]>> {
+  async getProjects(): Promise<Project[]> {
     return this.prismaService.project.findMany();
   }
 
-  async getProject(where: ProjectWhereUniqueInput): Promise<Nullable<Project>> {
-    return this.prismaService.project.findUnique({ where });
+  async getProject(where: ProjectWhereUniqueInput): Promise<Project> {
+    const project = await this.prismaService.project.findUnique({ where });
+
+    if (!project) {
+      throw new CustomNotFoundException('Project not found.');
+    }
+
+    return project;
   }
 
   async createProject(data: CreateProjectInput): Promise<Project> {
@@ -36,14 +43,10 @@ export class ProjectsService {
     });
   }
 
-  async updateProject(data: UpdateProjectInput): Promise<Nullable<Project>> {
+  async updateProject(data: UpdateProjectInput): Promise<Project> {
     const { id } = data;
 
-    const project = await this.getProject({ id });
-
-    if (!project) {
-      return null;
-    }
+    await this.getProject({ id });
 
     return this.prismaService.project.update({
       where: { id },
@@ -51,14 +54,8 @@ export class ProjectsService {
     });
   }
 
-  async deleteProject(
-    where: ProjectWhereUniqueInput,
-  ): Promise<Nullable<Project>> {
-    const project = await this.getProject({ id: where.id });
-
-    if (!project) {
-      return null;
-    }
+  async deleteProject(where: ProjectWhereUniqueInput): Promise<Project> {
+    await this.getProject({ id: where.id });
 
     return this.prismaService.project.delete({ where });
   }
@@ -73,7 +70,7 @@ export class ProjectsService {
     });
   }
 
-  async getProjectTasks(project: Project): Promise<Nullable<Task[]>> {
+  async getProjectTasks(project: Project): Promise<Task[]> {
     return this.prismaService.project
       .findUnique({
         where: {
@@ -83,7 +80,7 @@ export class ProjectsService {
       .tasks();
   }
 
-  async getProjectOwner(project: Project): Promise<Nullable<User>> {
+  async getProjectOwner(project: Project): Promise<User> {
     return this.prismaService.project
       .findUnique({
         where: {
@@ -93,7 +90,7 @@ export class ProjectsService {
       .owner();
   }
 
-  async getCurrentProjectUsers(project: Project): Promise<Nullable<User[]>> {
+  async getCurrentProjectUsers(project: Project): Promise<User[]> {
     return this.prismaService.project
       .findUnique({
         where: {
@@ -103,34 +100,18 @@ export class ProjectsService {
       .usersCurrentProject();
   }
 
-  async getProjectMemberships(
-    project: Project,
-  ): Promise<Nullable<ProjectMembership[]>> {
+  async getProjectMemberships(project: Project): Promise<ProjectMembership[]> {
     return this.prismaService.project
       .findUnique({ where: { id: project.id } })
       .projectMemberships();
   }
 
-  async addMembership(data: AddMembershipInput): Promise<Nullable<Project>> {
+  async addMembership(data: AddMembershipInput): Promise<Project> {
     const { userId, projectId, roleId } = data;
 
-    const user = await this.usersService.getUser({ id: userId });
-
-    if (!user) {
-      return null;
-    }
-
-    const project = await this.getProject({ id: projectId });
-
-    if (!project) {
-      return null;
-    }
-
-    const role = await this.rolesService.getRole({ id: roleId });
-
-    if (!role) {
-      return null;
-    }
+    await this.usersService.getUser({ id: userId });
+    await this.getProject({ id: projectId });
+    await this.rolesService.getRole({ id: roleId });
 
     return this.prismaService.project.update({
       where: { id: projectId },

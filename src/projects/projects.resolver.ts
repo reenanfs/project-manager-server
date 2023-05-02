@@ -15,7 +15,7 @@ import {
   UpdateProjectInput,
   AddMembershipInput,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
+
 import { ProjectsService } from './projects.service';
 
 @Resolver('Project')
@@ -23,44 +23,36 @@ export class ProjectsResolver {
   constructor(private projectsService: ProjectsService) {}
 
   @Query('projects')
-  async getProjects(): Promise<Nullable<Project[]>> {
+  async getProjects(): Promise<Project[]> {
     return this.projectsService.getProjects();
   }
 
   @Query('project')
   async getProject(
     @Args('input') input: ProjectWhereUniqueInput,
-  ): Promise<Nullable<Project>> {
-    const project = await this.projectsService.getProject(input);
-
-    if (!project) {
-      throw new NotFoundException('Project does not exist.');
-    }
-
-    return project;
+  ): Promise<Project> {
+    return this.projectsService.getProject(input);
   }
 
   @ResolveField('owner')
-  async getProjectOwner(@Parent() project: Project): Promise<Nullable<User>> {
+  async getProjectOwner(@Parent() project: Project): Promise<User> {
     return this.projectsService.getProjectOwner(project);
   }
 
   @ResolveField('usersCurrentProject')
-  async getCurrentProjectUsers(
-    @Parent() project: Project,
-  ): Promise<Nullable<User[]>> {
+  async getCurrentProjectUsers(@Parent() project: Project): Promise<User[]> {
     return this.projectsService.getCurrentProjectUsers(project);
   }
 
   @ResolveField('projectMemberships')
   async getProjectMemberships(
     @Parent() project: Project,
-  ): Promise<Nullable<ProjectMembership[]>> {
+  ): Promise<ProjectMembership[]> {
     return this.projectsService.getProjectMemberships(project);
   }
 
   @ResolveField('tasks')
-  async getProjectTasks(@Parent() project: Project): Promise<Nullable<Task[]>> {
+  async getProjectTasks(@Parent() project: Project): Promise<Task[]> {
     return this.projectsService.getProjectTasks(project);
   }
 
@@ -75,28 +67,16 @@ export class ProjectsResolver {
   async updateProject(
     @Args('input')
     input: UpdateProjectInput,
-  ): Promise<Nullable<Project>> {
-    const project = await this.projectsService.updateProject(input);
-
-    if (!project) {
-      throw new NotFoundException('Project does not exist.');
-    }
-
-    return project;
+  ): Promise<Project> {
+    return this.projectsService.updateProject(input);
   }
 
   @Mutation()
   async deleteProject(
     @Args('input')
     input: ProjectWhereUniqueInput,
-  ): Promise<Nullable<Project>> {
-    const project = await this.projectsService.deleteProject(input);
-
-    if (!project) {
-      throw new NotFoundException('Project does not exist.');
-    }
-
-    return project;
+  ): Promise<Project> {
+    return this.projectsService.deleteProject(input);
   }
 
   @Mutation()
@@ -111,13 +91,7 @@ export class ProjectsResolver {
   async addMembership(
     @Args('input')
     input: AddMembershipInput,
-  ): Promise<Nullable<Project>> {
-    const project = await this.projectsService.addMembership(input);
-
-    if (!project) {
-      throw new NotFoundException('Role, Project or User does not exist.');
-    }
-
-    return project;
+  ): Promise<Project> {
+    return this.projectsService.addMembership(input);
   }
 }

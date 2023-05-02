@@ -15,7 +15,7 @@ import {
   UpdateRoleInput,
   AddPermissionsOnRoleInput,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
+
 import { RolesService } from './roles.service';
 
 @Resolver('Role')
@@ -23,34 +23,24 @@ export class RolesResolver {
   constructor(private rolesService: RolesService) {}
 
   @Query('roles')
-  async getRoles(): Promise<Nullable<Role[]>> {
+  async getRoles(): Promise<Role[]> {
     return this.rolesService.getRoles();
   }
 
   @Query('role')
-  async getRole(
-    @Args('input') input: RoleWhereUniqueInput,
-  ): Promise<Nullable<Role>> {
-    const role = await this.rolesService.getRole(input);
-
-    if (!role) {
-      throw new NotFoundException('Role does not exist.');
-    }
-
-    return role;
+  async getRole(@Args('input') input: RoleWhereUniqueInput): Promise<Role> {
+    return this.rolesService.getRole(input);
   }
 
   @ResolveField('permissions')
-  async getRolePermissions(
-    @Parent() role: Role,
-  ): Promise<Nullable<Permission[]>> {
+  async getRolePermissions(@Parent() role: Role): Promise<Permission[]> {
     return this.rolesService.getRolePermissions(role);
   }
 
   @ResolveField('projectMemberships')
   async getProjectMemberships(
     @Parent() role: Role,
-  ): Promise<Nullable<ProjectMembership[]>> {
+  ): Promise<ProjectMembership[]> {
     return this.rolesService.getProjectMemberships(role);
   }
 
@@ -63,28 +53,16 @@ export class RolesResolver {
   async updateRole(
     @Args('input')
     input: UpdateRoleInput,
-  ): Promise<Nullable<Role>> {
-    const role = await this.rolesService.updateRole(input);
-
-    if (!role) {
-      throw new NotFoundException('Role does not exist.');
-    }
-
-    return role;
+  ): Promise<Role> {
+    return this.rolesService.updateRole(input);
   }
 
   @Mutation()
   async deleteRole(
     @Args('input')
     input: RoleWhereUniqueInput,
-  ): Promise<Nullable<Role>> {
-    const role = await this.rolesService.deleteRole(input);
-
-    if (!role) {
-      throw new NotFoundException('Role does not exist.');
-    }
-
-    return role;
+  ): Promise<Role> {
+    return this.rolesService.deleteRole(input);
   }
 
   @Mutation()
@@ -99,13 +77,7 @@ export class RolesResolver {
   async addPermissions(
     @Args('input')
     input: AddPermissionsOnRoleInput,
-  ): Promise<Nullable<Role>> {
-    const role = await this.rolesService.addPermissions(input);
-
-    if (!role) {
-      throw new NotFoundException('Role does not exist.');
-    }
-
-    return role;
+  ): Promise<Role> {
+    return this.rolesService.addPermissions(input);
   }
 }

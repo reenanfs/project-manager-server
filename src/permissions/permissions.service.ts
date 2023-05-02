@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Permission, ProjectMembership, Role } from '@prisma/client';
 import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dto';
+import { CustomNotFoundException } from 'src/common/errors/custom-exceptions/not-found.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   PermissionWhereUniqueInput,
@@ -8,20 +9,25 @@ import {
   CreatePermissionInput,
   UpdatePermissionInput,
 } from 'src/typescript/gql-generated-types';
-import { Nullable } from 'src/typescript/types';
 
 @Injectable()
 export class PermissionsService {
   constructor(private prismaService: PrismaService) {}
 
-  async getPermissions(): Promise<Nullable<Permission[]>> {
+  async getPermissions(): Promise<Permission[]> {
     return this.prismaService.permission.findMany();
   }
 
-  async getPermission(
-    where: PermissionWhereUniqueInput,
-  ): Promise<Nullable<Permission>> {
-    return this.prismaService.permission.findUnique({ where });
+  async getPermission(where: PermissionWhereUniqueInput): Promise<Permission> {
+    const permission = await this.prismaService.permission.findUnique({
+      where,
+    });
+
+    if (!permission) {
+      throw new CustomNotFoundException('Permission not found.');
+    }
+
+    return permission;
   }
 
   async createPermission(data: CreatePermissionInput): Promise<Permission> {
@@ -30,16 +36,10 @@ export class PermissionsService {
     });
   }
 
-  async updatePermission(
-    data: UpdatePermissionInput,
-  ): Promise<Nullable<Permission>> {
+  async updatePermission(data: UpdatePermissionInput): Promise<Permission> {
     const { id } = data;
 
-    const permission = await this.getPermission({ id });
-
-    if (!permission) {
-      return null;
-    }
+    await this.getPermission({ id });
 
     return this.prismaService.permission.update({
       where: { id },
@@ -49,12 +49,8 @@ export class PermissionsService {
 
   async deletePermission(
     where: PermissionWhereUniqueInput,
-  ): Promise<Nullable<Permission>> {
-    const permission = await this.getPermission({ id: where.id });
-
-    if (!permission) {
-      return null;
-    }
+  ): Promise<Permission> {
+    await this.getPermission({ id: where.id });
 
     return this.prismaService.permission.delete({ where });
   }
@@ -69,7 +65,7 @@ export class PermissionsService {
     });
   }
 
-  async getPermissionRoles(permission: Permission): Promise<Nullable<Role[]>> {
+  async getPermissionRoles(permission: Permission): Promise<Role[]> {
     const { grantedPermissions } =
       await this.prismaService.permission.findUnique({
         where: {
