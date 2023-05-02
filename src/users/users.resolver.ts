@@ -1,4 +1,4 @@
-import { NotFoundException, UploadedFile } from '@nestjs/common';
+import { NotFoundException, UploadedFile, UseFilters } from '@nestjs/common';
 import {
   Resolver,
   Args,
@@ -20,7 +20,6 @@ import { DeleteMultipleItemsDto } from 'src/common/dtos/delete-multiple-items.dt
 import {
   GetUsersInput,
   UserWhereUniqueInput,
-  CreateUserInput,
   CreateUserToProjectInput,
   UpdateUserInProjectInput,
 } from 'src/typescript/gql-generated-types';
@@ -122,10 +121,6 @@ export class UsersResolver {
     input: UpdateUserDto,
   ): Promise<Nullable<User>> {
     const user = await this.usersService.updateUser(input);
-
-    if (!user) {
-      throw new NotFoundException('User does not exist.');
-    }
 
     return user;
   }

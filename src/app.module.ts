@@ -12,13 +12,14 @@ import { ProjectsModule } from './projects/projects.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
 import { ProjectMembershipsModule } from './project-memberships/project-memberships.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './common/guards/access-token-jwt.guard';
 import { CORS_CONFIG } from './common/constants';
 import { ConfigModule } from '@nestjs/config';
+import { GraphqlExceptionFilter } from './common/errors/filter/GraphqlExceptionFilter';
 
 const ENV = process.env.NODE_ENV;
-console.log(ENV);
+
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -29,6 +30,14 @@ console.log(ENV);
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       typePaths: ['./**/*.graphql'],
       resolvers: { DateTime: DateTimeResolver, Upload: GraphQLUpload },
+      formatError: (error: any) => {
+        const graphQLFormattedError = {
+          message: error.extensions?.response?.message || error.message,
+          code: error.extensions?.code || 'INTERNAL_SERVER_ERROR',
+          name: error.extensions?.name || error.name,
+        };
+        return graphQLFormattedError;
+      },
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -46,6 +55,10 @@ console.log(ENV);
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GraphqlExceptionFilter,
     },
   ],
 })

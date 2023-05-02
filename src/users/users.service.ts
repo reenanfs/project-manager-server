@@ -23,6 +23,7 @@ import { FileUploaderService } from 'src/utils/file-uploader/file-uploader.servi
 import { RolesService } from 'src/roles/roles.service';
 import { ProjectsService } from 'src/projects/projects.service';
 import { ProjectMembershipsService } from 'src/project-memberships/project-memberships.service';
+import { CustomNotFoundException } from 'src/common/errors/custom-exception';
 
 @Injectable()
 export class UsersService {
@@ -72,7 +73,7 @@ export class UsersService {
     const user = await this.getUser({ id });
 
     if (!user) {
-      return null;
+      throw new CustomNotFoundException('User not found');
     }
 
     //Remove picture from storage if photoFile is null
