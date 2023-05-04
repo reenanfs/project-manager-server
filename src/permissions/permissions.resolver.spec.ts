@@ -6,9 +6,14 @@ describe('PermissionsResolver', () => {
   let resolver: PermissionsResolver;
 
   beforeEach(async () => {
+    const mockPermissionsService = {};
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [PermissionsResolver, PermissionsService],
-    }).compile();
+    })
+      .overrideProvider(PermissionsService)
+      .useValue(mockPermissionsService)
+      .compile();
 
     resolver = module.get<PermissionsResolver>(PermissionsResolver);
   });

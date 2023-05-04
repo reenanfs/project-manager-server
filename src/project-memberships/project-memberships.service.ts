@@ -22,6 +22,20 @@ export class ProjectMembershipsService {
     return membership;
   }
 
+  async ensureProjectMembershipExists(
+    where: ProjectMembershipWhereUniqueInput,
+  ): Promise<ProjectMembership> {
+    const membership = await this.prismaService.projectMembership.findUnique({
+      where,
+    });
+
+    if (!membership) {
+      throw new CustomNotFoundException('Memberhsip not found.');
+    }
+
+    return membership;
+  }
+
   async getProjectMembershipUser(
     projectMembership: ProjectMembership,
   ): Promise<User> {

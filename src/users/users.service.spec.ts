@@ -2,6 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MockService } from 'src/utils/mock/mock.service';
 import { UsersService } from './users.service';
+import { ProjectsService } from 'src/projects/projects.service';
+import { ProjectMembershipsService } from 'src/project-memberships/project-memberships.service';
+import { FileUploaderService } from 'src/utils/file-uploader/file-uploader.service';
+import { RolesService } from 'src/roles/roles.service';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -21,11 +25,44 @@ describe('UsersService', () => {
       },
     };
 
+    const mockfileUploaderService = {
+      uploadFile: jest.fn().mockResolvedValue(MockService.photoFile.filename),
+      deleteFile: jest.fn().mockResolvedValue({}),
+    };
+
+    const mockRoleService = {
+      ensureProjectExists: jest.fn().mockResolvedValue({}),
+    };
+
+    const mockProjectMembershipsService = {
+      ensureProjectExists: jest.fn().mockResolvedValue({}),
+    };
+
+    const mockProjectsService = {
+      ensureProjectExists: jest.fn().mockResolvedValue({}),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService, PrismaService, MockService],
+      providers: [
+        UsersService,
+        PrismaService,
+        MockService,
+        ProjectsService,
+        ProjectMembershipsService,
+        FileUploaderService,
+        RolesService,
+      ],
     })
       .overrideProvider(PrismaService)
       .useValue(mockPrismaService)
+      .overrideProvider(FileUploaderService)
+      .useValue(mockfileUploaderService)
+      .overrideProvider(RolesService)
+      .useValue(mockRoleService)
+      .overrideProvider(ProjectMembershipsService)
+      .useValue(mockProjectMembershipsService)
+      .overrideProvider(ProjectsService)
+      .useValue(mockProjectsService)
       .compile();
 
     service = module.get<UsersService>(UsersService);
@@ -64,35 +101,33 @@ describe('UsersService', () => {
 
   describe('createUser', () => {
     it('should create one user', async () => {
-      const returnedUser = await service.createUser(MockService.user);
+      const returnedUser = await service.createUser(
+        MockService.createUserInput,
+      );
 
       expect(returnedUser).toEqual(MockService.user);
       expect(prisma.user.create).toHaveBeenCalledTimes(1);
       expect(prisma.user.create).toHaveBeenCalledWith({
-        data: MockService.user,
+        data: {
+          ...MockService.createUserInput,
+          profilePictureName: MockService.photoFile.filename,
+        },
       });
     });
   });
 
   describe('updateUser', () => {
     it('should update one user', async () => {
-      const returnedUser = await service.updateUser(MockService.user);
+      const returnedUser = await service.updateUser(
+        MockService.updateUserInput,
+      );
 
       expect(returnedUser).toEqual(MockService.user);
       expect(prisma.user.update).toHaveBeenCalledTimes(1);
       expect(prisma.user.update).toHaveBeenCalledWith({
         where: { id: MockService.userId },
-        data: MockService.user,
+        data: MockService.updateUserInput,
       });
-    });
-
-    it('should return null if no user exists', async () => {
-      prisma.user.findUnique = jest.fn().mockResolvedValue(null);
-
-      const returnedUser = await service.updateUser(MockService.user);
-      expect(returnedUser).toEqual(null);
-      expect(prisma.user.findUnique).toHaveBeenCalledTimes(1);
-      expect(prisma.user.update).toHaveBeenCalledTimes(0);
     });
   });
 
@@ -107,15 +142,6 @@ describe('UsersService', () => {
           id: MockService.userId,
         },
       });
-    });
-
-    it('should return null if no user exists', async () => {
-      prisma.user.findUnique = jest.fn().mockResolvedValue(null);
-
-      const returnedUser = await service.deleteUser({ id: MockService.userId });
-      expect(returnedUser).toEqual(null);
-      expect(prisma.user.findUnique).toHaveBeenCalledTimes(1);
-      expect(prisma.user.delete).toHaveBeenCalledTimes(0);
     });
   });
 

@@ -4,7 +4,6 @@ import { AuthResolver } from './auth.resolver';
 import { HashModule } from 'src/utils/hash/hash.module';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
-import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CredentialsModule } from 'src/credentials/credentials.module';
 import { AccessTokenStrategy } from './strategies/access-token-jwt.strategy';
@@ -18,7 +17,6 @@ import { BlacklistModule } from 'src/utils/blacklist/blacklist.module';
     BlacklistModule,
     PassportModule,
     PrismaModule,
-    UsersModule,
     CredentialsModule,
     JwtModule.register({}),
   ],

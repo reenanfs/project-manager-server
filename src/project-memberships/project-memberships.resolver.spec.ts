@@ -6,11 +6,18 @@ describe('ProjectMembershipsResolver', () => {
   let resolver: ProjectMembershipsResolver;
 
   beforeEach(async () => {
+    const mockProjectMembershipsService = {};
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [ProjectMembershipsResolver, ProjectMembershipsService],
-    }).compile();
+    })
+      .overrideProvider(ProjectMembershipsService)
+      .useValue(mockProjectMembershipsService)
+      .compile();
 
-    resolver = module.get<ProjectMembershipsResolver>(ProjectMembershipsResolver);
+    resolver = module.get<ProjectMembershipsResolver>(
+      ProjectMembershipsResolver,
+    );
   });
 
   it('should be defined', () => {

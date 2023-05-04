@@ -20,6 +20,10 @@ export class RolesService {
   }
 
   async getRole(where: RoleWhereUniqueInput): Promise<Role> {
+    return this.prismaService.role.findUnique({ where });
+  }
+
+  async ensureRoleExists(where: RoleWhereUniqueInput): Promise<Role> {
     const role = await this.prismaService.role.findUnique({ where });
 
     if (!role) {
@@ -38,7 +42,7 @@ export class RolesService {
   async updateRole(data: UpdateRoleInput): Promise<Role> {
     const { id } = data;
 
-    await this.getRole({ id });
+    await this.ensureRoleExists({ id });
 
     return this.prismaService.role.update({
       where: { id },
@@ -47,7 +51,7 @@ export class RolesService {
   }
 
   async deleteRole(where: RoleWhereUniqueInput): Promise<Role> {
-    await this.getRole({ id: where.id });
+    await this.ensureRoleExists({ id: where.id });
 
     return this.prismaService.role.delete({ where });
   }
@@ -89,7 +93,7 @@ export class RolesService {
   async addPermissions(data: AddPermissionsOnRoleInput): Promise<Role> {
     const { roleId, permissionIds } = data;
 
-    await this.getRole({ id: roleId });
+    await this.ensureRoleExists({ id: roleId });
 
     const formattedPermissionIds = permissionIds.map((permissionId) => ({
       permission: { connect: { id: permissionId } },

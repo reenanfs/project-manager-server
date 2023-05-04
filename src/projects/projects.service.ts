@@ -28,6 +28,10 @@ export class ProjectsService {
   }
 
   async getProject(where: ProjectWhereUniqueInput): Promise<Project> {
+    return this.prismaService.project.findUnique({ where });
+  }
+
+  async ensureProjectExists(where: ProjectWhereUniqueInput): Promise<Project> {
     const project = await this.prismaService.project.findUnique({ where });
 
     if (!project) {
@@ -46,7 +50,7 @@ export class ProjectsService {
   async updateProject(data: UpdateProjectInput): Promise<Project> {
     const { id } = data;
 
-    await this.getProject({ id });
+    await this.ensureProjectExists({ id });
 
     return this.prismaService.project.update({
       where: { id },
@@ -55,7 +59,7 @@ export class ProjectsService {
   }
 
   async deleteProject(where: ProjectWhereUniqueInput): Promise<Project> {
-    await this.getProject({ id: where.id });
+    await this.ensureProjectExists({ id: where.id });
 
     return this.prismaService.project.delete({ where });
   }
@@ -109,9 +113,9 @@ export class ProjectsService {
   async addMembership(data: AddMembershipInput): Promise<Project> {
     const { userId, projectId, roleId } = data;
 
-    await this.usersService.getUser({ id: userId });
-    await this.getProject({ id: projectId });
-    await this.rolesService.getRole({ id: roleId });
+    await this.usersService.ensureUserExists({ id: userId });
+    await this.ensureProjectExists({ id: projectId });
+    await this.rolesService.ensureRoleExists({ id: roleId });
 
     return this.prismaService.project.update({
       where: { id: projectId },

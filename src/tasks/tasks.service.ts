@@ -30,6 +30,10 @@ export class TasksService {
   }
 
   async getTask(where: TaskWhereUniqueInput): Promise<Task> {
+    return this.prismaService.task.findUnique({ where });
+  }
+
+  async ensureTaskExists(where: TaskWhereUniqueInput): Promise<Task> {
     const task = await this.prismaService.task.findUnique({ where });
 
     if (!task) {
@@ -42,8 +46,8 @@ export class TasksService {
   async createTask(data: CreateTaskInput): Promise<Task> {
     const { userId, projectId } = data;
 
-    await this.usersService.getUser({ id: userId });
-    await this.projectsService.getProject({ id: projectId });
+    await this.usersService.ensureUserExists({ id: userId });
+    await this.projectsService.ensureProjectExists({ id: projectId });
 
     return this.prismaService.task.create({
       data,
@@ -53,7 +57,7 @@ export class TasksService {
   async updateTask(data: UpdateTaskInput): Promise<Task> {
     const { id } = data;
 
-    await this.getTask({ id });
+    await this.ensureTaskExists({ id });
 
     return this.prismaService.task.update({
       where: { id },
@@ -62,7 +66,7 @@ export class TasksService {
   }
 
   async deleteTask(where: TaskWhereUniqueInput): Promise<Task> {
-    await this.getTask({ id: where.id });
+    await this.ensureTaskExists({ id: where.id });
 
     return this.prismaService.task.delete({ where });
   }

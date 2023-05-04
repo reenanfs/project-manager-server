@@ -28,6 +28,14 @@ export class CredentialsService {
   }
 
   async getCredential(where: CredentialWhereUniqueInput): Promise<Credential> {
+    return this.prismaService.credential.findUnique({
+      where,
+    });
+  }
+
+  async ensureCredentialExists(
+    where: CredentialWhereUniqueInput,
+  ): Promise<Credential> {
     const credential = await this.prismaService.credential.findUnique({
       where,
     });
@@ -40,15 +48,23 @@ export class CredentialsService {
   }
 
   async createCredential(data: CreateCredentialInput): Promise<Credential> {
+    const { user, ...createCredentialInput } = data;
     return this.prismaService.credential.create({
-      data,
+      data: {
+        ...createCredentialInput,
+        user: {
+          create: {
+            ...user,
+          },
+        },
+      },
     });
   }
 
   async updateCredential(data: UpdateCredentialDto): Promise<Credential> {
     const { id } = data;
 
-    await this.getCredential({ id });
+    await this.ensureCredentialExists({ id });
 
     return this.prismaService.credential.update({
       where: { id },
@@ -59,7 +75,7 @@ export class CredentialsService {
   async deleteCredential(
     where: CredentialWhereUniqueInput,
   ): Promise<Credential> {
-    await this.getCredential({ id: where.id });
+    await this.ensureCredentialExists({ id: where.id });
 
     return this.prismaService.credential.delete({ where });
   }

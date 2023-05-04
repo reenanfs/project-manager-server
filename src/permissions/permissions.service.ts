@@ -19,6 +19,14 @@ export class PermissionsService {
   }
 
   async getPermission(where: PermissionWhereUniqueInput): Promise<Permission> {
+    return this.prismaService.permission.findUnique({
+      where,
+    });
+  }
+
+  async ensurePermissionExists(
+    where: PermissionWhereUniqueInput,
+  ): Promise<Permission> {
     const permission = await this.prismaService.permission.findUnique({
       where,
     });
@@ -39,7 +47,7 @@ export class PermissionsService {
   async updatePermission(data: UpdatePermissionInput): Promise<Permission> {
     const { id } = data;
 
-    await this.getPermission({ id });
+    await this.ensurePermissionExists({ id });
 
     return this.prismaService.permission.update({
       where: { id },
@@ -50,7 +58,7 @@ export class PermissionsService {
   async deletePermission(
     where: PermissionWhereUniqueInput,
   ): Promise<Permission> {
-    await this.getPermission({ id: where.id });
+    await this.ensurePermissionExists({ id: where.id });
 
     return this.prismaService.permission.delete({ where });
   }

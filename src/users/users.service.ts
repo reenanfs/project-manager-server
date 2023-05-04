@@ -21,7 +21,6 @@ import { FileUploaderService } from 'src/utils/file-uploader/file-uploader.servi
 import { RolesService } from 'src/roles/roles.service';
 import { ProjectsService } from 'src/projects/projects.service';
 import { ProjectMembershipsService } from 'src/project-memberships/project-memberships.service';
-import { CustomNotFoundException } from 'src/common/errors/custom-exceptions/not-found.exception';
 
 @Injectable()
 export class UsersService {
@@ -43,12 +42,14 @@ export class UsersService {
   }
 
   async getUser(where: UserWhereUniqueInput): Promise<User> {
-    const user = await this.prismaService.user.findUnique({ where });
+    return this.prismaService.user.findUnique({ where });
+  }
 
+  async ensureUserExists(where: UserWhereUniqueInput): Promise<User> {
+    const user = await this.getUser(where);
     if (!user) {
-      throw new CustomNotFoundException('User not found.');
+      throw new Error('User not found.');
     }
-
     return user;
   }
 
@@ -56,6 +57,7 @@ export class UsersService {
     let profilePictureName: string;
 
     if (data.photoFile) {
+      console.log(this.fileUploaderService);
       profilePictureName = await this.fileUploaderService.uploadFile(
         data.photoFile,
       );
@@ -72,7 +74,7 @@ export class UsersService {
     const { id } = data;
     let profilePictureName: string | null;
 
-    const user = await this.getUser({ id });
+    const user = await this.ensureUserExists({ id });
 
     //Remove picture from storage if photoFile is null
     if (data.photoFile === null && user.profilePictureName) {
@@ -102,7 +104,7 @@ export class UsersService {
   }
 
   async deleteUser(where: UserWhereUniqueInput): Promise<User> {
-    await this.getUser({ id: where.id });
+    await this.ensureUserExists({ id: where.id });
 
     return this.prismaService.user.delete({ where });
   }
@@ -150,8 +152,8 @@ export class UsersService {
   async createUserToProject(data: CreateUserToProjectInput): Promise<User> {
     const { name, projectId, roleId } = data;
 
-    await this.projectsService.getProject({ id: projectId });
-    await this.rolesService.getRole({ id: roleId });
+    await this.projectsService.ensureProjectExists({ id: projectId });
+    await this.rolesService.ensureRoleExists({ id: roleId });
 
     return this.prismaService.user.create({
       data: {
@@ -171,15 +173,15 @@ export class UsersService {
   async updateUserInProject(data: UpdateUserInProjectInput): Promise<User> {
     const { id, name, roleId, projectId } = data;
 
-    await this.getUser({ id });
-    await this.projectsService.getProject({ id: projectId });
-    await this.projectMembershipsService.getProjectMembership({
+    await this.ensureUserExists({ id });
+    await this.projectsService.ensureProjectExists({ id: projectId });
+    await this.projectMembershipsService.ensureProjectMembershipExists({
       userId_projectId: {
         userId: id,
         projectId,
       },
     });
-    await this.rolesService.getRole({ id: roleId });
+    await this.rolesService.ensureRoleExists({ id: roleId });
 
     return this.prismaService.user.update({
       where: { id },

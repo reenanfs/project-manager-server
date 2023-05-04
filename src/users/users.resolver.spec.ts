@@ -1,8 +1,8 @@
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockService } from 'src/utils/mock/mock.service';
 import { UsersResolver } from './users.resolver';
 import { UsersService } from './users.service';
+import { S3StorageService } from 'src/utils/file-uploader/services/s3-storage.service';
 
 describe('UsersResolver', () => {
   let resolver: UsersResolver;
@@ -19,11 +19,15 @@ describe('UsersResolver', () => {
       deleteUsers: jest.fn().mockResolvedValue(MockService.bulkOperationResult),
     };
 
+    const mockS3StorageService = {};
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersResolver, UsersService, MockService],
+      providers: [UsersResolver, UsersService, MockService, S3StorageService],
     })
       .overrideProvider(UsersService)
       .useValue(mockUsersService)
+      .overrideProvider(S3StorageService)
+      .useValue(mockS3StorageService)
       .compile();
 
     service = module.get<UsersService>(UsersService);
@@ -53,17 +57,6 @@ describe('UsersResolver', () => {
       expect(service.getUser).toHaveBeenCalledWith({
         id: MockService.userId,
       });
-    });
-
-    it('should throw an error if user does not exist', async () => {
-      service.getUser = jest.fn().mockResolvedValue(null);
-
-      expect(resolver.getUser({ id: MockService.userId })).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(resolver.getUser({ id: MockService.userId })).rejects.toThrow(
-        'User does not exist.',
-      );
     });
   });
 
@@ -95,17 +88,6 @@ describe('UsersResolver', () => {
       expect(service.updateUser).toHaveBeenCalledTimes(1);
       expect(service.updateUser).toHaveBeenCalledWith(MockService.user);
     });
-
-    it('should throw an error if user does not exist', async () => {
-      service.updateUser = jest.fn().mockResolvedValue(null);
-
-      expect(resolver.updateUser(MockService.user)).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(resolver.updateUser(MockService.user)).rejects.toThrow(
-        'User does not exist.',
-      );
-    });
   });
 
   describe('deleteUser', () => {
@@ -119,17 +101,6 @@ describe('UsersResolver', () => {
       expect(service.deleteUser).toHaveBeenCalledWith({
         id: MockService.userId,
       });
-    });
-
-    it('should throw an error if user does not exist', async () => {
-      service.deleteUser = jest.fn().mockResolvedValue(null);
-
-      expect(resolver.deleteUser({ id: MockService.userId })).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(resolver.deleteUser({ id: MockService.userId })).rejects.toThrow(
-        'User does not exist.',
-      );
     });
   });
 

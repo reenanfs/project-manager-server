@@ -1,8 +1,9 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 import { Credential } from '@prisma/client';
+import { CustomUnauthorizedException } from 'src/common/errors/custom-exceptions/unauthorized-exception';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -17,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     });
 
     if (!credential) {
-      throw new UnauthorizedException();
+      throw new CustomUnauthorizedException('Invalid credentials.');
     }
 
     return credential;

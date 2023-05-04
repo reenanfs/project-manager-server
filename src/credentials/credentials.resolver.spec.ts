@@ -6,9 +6,14 @@ describe('CredentialsResolver', () => {
   let resolver: CredentialsResolver;
 
   beforeEach(async () => {
+    const mockCredentialsService = {};
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [CredentialsResolver, CredentialsService],
-    }).compile();
+    })
+      .overrideProvider(CredentialsService)
+      .useValue(mockCredentialsService)
+      .compile();
 
     resolver = module.get<CredentialsResolver>(CredentialsResolver);
   });

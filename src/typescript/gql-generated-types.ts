@@ -12,8 +12,13 @@ export enum SortOrder {
     desc = "desc"
 }
 
-export class AuthInput {
-    name?: Nullable<string>;
+export class LocalSigninInput {
+    email: string;
+    password: string;
+}
+
+export class LocalSignupInput {
+    name: string;
     email: string;
     password: string;
 }
@@ -34,11 +39,16 @@ export class GetCredentialsInput {
     orderBy?: Nullable<GetCredentialsOrderBy>;
 }
 
+export class CredentialUserInput {
+    name: string;
+    isAdmin: boolean;
+}
+
 export class CreateCredentialInput {
     email: string;
     password: string;
     refreshToken?: Nullable<string>;
-    userId: string;
+    user: CredentialUserInput;
 }
 
 export class UpdateCredentialInput {
@@ -229,9 +239,9 @@ export class AuthResponse {
 }
 
 export abstract class IMutation {
-    abstract localSignin(input: AuthInput): AuthResponse | Promise<AuthResponse>;
+    abstract localSignin(input: LocalSigninInput): AuthResponse | Promise<AuthResponse>;
 
-    abstract localSignup(input: AuthInput): AuthResponse | Promise<AuthResponse>;
+    abstract localSignup(input: LocalSignupInput): AuthResponse | Promise<AuthResponse>;
 
     abstract localSignout(input: LocalSignoutInput): Credential | Promise<Credential>;
 

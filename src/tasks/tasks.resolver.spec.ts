@@ -3,10 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MockService } from 'src/utils/mock/mock.service';
 import { TasksResolver } from './tasks.resolver';
 import { TasksService } from './tasks.service';
+import { ProjectsService } from 'src/projects/projects.service';
+import { UsersService } from 'src/users/users.service';
 
 describe('TasksResolver', () => {
   let resolver: TasksResolver;
-  let service: TasksService;
+  let tasksService: TasksService;
 
   beforeEach(async () => {
     const mockTasksService = {
@@ -26,7 +28,7 @@ describe('TasksResolver', () => {
       .useValue(mockTasksService)
       .compile();
 
-    service = module.get<TasksService>(TasksService);
+    tasksService = module.get<TasksService>(TasksService);
     resolver = module.get<TasksResolver>(TasksResolver);
   });
 
@@ -39,8 +41,8 @@ describe('TasksResolver', () => {
       const returnedTasks = await resolver.getTasks({});
 
       expect(returnedTasks).toEqual(MockService.tasksArray);
-      expect(service.getTasks).toHaveBeenCalledTimes(1);
-      expect(service.getTasks).toHaveBeenCalledWith({});
+      expect(tasksService.getTasks).toHaveBeenCalledTimes(1);
+      expect(tasksService.getTasks).toHaveBeenCalledWith({});
     });
   });
 
@@ -49,21 +51,10 @@ describe('TasksResolver', () => {
       const returnedTask = await resolver.getTask({ id: MockService.taskId });
 
       expect(returnedTask).toEqual(MockService.task);
-      expect(service.getTask).toHaveBeenCalledTimes(1);
-      expect(service.getTask).toHaveBeenCalledWith({
+      expect(tasksService.getTask).toHaveBeenCalledTimes(1);
+      expect(tasksService.getTask).toHaveBeenCalledWith({
         id: MockService.taskId,
       });
-    });
-
-    it('should throw an error if task does not exist', async () => {
-      service.getTask = jest.fn().mockResolvedValue(null);
-
-      expect(resolver.getTask({ id: MockService.taskId })).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(resolver.getTask({ id: MockService.taskId })).rejects.toThrow(
-        'Task does not exist.',
-      );
     });
   });
 
@@ -72,8 +63,8 @@ describe('TasksResolver', () => {
       const returnedUser = await resolver.getTaskUser(MockService.task);
 
       expect(returnedUser).toEqual(MockService.user);
-      expect(service.getTaskUser).toHaveBeenCalledTimes(1);
-      expect(service.getTaskUser).toHaveBeenCalledWith(MockService.task);
+      expect(tasksService.getTaskUser).toHaveBeenCalledTimes(1);
+      expect(tasksService.getTaskUser).toHaveBeenCalledWith(MockService.task);
     });
   });
 
@@ -82,19 +73,8 @@ describe('TasksResolver', () => {
       const returnedTask = await resolver.createTask(MockService.task);
 
       expect(returnedTask).toEqual(MockService.task);
-      expect(service.createTask).toHaveBeenCalledTimes(1);
-      expect(service.createTask).toHaveBeenCalledWith(MockService.task);
-    });
-
-    it('should throw an error if user does not exist', async () => {
-      service.createTask = jest.fn().mockResolvedValue(null);
-
-      expect(resolver.createTask(MockService.task)).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(resolver.createTask(MockService.task)).rejects.toThrow(
-        'User does not exist.',
-      );
+      expect(tasksService.createTask).toHaveBeenCalledTimes(1);
+      expect(tasksService.createTask).toHaveBeenCalledWith(MockService.task);
     });
   });
 
@@ -103,19 +83,8 @@ describe('TasksResolver', () => {
       const returnedTask = await resolver.updateTask(MockService.task);
 
       expect(returnedTask).toEqual(MockService.task);
-      expect(service.updateTask).toHaveBeenCalledTimes(1);
-      expect(service.updateTask).toHaveBeenCalledWith(MockService.task);
-    });
-
-    it('should throw an error if task does not exist', async () => {
-      service.updateTask = jest.fn().mockResolvedValue(null);
-
-      expect(resolver.updateTask(MockService.task)).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(resolver.updateTask(MockService.task)).rejects.toThrow(
-        'Task does not exist.',
-      );
+      expect(tasksService.updateTask).toHaveBeenCalledTimes(1);
+      expect(tasksService.updateTask).toHaveBeenCalledWith(MockService.task);
     });
   });
 
@@ -126,21 +95,10 @@ describe('TasksResolver', () => {
       });
 
       expect(returnedTask).toEqual(MockService.task);
-      expect(service.deleteTask).toHaveBeenCalledTimes(1);
-      expect(service.deleteTask).toHaveBeenCalledWith({
+      expect(tasksService.deleteTask).toHaveBeenCalledTimes(1);
+      expect(tasksService.deleteTask).toHaveBeenCalledWith({
         id: MockService.taskId,
       });
-    });
-
-    it('should throw an error if task does not exist', async () => {
-      service.deleteTask = jest.fn().mockResolvedValue(null);
-
-      expect(resolver.deleteTask({ id: MockService.taskId })).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(resolver.deleteTask({ id: MockService.taskId })).rejects.toThrow(
-        'Task does not exist.',
-      );
     });
   });
 
@@ -153,8 +111,8 @@ describe('TasksResolver', () => {
       expect(returnedBulkOperationResult).toEqual(
         MockService.bulkOperationResult,
       );
-      expect(service.deleteTasks).toHaveBeenCalledTimes(1);
-      expect(service.deleteTasks).toHaveBeenCalledWith({
+      expect(tasksService.deleteTasks).toHaveBeenCalledTimes(1);
+      expect(tasksService.deleteTasks).toHaveBeenCalledWith({
         ids: MockService.taskIdArray,
       });
     });

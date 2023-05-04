@@ -6,12 +6,13 @@ import { CredentialsService } from 'src/credentials/credentials.service';
 
 import { HashService } from 'src/utils/hash/hash.service';
 import { AuthResponse } from './dtos/auth-response.dto';
-import { AuthInputDto } from './dtos/auth-input.dto';
+import { LocalSignupInputDto } from './dtos/local-signup.dto';
 import { BlacklistService } from 'src/utils/blacklist/blacklist.service';
-import { UsersService } from 'src/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { CustomBadRequestException } from 'src/common/errors/custom-exceptions/bad-request.exception';
 import { CustomForbiddenException } from 'src/common/errors/custom-exceptions/forbidden.exception';
+import { CustomConflictException } from 'src/common/errors/custom-exceptions/conflict-exception';
+import { LocalSigninInput } from 'src/typescript/gql-generated-types';
 
 interface IAuthToken {
   access_token: string;
@@ -24,25 +25,21 @@ export class AuthService {
     private hashService: HashService,
     private blacklistService: BlacklistService,
     private credentialsService: CredentialsService,
-    private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
 
-  async localSignup(res: Response, data: AuthInputDto): Promise<AuthResponse> {
+  async localSignup(
+    res: Response,
+    data: LocalSignupInputDto,
+  ): Promise<AuthResponse> {
     // Validating data
-    await this.credentialsService.getCredential({
+    const credential = await this.credentialsService.getCredential({
       email: data.email,
     });
 
-    // Create user if name is provided
-    let user: User;
-
-    if (data.name) {
-      user = await this.usersService.createUser({
-        name: data.name,
-        isAdmin: false,
-      });
+    if (credential) {
+      throw new CustomConflictException('Email already in use.');
     }
 
     // Hash password and create credential
@@ -52,7 +49,10 @@ export class AuthService {
 
     let newCredential = await this.credentialsService.createCredential({
       ...createCredentialInput,
-      userId: user ? user.id : undefined,
+      user: {
+        name,
+        isAdmin: false,
+      },
     });
 
     // Generate tokens and store in cookie
@@ -113,7 +113,7 @@ export class AuthService {
   async validateCredential({
     email,
     password,
-  }: AuthInputDto): Promise<Credential> {
+  }: LocalSigninInput): Promise<Credential> {
     const credential = await this.credentialsService.getCredential({
       email,
     });

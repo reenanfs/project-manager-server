@@ -9,7 +9,7 @@ import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-credential.decorator';
 import { AuthResponse } from './dtos/auth-response.dto';
-import { AuthInputDto } from './dtos/auth-input.dto';
+import { LocalSignupInputDto } from './dtos/local-signup.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from './guards/refresh-token-jwt.guard';
 import { IgnoreAccessTokenGuard } from 'src/common/decorators/ignore-access-token.decorator';
@@ -26,16 +26,10 @@ export class AuthResolver {
   @IgnoreAccessTokenGuard()
   @Mutation()
   async localSignup(
-    @Args('input') input: AuthInputDto,
+    @Args('input') input: LocalSignupInputDto,
     @Context('res') res: Response,
   ): Promise<AuthResponse> {
-    const authResponse = await this.authService.localSignup(res, input);
-
-    if (!authResponse) {
-      throw new BadRequestException('Email already in use.');
-    }
-
-    return authResponse;
+    return this.authService.localSignup(res, input);
   }
 
   @IgnoreAccessTokenGuard()
@@ -64,17 +58,7 @@ export class AuthResolver {
     @Context('res') res: Response,
     @CurrentUser() { credentialId, refreshToken }: ICurrentUser,
   ): Promise<AuthResponse> {
-    const authResponse = await this.authService.refreshTokens(
-      res,
-      credentialId,
-      refreshToken,
-    );
-
-    if (!authResponse) {
-      throw new UnauthorizedException('Access denied');
-    }
-
-    return authResponse;
+    return this.authService.refreshTokens(res, credentialId, refreshToken);
   }
 
   @Query()

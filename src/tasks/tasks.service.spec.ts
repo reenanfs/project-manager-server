@@ -2,9 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MockService } from 'src/utils/mock/mock.service';
 import { TasksService } from './tasks.service';
+import { ProjectsService } from 'src/projects/projects.service';
+import { UsersService } from 'src/users/users.service';
+import { CustomNotFoundException } from 'src/common/errors/custom-exceptions/not-found.exception';
 
 describe('TasksService', () => {
-  let service: TasksService;
+  let tasksService: TasksService;
+  let projectsService: ProjectsService;
+  let usersService: UsersService;
   let prisma: PrismaService;
 
   beforeEach(async () => {
@@ -24,24 +29,45 @@ describe('TasksService', () => {
       },
     };
 
+    const mockProjectsService = {
+      ensureProjectExists: jest.fn().mockResolvedValue({}),
+    };
+
+    const mockUsersService = {
+      ensureUserExists: jest.fn().mockResolvedValue(MockService.user),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TasksService, PrismaService, MockService],
+      providers: [
+        TasksService,
+        PrismaService,
+        MockService,
+        ProjectsService,
+        UsersService,
+      ],
     })
       .overrideProvider(PrismaService)
       .useValue(mockPrismaService)
+      .overrideProvider(ProjectsService)
+      .useValue(mockProjectsService)
+      .overrideProvider(UsersService)
+      .useValue(mockUsersService)
       .compile();
 
-    service = module.get<TasksService>(TasksService);
+    tasksService = module.get<TasksService>(TasksService);
+    projectsService = module.get<ProjectsService>(ProjectsService);
+    usersService = module.get<UsersService>(UsersService);
+    tasksService = module.get<TasksService>(TasksService);
     prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(tasksService).toBeDefined();
   });
 
   describe('getTasks', () => {
     it('should return an array of tasks', async () => {
-      const returnedTasks = await service.getTasks({});
+      const returnedTasks = await tasksService.getTasks({});
 
       expect(returnedTasks).toEqual(MockService.tasksArray);
       expect(prisma.task.findMany).toHaveBeenCalledTimes(1);
@@ -53,7 +79,9 @@ describe('TasksService', () => {
 
   describe('getTask', () => {
     it('should return one task', async () => {
-      const returnedTask = await service.getTask({ id: MockService.taskId });
+      const returnedTask = await tasksService.getTask({
+        id: MockService.taskId,
+      });
 
       expect(returnedTask).toEqual(MockService.task);
       expect(prisma.task.findUnique).toHaveBeenCalledTimes(1);
@@ -66,29 +94,61 @@ describe('TasksService', () => {
   });
 
   describe('createTask', () => {
+    it('should call usersService.ensureUserExists with the correct argument', async () => {
+      await tasksService.createTask(MockService.createTaskInput);
+
+      expect(usersService.ensureUserExists).toHaveBeenCalledWith({
+        id: MockService.createTaskInput.userId,
+      });
+    });
+
+    it('should call projectsService.ensureProjectExists with the correct argument', async () => {
+      await tasksService.createTask(MockService.createTaskInput);
+
+      expect(projectsService.ensureProjectExists).toHaveBeenCalledWith({
+        id: MockService.createTaskInput.projectId,
+      });
+    });
+
+    it('should call prismaService.task.create with the correct argument', async () => {
+      await tasksService.createTask(MockService.createTaskInput);
+
+      expect(prisma.task.create).toHaveBeenCalledWith({
+        data: MockService.createTaskInput,
+      });
+    });
+
     it('should create one task', async () => {
-      const returnedTask = await service.createTask(MockService.task);
+      const returnedTask = await tasksService.createTask(
+        MockService.createTaskInput,
+      );
 
       expect(returnedTask).toEqual(MockService.task);
       expect(prisma.task.create).toHaveBeenCalledTimes(1);
       expect(prisma.task.create).toHaveBeenCalledWith({
-        data: MockService.task,
+        data: MockService.createTaskInput,
       });
     });
 
-    it('should return null if no user exists', async () => {
-      prisma.user.findUnique = jest.fn().mockResolvedValue(null);
+    it('should throw error if no user exists', async () => {
+      usersService.ensureUserExists = jest
+        .fn()
+        .mockRejectedValue(new CustomNotFoundException('User not found.'));
 
-      const returnedTask = await service.createTask(MockService.task);
-      expect(returnedTask).toEqual(null);
-      expect(prisma.user.findUnique).toHaveBeenCalledTimes(1);
+      await expect(
+        tasksService.createTask(MockService.createTaskInput),
+      ).rejects.toThrowError(CustomNotFoundException);
+      expect(usersService.ensureUserExists).toBeCalledWith({
+        id: MockService.createTaskInput.userId,
+      });
+      expect(projectsService.ensureProjectExists).toHaveBeenCalledTimes(0);
       expect(prisma.task.create).toHaveBeenCalledTimes(0);
     });
   });
 
   describe('updateTask', () => {
     it('should update one task', async () => {
-      const returnedTask = await service.updateTask(MockService.task);
+      const returnedTask = await tasksService.updateTask(MockService.task);
 
       expect(returnedTask).toEqual(MockService.task);
       expect(prisma.task.update).toHaveBeenCalledTimes(1);
@@ -98,19 +158,26 @@ describe('TasksService', () => {
       });
     });
 
-    it('should return null if no task exists', async () => {
-      prisma.task.findUnique = jest.fn().mockResolvedValue(null);
+    it('should throw error if no user exists', async () => {
+      tasksService.ensureTaskExists = jest
+        .fn()
+        .mockRejectedValue(new CustomNotFoundException('User not found.'));
 
-      const returnedTask = await service.updateTask(MockService.task);
-      expect(returnedTask).toEqual(null);
-      expect(prisma.task.findUnique).toHaveBeenCalledTimes(1);
+      await expect(
+        tasksService.updateTask(MockService.updateTaskInput),
+      ).rejects.toThrowError(CustomNotFoundException);
+      expect(tasksService.ensureTaskExists).toBeCalledWith({
+        id: MockService.updateTaskInput.id,
+      });
       expect(prisma.task.update).toHaveBeenCalledTimes(0);
     });
   });
 
   describe('deleteTask', () => {
     it('should delete one task', async () => {
-      const returnedTask = await service.deleteTask({ id: MockService.taskId });
+      const returnedTask = await tasksService.deleteTask({
+        id: MockService.taskId,
+      });
 
       expect(returnedTask).toEqual(MockService.task);
       expect(prisma.task.delete).toHaveBeenCalledTimes(1);
@@ -121,19 +188,27 @@ describe('TasksService', () => {
       });
     });
 
-    it('should return null if no task exists', async () => {
-      prisma.task.findUnique = jest.fn().mockResolvedValue(null);
+    it('should throw error if no task exists', async () => {
+      tasksService.ensureTaskExists = jest
+        .fn()
+        .mockRejectedValue(new CustomNotFoundException('User not found.'));
 
-      const returnedTask = await service.deleteTask({ id: MockService.taskId });
-      expect(returnedTask).toEqual(null);
-      expect(prisma.task.findUnique).toHaveBeenCalledTimes(1);
+      await expect(
+        tasksService.deleteTask({
+          id: MockService.taskId,
+        }),
+      ).rejects.toThrowError(CustomNotFoundException);
+
+      expect(tasksService.ensureTaskExists).toBeCalledWith({
+        id: MockService.taskId,
+      });
       expect(prisma.task.delete).toHaveBeenCalledTimes(0);
     });
   });
 
   describe('deleteTasks', () => {
     it('should delete many tasks', async () => {
-      const returneBulkOperationResult = await service.deleteTasks({
+      const returneBulkOperationResult = await tasksService.deleteTasks({
         ids: MockService.taskIdArray,
       });
 
@@ -155,7 +230,7 @@ describe('TasksService', () => {
         user: jest.fn().mockResolvedValue(MockService.user),
       });
 
-      const returnedUser = await service.getTaskUser(MockService.task);
+      const returnedUser = await tasksService.getTaskUser(MockService.task);
 
       expect(returnedUser).toEqual(MockService.user);
       expect(prisma.task.findUnique).toHaveBeenCalledTimes(1);
