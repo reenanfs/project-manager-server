@@ -3,7 +3,7 @@ import { redisStore } from 'cache-manager-redis-yet';
 
 import { BlacklistService } from './blacklist.service';
 import { ConfigService } from '@nestjs/config';
-
+console.log(process.env.REDIS_PORT);
 @Module({
   imports: [
     CacheModule.registerAsync<any>({
