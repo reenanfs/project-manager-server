@@ -4,7 +4,7 @@ on:
   - pull_request
 jobs:
   tests:
-    runs-on: node:16.16-alpine3.15
+    runs-on: ubuntu:latest
     env:
       DOCKER_TARGET: dev
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
