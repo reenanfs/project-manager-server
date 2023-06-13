@@ -24,6 +24,7 @@ jobs:
       - name: 'Create config folder'
         run: mkdir config
 
+        # Setting variables needed in code
       - name: 'Create dummy env file'
         run: |
           echo "REDIS_HOST=cache
