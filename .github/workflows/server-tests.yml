@@ -6,7 +6,6 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     env:
-      NODE_ENV: dev
       DOCKER_TARGET: dev
       DOCKER_USER: ${{ secrets.DOCKER_USER }}
       DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
@@ -15,27 +14,28 @@ jobs:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
       POSTGRES_PORT: 5432
-      REDIS_HOST: cache
       REDIS_PORT: 6379
-      REDIS_TTL: 900000
-      JWT_SECRET_ACCESS_TOKEN: test_secret
-      ACCESS_TOKEN_EXPIRES_IN: 15m
-      JWT_SECRET_REFRESH_TOKEN: test_secret2
-      REFRESH_TOKEN_EXPIRES_IN: 7d
     steps:
       - uses: actions/checkout@v2
 
       - name: Login to DockerHub
-        run: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+        run: docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
 
       - name: 'Create config folder'
         run: mkdir config
 
       - name: 'Create dummy env file'
-        run: touch config/.env.test
+        run: |
+          echo "REDIS_HOST=cache
+          REDIS_TTL=900000
+          NODE_ENV=dev
+          JWT_SECRET_ACCESS_TOKEN=test_secret
+          ACCESS_TOKEN_EXPIRES_IN=15m
+          JWT_SECRET_REFRESH_TOKEN=test_secret2
+          REFRESH_TOKEN_EXPIRES_IN=7d" > config/.env.test
 
       - name: Print environment variables
-        run: echo $JWT_SECRET_ACCESS_TOKEN
+        run: cat config/.env.test
 
       - name: Run tests
         run: npm run docker:test

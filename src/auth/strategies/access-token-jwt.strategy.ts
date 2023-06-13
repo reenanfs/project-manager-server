@@ -4,7 +4,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { BlacklistService } from 'src/utils/blacklist/blacklist.service';
 import { ConfigService } from '@nestjs/config';
-console.log(process.env.JWT_SECRET_ACCESS_TOKEN);
+
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
@@ -17,7 +17,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       ignoreExpiration: false,
-      secretOrKey: 'process.env.JWT_SECRET_ACCESS_TOKEN',
+      secretOrKey: configService.get<string>('JWT_SECRET_ACCESS_TOKEN'),
       passReqToCallback: true,
     });
   }
