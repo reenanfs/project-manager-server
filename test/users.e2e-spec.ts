@@ -1,9 +1,14 @@
 import * as request from 'supertest';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import {
+  INestApplication,
+  ValidationPipe,
+  CACHE_MANAGER,
+} from '@nestjs/common';
+import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { useContainer } from 'class-validator';
 import { MockService } from 'src/utils/mock/mock.service';
+import { Cache } from 'cache-manager';
 
 const gql = '/graphql';
 let jwtToken: string;
@@ -12,7 +17,7 @@ describe('Users (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+    const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
       providers: [MockService],
     }).compile();

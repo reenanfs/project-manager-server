@@ -50,18 +50,12 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  const deleteCredentials = prisma.credential.deleteMany();
-  const deleteProjects = prisma.project.deleteMany();
-  const deleteTasks = prisma.task.deleteMany();
-  const deleteUsers = prisma.user.deleteMany();
-  const deleteRoles = prisma.role.deleteMany();
-
   await prisma.$transaction([
-    deleteCredentials,
-    deleteProjects,
-    deleteTasks,
-    deleteUsers,
-    deleteRoles,
+    prisma.credential.deleteMany(),
+    prisma.project.deleteMany(),
+    prisma.task.deleteMany(),
+    prisma.user.deleteMany(),
+    prisma.role.deleteMany(),
   ]);
 });
 
