@@ -21,7 +21,7 @@ jobs:
         run: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
       - name: 'Create dummy env file'
-        run: touch .env.dev
+        run: touch ./config/.env.test
 
       - name: Run tests
         run: npm run docker:test
