@@ -31,7 +31,7 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(req: Request, payload: any) {
-    let accessToken = req.cookies.access_token;
+    let accessToken = req.cookies?.access_token;
 
     if (!accessToken) {
       accessToken = req.get('Authorization').replace('Bearer', '').trim();

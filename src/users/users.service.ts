@@ -57,7 +57,6 @@ export class UsersService {
     let profilePictureName: string;
 
     if (data.photoFile) {
-      console.log(this.fileUploaderService);
       profilePictureName = await this.fileUploaderService.uploadFile(
         data.photoFile,
       );

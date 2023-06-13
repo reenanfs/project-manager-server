@@ -13,17 +13,56 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await prisma.user.createMany({ data: MockService.usersArray });
-  await prisma.task.createMany({
-    data: MockService.tasksArray,
+  await prisma.user.createMany({ data: [...MockService.createManyUsersInput] });
+  const role = await prisma.role.create({
+    data: { ...MockService.createRoleInput },
+  });
+  const users = await prisma.user.findMany();
+
+  await prisma.project.create({
+    data: {
+      ...MockService.createProjectInput,
+      ownerId: users[0].id,
+      projectMemberships: {
+        createMany: {
+          data: [
+            {
+              userId: users[0].id,
+              roleId: role.id,
+            },
+            {
+              userId: users[1].id,
+              roleId: role.id,
+            },
+          ],
+        },
+      },
+      tasks: {
+        createMany: {
+          data: [
+            { ...MockService.createManyTasksInput[0], userId: users[0].id },
+            { ...MockService.createManyTasksInput[1], userId: users[1].id },
+          ],
+        },
+      },
+    },
   });
 });
 
 afterEach(async () => {
-  const deleteOrderDetails = prisma.task.deleteMany();
-  const deleteProduct = prisma.user.deleteMany();
+  const deleteCredentials = prisma.credential.deleteMany();
+  const deleteProjects = prisma.project.deleteMany();
+  const deleteTasks = prisma.task.deleteMany();
+  const deleteUsers = prisma.user.deleteMany();
+  const deleteRoles = prisma.role.deleteMany();
 
-  await prisma.$transaction([deleteOrderDetails, deleteProduct]);
+  await prisma.$transaction([
+    deleteCredentials,
+    deleteProjects,
+    deleteTasks,
+    deleteUsers,
+    deleteRoles,
+  ]);
 });
 
 afterAll(async () => {
