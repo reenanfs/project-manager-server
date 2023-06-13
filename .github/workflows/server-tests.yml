@@ -17,6 +17,10 @@ jobs:
       REDIS_HOST: 'cache'
       REDIS_PORT: 6379
       REDIS_TTL: 900000
+      JWT_SECRET_ACCESS_TOKEN: 'test_secret'
+      ACCESS_TOKEN_EXPIRES_IN: '15m'
+      JWT_SECRET_REFRESH_TOKEN: 'test_secret2'
+      REFRESH_TOKEN_EXPIRES_IN: '7d'
     steps:
       - uses: actions/checkout@v2
 
